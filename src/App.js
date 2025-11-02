@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Home from './components/Home';
 import Profile from './components/Profile';
 import Settings from './components/Settings';
+import LifeScheduleDayContainer from 'features/life/life-schedule-day/containers/LifeScheduleDayContainer';
 import './App.css';
 
 function App() {
@@ -12,6 +13,8 @@ function App() {
         <Route path="/" element={<Home title="Home Page" message="Welcome to the home page!" />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/settings" element={<Settings />} />
+        {/* 生活管理システム */}
+        <Route path="/life/life-schedule-day" element={<LifeScheduleDayContainer />} />
       </Routes>
     </Router>
   );
