@@ -406,11 +406,13 @@ export const useLifeScheduleDayState = (
                 prev.selectedData.resizingTask.originalStartDate || currentTask.startDateTime, 
                 deltaMinutes
               ));
+              // 終了時間は変更しない
               newEndDate = currentTask.endDateTime;
               break;
             case 'end':
+              // 開始時間は変更しない
               newStartDate = currentTask.startDateTime;
-              // originalEndDateからの累積差分を使用
+              // originalEndDateからの累積差分を使用（開始と同じロジック）
               newEndDate = roundToNearestMinute(addMinutes(
                 prev.selectedData.resizingTask.originalEndDate || currentTask.endDateTime, 
                 deltaMinutes
