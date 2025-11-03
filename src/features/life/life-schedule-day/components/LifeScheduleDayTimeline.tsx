@@ -17,7 +17,7 @@ interface Props {
   }
   controls?: {
     taskControls: {
-      onDragStart: (tmpId: number, type: 'start' | 'end' | 'move', event: React.MouseEvent) => void;
+      onDragStart: (tmpId: number, type: 'start' | 'end' | 'move', event: React.MouseEvent | React.TouchEvent) => void;
     };
   };
 }

@@ -382,50 +382,69 @@ export const useLifeScheduleDayState = (
         if (!state.selectedData.resizingTask.tmpId) return;
         const CELL_WIDTH = 35;  // px
         const MINUTES_PER_CELL = 15;  // minutes
-        const deltaX = clientX - (state.selectedData.resizingTask.startX || 0);
-        const deltaMinutes = Math.round((deltaX / CELL_WIDTH) * MINUTES_PER_CELL);
-        setState(prev => ({
-          ...prev,
-          data: {
-            ...prev.data,
-            tasks: prev.data.tasks.map(task => {
-              if (task.tmpId === prev.selectedData.resizingTask.tmpId) {
-                let newStartDate = task.startDateTime;
-                let newEndDate = task.endDateTime;
+        
+        setState(prev => {
+          if (!prev.selectedData.resizingTask.tmpId) return prev;
+          
+          // 最初のタッチ位置（startX）からの累積差分を計算
+          // startXは最初のタッチ位置のまま保持する（更新しない）
+          const startX = prev.selectedData.resizingTask.startX || 0;
+          const deltaX = clientX - startX;
+          const deltaMinutes = Math.round((deltaX / CELL_WIDTH) * MINUTES_PER_CELL);
+          
+          // 現在のタスクを取得
+          const currentTask = prev.data.tasks.find(task => task.tmpId === prev.selectedData.resizingTask.tmpId);
+          if (!currentTask) return prev;
+          
+          let newStartDate = currentTask.startDateTime;
+          let newEndDate = currentTask.endDateTime;
 
-                switch (prev.selectedData.resizingTask.type) {
-                  case 'start':
-                    newStartDate = roundToNearestMinute(addMinutes(
-                      state.selectedData.resizingTask.originalStartDate || task.startDateTime, 
-                      deltaMinutes
-                    ));
-                    newEndDate = task.endDateTime;
-                    break;
-                  case 'end':
-                    newStartDate = task.startDateTime;
-                    newEndDate = roundToNearestMinute(addMinutes(
-                      state.selectedData.resizingTask.originalEndDate || task.endDateTime, 
-                      deltaMinutes
-                    ));
-                    break;
-                  case 'move':
-                    newStartDate = roundToNearestMinute(addMinutes(
-                      state.selectedData.resizingTask.originalStartDate || task.startDateTime, 
-                      deltaMinutes
-                    ));
-                    const duration = differenceInMinutes(
-                      state.selectedData.resizingTask.originalEndDate || task.endDateTime,
-                      state.selectedData.resizingTask.originalStartDate || task.startDateTime
-                    );
-                    newEndDate = addMinutes(newStartDate, duration);
-                    break;
-                }
-                return { ...task, startDateTime: newStartDate, endDateTime: newEndDate };
-              }
-              return task;
-            }),
+          switch (prev.selectedData.resizingTask.type) {
+            case 'start':
+              // originalStartDateからの累積差分を使用
+              newStartDate = roundToNearestMinute(addMinutes(
+                prev.selectedData.resizingTask.originalStartDate || currentTask.startDateTime, 
+                deltaMinutes
+              ));
+              newEndDate = currentTask.endDateTime;
+              break;
+            case 'end':
+              newStartDate = currentTask.startDateTime;
+              // originalEndDateからの累積差分を使用
+              newEndDate = roundToNearestMinute(addMinutes(
+                prev.selectedData.resizingTask.originalEndDate || currentTask.endDateTime, 
+                deltaMinutes
+              ));
+              break;
+            case 'move':
+              // originalStartDateからの累積差分を使用
+              newStartDate = roundToNearestMinute(addMinutes(
+                prev.selectedData.resizingTask.originalStartDate || currentTask.startDateTime, 
+                deltaMinutes
+              ));
+              const duration = differenceInMinutes(
+                prev.selectedData.resizingTask.originalEndDate || currentTask.endDateTime,
+                prev.selectedData.resizingTask.originalStartDate || currentTask.startDateTime
+              );
+              newEndDate = addMinutes(newStartDate, duration);
+              break;
           }
-        }));
+          
+          const updatedTasks = prev.data.tasks.map(task => {
+            if (task.tmpId === prev.selectedData.resizingTask.tmpId) {
+              return { ...task, startDateTime: newStartDate, endDateTime: newEndDate };
+            }
+            return task;
+          });
+          
+          return {
+            ...prev,
+            data: {
+              ...prev.data,
+              tasks: updatedTasks,
+            }
+          };
+        });
       }, [state.selectedData.resizingTask, setState]),
 
       // 選択データリセット

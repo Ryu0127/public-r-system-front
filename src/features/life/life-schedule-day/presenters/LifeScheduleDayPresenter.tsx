@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { LifeScheduleDayActions, LifeScheduleDayState, Project } from '../hooks/useLifeScheduleDayState';
 import { LifeScheduleDayTaskList } from '../components/LifeScheduleDayTaskList';
 import { LifeScheduleDayTimeline } from '../components/LifeScheduleDayTimeline';
@@ -23,8 +23,8 @@ export interface LifeScheduleDayUiProps {
     onAddTask: () => void;
     onChangeForm: (event: React.ChangeEvent<HTMLSelectElement | HTMLTextAreaElement>, tmpId: number) => void;
     onUpdate: () => void;
-    onDragStart: (tmpId: number, type: 'start' | 'end' | 'move', e: React.MouseEvent) => void;
-    onDragMove: (e: React.MouseEvent) => void;
+    onDragStart: (tmpId: number, type: 'start' | 'end' | 'move', e: React.MouseEvent | React.TouchEvent) => void;
+    onDragMove: (e: React.MouseEvent | React.TouchEvent) => void;
     onDragEnd: () => void;
     registGoogleCalendar: (tmpId: number) => void;
   };
@@ -34,6 +34,10 @@ export interface LifeScheduleDayUiProps {
     onMouseMove: (e: React.MouseEvent) => void;
     onMouseUp: () => void;
     onMouseLeave: () => void;
+    onTouchStart: (e: React.TouchEvent) => void;
+    onTouchMove: (e: React.TouchEvent) => void;
+    onTouchEnd: () => void;
+    onTouchCancel: () => void;
   };
 }
 
@@ -55,6 +59,9 @@ const LifeScheduleDayPresenter: React.FC<PresenterProps> = ({
   state,
   actions,
 }) => {
+  // タイムライン要素へのref
+  const timelineElementRef = useRef<HTMLDivElement | null>(null);
+
   // UI Props定義
   const uiProps: LifeScheduleDayUiProps = {
     // サイドバー操作コントロール
@@ -73,11 +80,13 @@ const LifeScheduleDayPresenter: React.FC<PresenterProps> = ({
       onAddTask: actions.addTask,
       onChangeForm: actions.updateFormValueTask,
       onUpdate: actions.update,
-      onDragStart: useCallback((tmpId: number, type: 'start' | 'end' | 'move', e: React.MouseEvent) => {
-        actions.taskDragActions.startTaskDrag(tmpId, type, e.clientX);
+      onDragStart: useCallback((tmpId: number, type: 'start' | 'end' | 'move', e: React.MouseEvent | React.TouchEvent) => {
+        const clientX = 'touches' in e && e.touches.length > 0 ? e.touches[0].clientX : (e as React.MouseEvent).clientX;
+        actions.taskDragActions.startTaskDrag(tmpId, type, clientX);
       }, [actions]),
-      onDragMove: useCallback((e: React.MouseEvent) => {
-        actions.taskDragActions.moveTask(e.clientX);
+      onDragMove: useCallback((e: React.MouseEvent | React.TouchEvent) => {
+        const clientX = 'touches' in e && e.touches.length > 0 ? e.touches[0].clientX : (e as React.MouseEvent).clientX;
+        actions.taskDragActions.moveTask(clientX);
       }, [actions]),
       onDragEnd: useCallback(() => {
         actions.taskDragActions.resetSelectedData();
@@ -106,8 +115,112 @@ const LifeScheduleDayPresenter: React.FC<PresenterProps> = ({
         actions.endScroll();
         actions.taskDragActions.resetSelectedData();
       }, [actions]),
+      onTouchStart: useCallback((e: React.TouchEvent) => {
+        // タスクドラッグが既に開始されている場合は何もしない
+        if (!state.selectedData.resizingTask.tmpId) {
+          actions.startScroll(e.touches[0].clientX);
+        }
+      }, [actions, state.selectedData.resizingTask.tmpId]),
+      onTouchMove: useCallback((e: React.TouchEvent) => {
+        // タスクドラッグ中はグローバルリスナーで処理するため、ここでは何もしない
+        if (!state.selectedData.resizingTask.tmpId) {
+          actions.handleScroll(e.touches[0].clientX);
+        }
+      }, [actions, state.selectedData.resizingTask.tmpId]),
+      onTouchEnd: useCallback(() => {
+        actions.endScroll();
+        actions.taskDragActions.resetSelectedData();
+      }, [actions]),
+      onTouchCancel: useCallback(() => {
+        actions.endScroll();
+        actions.taskDragActions.resetSelectedData();
+      }, [actions]),
     }
   };
+
+  // タイムライン要素のネイティブタッチイベントリスナー（passive: falseでpreventDefault可能）
+  useEffect(() => {
+    const timelineElement = timelineElementRef.current;
+    if (!timelineElement) return;
+
+    const handleTouchStart = (e: TouchEvent) => {
+      // タスクドラッグが開始されていない場合のみスクロール開始
+      if (!state.selectedData.resizingTask.tmpId) {
+        actions.startScroll(e.touches[0].clientX);
+      }
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      // 最新の状態を確認
+      const currentResizingTaskId = state.selectedData.resizingTask.tmpId;
+      if (currentResizingTaskId) {
+        // タスクドラッグ中
+        e.preventDefault(); // スクロールを防ぐ
+        actions.taskDragActions.moveTask(e.touches[0].clientX);
+      } else {
+        // タイムラインスクロール中
+        actions.handleScroll(e.touches[0].clientX);
+      }
+    };
+
+    const handleTouchEnd = () => {
+      actions.endScroll();
+      actions.taskDragActions.resetSelectedData();
+    };
+
+    const handleTouchCancel = () => {
+      actions.endScroll();
+      actions.taskDragActions.resetSelectedData();
+    };
+
+    timelineElement.addEventListener('touchstart', handleTouchStart, { passive: false });
+    timelineElement.addEventListener('touchmove', handleTouchMove, { passive: false });
+    timelineElement.addEventListener('touchend', handleTouchEnd, { passive: false });
+    timelineElement.addEventListener('touchcancel', handleTouchCancel, { passive: false });
+
+    return () => {
+      timelineElement.removeEventListener('touchstart', handleTouchStart);
+      timelineElement.removeEventListener('touchmove', handleTouchMove);
+      timelineElement.removeEventListener('touchend', handleTouchEnd);
+      timelineElement.removeEventListener('touchcancel', handleTouchCancel);
+    };
+  }, [state.selectedData.resizingTask.tmpId, actions, state.selectedData]);
+
+  // タスクドラッグ中のグローバルタッチイベントリスナー（タイムライン要素外での移動に対応）
+  useEffect(() => {
+    const currentResizingTaskId = state.selectedData.resizingTask.tmpId;
+    if (!currentResizingTaskId) return;
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (e.touches.length > 0) {
+        // タイムライン要素内のイベントはネイティブリスナーで処理されるため、要素外のみ処理
+        if (!timelineElementRef.current?.contains(e.target as Node)) {
+          e.preventDefault(); // スクロールを防ぐ
+          actions.taskDragActions.moveTask(e.touches[0].clientX);
+        }
+      }
+    };
+
+    const handleTouchEnd = () => {
+      actions.endScroll();
+      actions.taskDragActions.resetSelectedData();
+    };
+
+    const handleTouchCancel = () => {
+      actions.endScroll();
+      actions.taskDragActions.resetSelectedData();
+    };
+
+    document.addEventListener('touchmove', handleTouchMove, { passive: false });
+    document.addEventListener('touchend', handleTouchEnd);
+    document.addEventListener('touchcancel', handleTouchCancel);
+
+    return () => {
+      document.removeEventListener('touchmove', handleTouchMove);
+      document.removeEventListener('touchend', handleTouchEnd);
+      document.removeEventListener('touchcancel', handleTouchCancel);
+    };
+  }, [state.selectedData.resizingTask.tmpId, actions]);
 
   return (
     <LayoutBaseTs
@@ -142,7 +255,12 @@ const LifeScheduleDayPresenter: React.FC<PresenterProps> = ({
                   {/* タイムライン */}
                   <div 
                     className="w-auto overflow-x-auto cursor-grab active:cursor-grabbing"
-                    ref={state.config.timelineRef}
+                    ref={(el) => {
+                      if (state.config.timelineRef) {
+                        (state.config.timelineRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
+                      }
+                      timelineElementRef.current = el;
+                    }}
                     onMouseDown={uiProps.timelineControls.onMouseDown}
                     onMouseMove={uiProps.timelineControls.onMouseMove}
                     onMouseUp={uiProps.timelineControls.onMouseUp}

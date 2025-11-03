@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 
 export interface TimelineScrollingHorizontalProps {
     timeSlots: TimeSlot[];
     tasks: Task[];
     splitTime: number;
     gridColsClass: string;
-    onDragStart: (tmpId: number, type: 'start' | 'end' | 'move', event: React.MouseEvent) => void;
+    onDragStart: (tmpId: number, type: 'start' | 'end' | 'move', event: React.MouseEvent | React.TouchEvent) => void;
 }
 
 export interface TimeSlot {
@@ -29,6 +29,15 @@ export interface Task {
 }
 
 const TimelineScrollingHorizontal: React.FC<TimelineScrollingHorizontalProps> = ({ timeSlots, tasks, splitTime, gridColsClass, onDragStart }) => {
+    // タスクバーとハンドルのrefを保存
+    const taskRefs = useRef<Map<string, HTMLDivElement>>(new Map());
+    const startHandleRefs = useRef<Map<string, HTMLDivElement>>(new Map());
+    const endHandleRefs = useRef<Map<string, HTMLDivElement>>(new Map());
+    // リスナーを保存するMap
+    const taskListeners = useRef<Map<string, (e: TouchEvent) => void>>(new Map());
+    const startHandleListeners = useRef<Map<string, (e: TouchEvent) => void>>(new Map());
+    const endHandleListeners = useRef<Map<string, (e: TouchEvent) => void>>(new Map());
+
     const formatTime = (date: Date): string => {
         return date.toLocaleTimeString('ja-JP', { 
             hour: '2-digit', 
@@ -45,6 +54,109 @@ const TimelineScrollingHorizontal: React.FC<TimelineScrollingHorizontalProps> = 
     const isEndTime = (task: Task, timeSlot: Date): boolean => {
         return new Date(timeSlot.getTime() + splitTime * 60000).getTime() === task.endDateTime.getTime();
     };
+
+    // タッチイベントリスナーの設定
+    useEffect(() => {
+        const taskElements = taskRefs.current;
+        const startHandleElements = startHandleRefs.current;
+        const endHandleElements = endHandleRefs.current;
+        const taskListenerMap = taskListeners.current;
+        const startHandleListenerMap = startHandleListeners.current;
+        const endHandleListenerMap = endHandleListeners.current;
+
+        const handleTouchStart = (e: TouchEvent, taskId: number, type: 'start' | 'end' | 'move') => {
+            e.preventDefault();
+            e.stopPropagation();
+            const touch = e.touches[0];
+            // React.TouchEventのような構造を作成
+            const syntheticEvent = {
+                touches: [touch],
+                targetTouches: [touch],
+                changedTouches: [touch],
+                nativeEvent: e,
+                currentTarget: e.currentTarget,
+                target: e.target,
+                bubbles: e.bubbles,
+                cancelable: e.cancelable,
+                defaultPrevented: e.defaultPrevented,
+                eventPhase: e.eventPhase,
+                isTrusted: e.isTrusted,
+                preventDefault: () => {
+                    e.preventDefault();
+                },
+                stopPropagation: () => {
+                    e.stopPropagation();
+                },
+                timeStamp: e.timeStamp,
+                type: 'touchstart',
+            } as unknown as React.TouchEvent;
+            onDragStart(taskId, type, syntheticEvent);
+        };
+
+        // タスクバーのリスナーを追加
+        taskElements.forEach((element, taskId) => {
+            // 既存のリスナーを削除
+            const existingListener = taskListenerMap.get(taskId);
+            if (existingListener) {
+                element.removeEventListener('touchstart', existingListener);
+            }
+            // 新しいリスナーを追加
+            const listener = (e: TouchEvent) => handleTouchStart(e, parseInt(taskId), 'move');
+            element.addEventListener('touchstart', listener, { passive: false });
+            taskListenerMap.set(taskId, listener);
+        });
+
+        // 開始ハンドルのリスナーを追加
+        startHandleElements.forEach((element, taskId) => {
+            // 既存のリスナーを削除
+            const existingListener = startHandleListenerMap.get(taskId);
+            if (existingListener) {
+                element.removeEventListener('touchstart', existingListener);
+            }
+            // 新しいリスナーを追加
+            const listener = (e: TouchEvent) => handleTouchStart(e, parseInt(taskId), 'start');
+            element.addEventListener('touchstart', listener, { passive: false });
+            startHandleListenerMap.set(taskId, listener);
+        });
+
+        // 終了ハンドルのリスナーを追加
+        endHandleElements.forEach((element, taskId) => {
+            // 既存のリスナーを削除
+            const existingListener = endHandleListenerMap.get(taskId);
+            if (existingListener) {
+                element.removeEventListener('touchstart', existingListener);
+            }
+            // 新しいリスナーを追加
+            const listener = (e: TouchEvent) => handleTouchStart(e, parseInt(taskId), 'end');
+            element.addEventListener('touchstart', listener, { passive: false });
+            endHandleListenerMap.set(taskId, listener);
+        });
+
+        return () => {
+            // クリーンアップ: すべてのリスナーを削除
+            taskElements.forEach((element, taskId) => {
+                const listener = taskListenerMap.get(taskId);
+                if (listener) {
+                    element.removeEventListener('touchstart', listener);
+                    taskListenerMap.delete(taskId);
+                }
+            });
+            startHandleElements.forEach((element, taskId) => {
+                const listener = startHandleListenerMap.get(taskId);
+                if (listener) {
+                    element.removeEventListener('touchstart', listener);
+                    startHandleListenerMap.delete(taskId);
+                }
+            });
+            endHandleElements.forEach((element, taskId) => {
+                const listener = endHandleListenerMap.get(taskId);
+                if (listener) {
+                    element.removeEventListener('touchstart', listener);
+                    endHandleListenerMap.delete(taskId);
+                }
+            });
+        };
+    }, [tasks, onDragStart]);
     return (
         <>
             {/* 時間軸ヘッダー */}
@@ -74,7 +186,14 @@ const TimelineScrollingHorizontal: React.FC<TimelineScrollingHorizontalProps> = 
                                         <>
                                             {/* タスクバー */}
                                             <div
-                                              className={`absolute top-6 h-12 cursor-move`}
+                                              ref={(el) => {
+                                                if (el) {
+                                                  taskRefs.current.set(task.tmpId.toString(), el);
+                                                } else {
+                                                  taskRefs.current.delete(task.tmpId.toString());
+                                                }
+                                              }}
+                                              className={`absolute top-6 h-12 cursor-move touch-none`}
                                               style={{
                                                 left: '0',
                                                 width: `100%`,
@@ -86,7 +205,14 @@ const TimelineScrollingHorizontal: React.FC<TimelineScrollingHorizontalProps> = 
                                             {/* 開始ハンドル */}
                                             {isStart && (
                                               <div
-                                                className="absolute top-6 left-0 w-1 h-12 bg-black cursor-ew-resize hover:bg-blue-500 transition-colors"
+                                                ref={(el) => {
+                                                  if (el) {
+                                                    startHandleRefs.current.set(task.tmpId.toString(), el);
+                                                  } else {
+                                                    startHandleRefs.current.delete(task.tmpId.toString());
+                                                  }
+                                                }}
+                                                className="absolute top-6 left-0 w-1 h-12 bg-black cursor-ew-resize hover:bg-blue-500 transition-colors touch-none"
                                                 style={{ width: '4px', left: '-2px' }}
                                                 onMouseDown={(e) => onDragStart(task.tmpId, 'start', e)}
                                               />
@@ -94,7 +220,14 @@ const TimelineScrollingHorizontal: React.FC<TimelineScrollingHorizontalProps> = 
                                             {/* 終了ハンドル */}
                                             {isEnd && (
                                               <div
-                                                className="absolute top-6 right-0 w-1 h-12 bg-black cursor-ew-resize hover:bg-blue-500 transition-colors"
+                                                ref={(el) => {
+                                                  if (el) {
+                                                    endHandleRefs.current.set(task.tmpId.toString(), el);
+                                                  } else {
+                                                    endHandleRefs.current.delete(task.tmpId.toString());
+                                                  }
+                                                }}
+                                                className="absolute top-6 right-0 w-1 h-12 bg-black cursor-ew-resize hover:bg-blue-500 transition-colors touch-none"
                                                 style={{ width: '4px', right: '-2px' }}
                                                 onMouseDown={(e) => onDragStart(task.tmpId, 'end', e)}
                                               />
