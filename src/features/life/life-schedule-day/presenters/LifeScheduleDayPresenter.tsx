@@ -61,6 +61,12 @@ const LifeScheduleDayPresenter: React.FC<PresenterProps> = ({
 }) => {
   // タイムライン要素へのref
   const timelineElementRef = useRef<HTMLDivElement | null>(null);
+  const stateRef = useRef(state);
+  
+  // 最新のstateを常に保持
+  useEffect(() => {
+    stateRef.current = state;
+  }, [state]);
 
   // UI Props定義
   const uiProps: LifeScheduleDayUiProps = {
@@ -81,7 +87,12 @@ const LifeScheduleDayPresenter: React.FC<PresenterProps> = ({
       onChangeForm: actions.updateFormValueTask,
       onUpdate: actions.update,
       onDragStart: useCallback((tmpId: number, type: 'start' | 'end' | 'move', e: React.MouseEvent | React.TouchEvent) => {
+        // マウスイベントの場合のみログを出力（タッチイベントはTimelineScrollingHorizontalで出力）
         const clientX = 'touches' in e && e.touches.length > 0 ? e.touches[0].clientX : (e as React.MouseEvent).clientX;
+        if (e.type === 'mousedown') {
+          console.log('[ドラッグ開始]', { tmpId, type, clientX, eventType: e.type });
+        }
+        // 同期的にstartTaskDragを呼び出す
         actions.taskDragActions.startTaskDrag(tmpId, type, clientX);
       }, [actions]),
       onDragMove: useCallback((e: React.MouseEvent | React.TouchEvent) => {
@@ -144,15 +155,34 @@ const LifeScheduleDayPresenter: React.FC<PresenterProps> = ({
     if (!timelineElement) return;
 
     const handleTouchStart = (e: TouchEvent) => {
-      // タスクドラッグが開始されていない場合のみスクロール開始
-      if (!state.selectedData.resizingTask.tmpId) {
-        actions.startScroll(e.touches[0].clientX);
+      // タスクドラッグが既に開始されている場合は何もしない
+      // （タスクバーのリスナーで既に処理済み）
+      if (stateRef.current.selectedData.resizingTask.tmpId) {
+        return;
       }
+      
+      // タスクバー、開始ハンドル、終了ハンドルがタッチされた場合は何もしない
+      // （TimelineScrollingHorizontalのネイティブリスナーで処理される）
+      const target = e.target as HTMLElement;
+      
+      // タスクバー（cursor-move）やハンドル（cursor-ew-resize）を検出
+      const isTaskBarOrHandle = target.classList.contains('cursor-move') || 
+                                 target.classList.contains('cursor-ew-resize') ||
+                                 target.closest('.cursor-move') !== null ||
+                                 target.closest('.cursor-ew-resize') !== null;
+      
+      if (isTaskBarOrHandle) {
+        // タスクバーやハンドルの場合はタイムラインスクロールを開始しない
+        return;
+      }
+      
+      // タイムラインスクロール開始
+      actions.startScroll(e.touches[0].clientX);
     };
 
     const handleTouchMove = (e: TouchEvent) => {
-      // 最新の状態を確認
-      const currentResizingTaskId = state.selectedData.resizingTask.tmpId;
+      // 最新の状態を確認（stateRefを使用）
+      const currentResizingTaskId = stateRef.current.selectedData.resizingTask.tmpId;
       if (currentResizingTaskId) {
         // タスクドラッグ中
         e.preventDefault(); // スクロールを防ぐ
@@ -173,6 +203,7 @@ const LifeScheduleDayPresenter: React.FC<PresenterProps> = ({
       actions.taskDragActions.resetSelectedData();
     };
 
+    // バブリングフェーズで登録（タスクバーのキャプチャフェーズリスナーが先に処理される）
     timelineElement.addEventListener('touchstart', handleTouchStart, { passive: false });
     timelineElement.addEventListener('touchmove', handleTouchMove, { passive: false });
     timelineElement.addEventListener('touchend', handleTouchEnd, { passive: false });
@@ -184,15 +215,17 @@ const LifeScheduleDayPresenter: React.FC<PresenterProps> = ({
       timelineElement.removeEventListener('touchend', handleTouchEnd);
       timelineElement.removeEventListener('touchcancel', handleTouchCancel);
     };
-  }, [state.selectedData.resizingTask.tmpId, actions, state.selectedData]);
+  }, [actions]);
 
   // タスクドラッグ中のグローバルタッチイベントリスナー（タイムライン要素外での移動に対応）
   useEffect(() => {
-    const currentResizingTaskId = state.selectedData.resizingTask.tmpId;
-    if (!currentResizingTaskId) return;
+    // stateRefを使用して最新の状態を確認
+    if (!stateRef.current.selectedData.resizingTask.tmpId) return;
 
     const handleTouchMove = (e: TouchEvent) => {
       if (e.touches.length > 0) {
+        // 最新の状態を確認（stateRefを使用）
+        if (!stateRef.current.selectedData.resizingTask.tmpId) return;
         // タイムライン要素内のイベントはネイティブリスナーで処理されるため、要素外のみ処理
         if (!timelineElementRef.current?.contains(e.target as Node)) {
           e.preventDefault(); // スクロールを防ぐ

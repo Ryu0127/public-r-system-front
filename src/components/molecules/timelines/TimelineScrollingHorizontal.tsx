@@ -64,10 +64,15 @@ const TimelineScrollingHorizontal: React.FC<TimelineScrollingHorizontalProps> = 
         const startHandleListenerMap = startHandleListeners.current;
         const endHandleListenerMap = endHandleListeners.current;
 
-        const handleTouchStart = (e: TouchEvent, taskId: number, type: 'start' | 'end' | 'move') => {
-            e.preventDefault();
-            e.stopPropagation();
+        const handleTouchStart = (e: TouchEvent, taskId: number, type: 'start' | 'end') => {
+            // 開始/終了ハンドル用のハンドラー
             const touch = e.touches[0];
+            console.log('[ドラッグ開始]', { tmpId: taskId, type, clientX: touch.clientX, eventType: 'touchstart', timestamp: Date.now() });
+            
+            // イベントの伝播を停止してタイムライン要素のリスナーに到達させない
+            e.stopPropagation();
+            e.preventDefault();
+            
             // React.TouchEventのような構造を作成
             const syntheticEvent = {
                 touches: [touch],
@@ -90,45 +95,43 @@ const TimelineScrollingHorizontal: React.FC<TimelineScrollingHorizontalProps> = 
                 timeStamp: e.timeStamp,
                 type: 'touchstart',
             } as unknown as React.TouchEvent;
+            // タッチ開始時に即座にonDragStartを呼び出す
             onDragStart(taskId, type, syntheticEvent);
         };
 
-        // タスクバーのリスナーを追加
+        // タスクバーはReactのonTouchStartを使用するため、ネイティブリスナーは不要
+        // ただし、既存のリスナーがある場合はクリーンアップ
         taskElements.forEach((element, taskId) => {
-            // 既存のリスナーを削除
             const existingListener = taskListenerMap.get(taskId);
             if (existingListener) {
-                element.removeEventListener('touchstart', existingListener);
+                element.removeEventListener('touchstart', existingListener, { capture: true });
+                taskListenerMap.delete(taskId);
             }
-            // 新しいリスナーを追加
-            const listener = (e: TouchEvent) => handleTouchStart(e, parseInt(taskId), 'move');
-            element.addEventListener('touchstart', listener, { passive: false });
-            taskListenerMap.set(taskId, listener);
         });
 
-        // 開始ハンドルのリスナーを追加
+        // 開始ハンドルのリスナーを追加（キャプチャフェーズで登録してタイムライン要素のリスナーより先に処理）
         startHandleElements.forEach((element, taskId) => {
             // 既存のリスナーを削除
             const existingListener = startHandleListenerMap.get(taskId);
             if (existingListener) {
-                element.removeEventListener('touchstart', existingListener);
+                element.removeEventListener('touchstart', existingListener, { capture: true });
             }
-            // 新しいリスナーを追加
+            // 新しいリスナーを追加（キャプチャフェーズ）
             const listener = (e: TouchEvent) => handleTouchStart(e, parseInt(taskId), 'start');
-            element.addEventListener('touchstart', listener, { passive: false });
+            element.addEventListener('touchstart', listener, { passive: false, capture: true });
             startHandleListenerMap.set(taskId, listener);
         });
 
-        // 終了ハンドルのリスナーを追加
+        // 終了ハンドルのリスナーを追加（キャプチャフェーズで登録してタイムライン要素のリスナーより先に処理）
         endHandleElements.forEach((element, taskId) => {
             // 既存のリスナーを削除
             const existingListener = endHandleListenerMap.get(taskId);
             if (existingListener) {
-                element.removeEventListener('touchstart', existingListener);
+                element.removeEventListener('touchstart', existingListener, { capture: true });
             }
-            // 新しいリスナーを追加
+            // 新しいリスナーを追加（キャプチャフェーズ）
             const listener = (e: TouchEvent) => handleTouchStart(e, parseInt(taskId), 'end');
-            element.addEventListener('touchstart', listener, { passive: false });
+            element.addEventListener('touchstart', listener, { passive: false, capture: true });
             endHandleListenerMap.set(taskId, listener);
         });
 
@@ -137,21 +140,21 @@ const TimelineScrollingHorizontal: React.FC<TimelineScrollingHorizontalProps> = 
             taskElements.forEach((element, taskId) => {
                 const listener = taskListenerMap.get(taskId);
                 if (listener) {
-                    element.removeEventListener('touchstart', listener);
+                    element.removeEventListener('touchstart', listener, { capture: true });
                     taskListenerMap.delete(taskId);
                 }
             });
             startHandleElements.forEach((element, taskId) => {
                 const listener = startHandleListenerMap.get(taskId);
                 if (listener) {
-                    element.removeEventListener('touchstart', listener);
+                    element.removeEventListener('touchstart', listener, { capture: true });
                     startHandleListenerMap.delete(taskId);
                 }
             });
             endHandleElements.forEach((element, taskId) => {
                 const listener = endHandleListenerMap.get(taskId);
                 if (listener) {
-                    element.removeEventListener('touchstart', listener);
+                    element.removeEventListener('touchstart', listener, { capture: true });
                     endHandleListenerMap.delete(taskId);
                 }
             });
@@ -201,6 +204,13 @@ const TimelineScrollingHorizontal: React.FC<TimelineScrollingHorizontalProps> = 
                                                 backgroundColor: task.projectColor
                                               }}
                                               onMouseDown={(e) => onDragStart(task.tmpId, 'move', e)}
+                                              onTouchStart={(e) => {
+                                                // タッチ開始時に即座にログを出力
+                                                const touch = e.touches[0];
+                                                console.log('[ドラッグ開始]', { tmpId: task.tmpId, type: 'move', clientX: touch.clientX, eventType: 'touchstart', timestamp: Date.now() });
+                                                // タッチイベントでドラッグを開始
+                                                onDragStart(task.tmpId, 'move', e);
+                                              }}
                                             />
                                             {/* 開始ハンドル */}
                                             {isStart && (
