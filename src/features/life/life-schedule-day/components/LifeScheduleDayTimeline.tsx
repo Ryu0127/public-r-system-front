@@ -18,6 +18,7 @@ interface Props {
   controls?: {
     taskControls: {
       onDragStart: (tmpId: number, type: 'start' | 'end' | 'move', event: React.MouseEvent | React.TouchEvent) => void;
+      onTaskTap?: (tmpId: number) => void; // タスクタップ時のコールバック（モバイル用）
     };
   };
 }
@@ -45,6 +46,7 @@ export const LifeScheduleDayTimeline: React.FC<Props> = ({
         splitTime={15}
         gridColsClass="grid-cols-[repeat(96,minmax(35px,1fr))]"
         onDragStart={controls.taskControls.onDragStart}
+        onTaskTap={controls.taskControls.onTaskTap}
       />
     </div>
   );

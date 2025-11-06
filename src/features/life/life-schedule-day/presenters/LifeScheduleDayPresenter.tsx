@@ -21,12 +21,13 @@ export interface LifeScheduleDayUiProps {
     openTaskDetail: (tmpId: number) => void;
     closeTaskDetail: () => void;
     onAddTask: () => void;
-    onChangeForm: (event: React.ChangeEvent<HTMLSelectElement | HTMLTextAreaElement>, tmpId: number) => void;
+    onChangeForm: (event: React.ChangeEvent<HTMLSelectElement | HTMLTextAreaElement | HTMLInputElement>, tmpId: number) => void;
     onUpdate: () => void;
     onDragStart: (tmpId: number, type: 'start' | 'end' | 'move', e: React.MouseEvent | React.TouchEvent) => void;
     onDragMove: (e: React.MouseEvent | React.TouchEvent) => void;
     onDragEnd: () => void;
     registGoogleCalendar: (tmpId: number) => void;
+    onTaskTap?: (tmpId: number) => void; // タスクタップ時のコールバック（モバイル用）
   };
   // タイムライン操作コントロール
   timelineControls: {
@@ -94,6 +95,10 @@ const LifeScheduleDayPresenter: React.FC<PresenterProps> = ({
         }
         // 同期的にstartTaskDragを呼び出す
         actions.taskDragActions.startTaskDrag(tmpId, type, clientX);
+      }, [actions]),
+      onTaskTap: useCallback((tmpId: number) => {
+        // タスクタップ時に詳細パネルを開く（モバイル用）
+        actions.openTaskDetail(tmpId);
       }, [actions]),
       onDragMove: useCallback((e: React.MouseEvent | React.TouchEvent) => {
         const clientX = 'touches' in e && e.touches.length > 0 ? e.touches[0].clientX : (e as React.MouseEvent).clientX;
@@ -268,15 +273,15 @@ const LifeScheduleDayPresenter: React.FC<PresenterProps> = ({
         {state.config.isLoading ? (
           <Loading />
         ) : (
-          <div className="flex flex-col bg-gray-100">
+            <div className="flex flex-col bg-gray-100">
             {/* メインコンテンツ */}
             <div className="flex-1 p-4">
               <div className="bg-white rounded-lg shadow overflow-hidden">
                 {/* タスクリストとタイムライン */}
-                <div className="flex h-[calc(100vh-15rem)] overflow-hidden">
-                  {/* タスクリスト */}
+                <div className="flex h-[calc(100vh-15rem)] overflow-hidden relative">
+                  {/* タスクリスト（モバイルでは非表示、デスクトップでは常に表示） */}
                   <div
-                    className="w-1/4 min-w-[300px] overflow-y-auto border-r mb-[15px]"
+                    className="hidden md:block w-1/4 min-w-[300px] overflow-y-auto border-r mb-[15px]"
                     ref={state.config.taskListRef}
                   >
                     <LifeScheduleDayTaskList
@@ -285,9 +290,10 @@ const LifeScheduleDayPresenter: React.FC<PresenterProps> = ({
                       controls={{ taskControls: uiProps.taskControls }}
                     />
                   </div>
+                  
                   {/* タイムライン */}
                   <div 
-                    className="w-auto overflow-x-auto cursor-grab active:cursor-grabbing"
+                    className="w-auto flex-1 overflow-x-auto cursor-grab active:cursor-grabbing"
                     ref={(el) => {
                       if (state.config.timelineRef) {
                         (state.config.timelineRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
@@ -305,7 +311,12 @@ const LifeScheduleDayPresenter: React.FC<PresenterProps> = ({
                         timeSlots: state.item.timeSlots,
                         masterTasks: dataTransformer.toMasterTask(state.item.projects),
                       }}
-                      controls={{ taskControls: uiProps.taskControls }}
+                      controls={{ 
+                        taskControls: {
+                          ...uiProps.taskControls,
+                          onTaskTap: uiProps.taskControls.onTaskTap,
+                        }
+                      }}
                     />
                   </div>
                 </div>
@@ -313,7 +324,7 @@ const LifeScheduleDayPresenter: React.FC<PresenterProps> = ({
                 <AreaOverlaySidePanel
                   isOpen={state.config.openDetailPanel}
                   width="300px"
-                  addCss="pt-16"
+                  addCss="pt-10"
                 >
                   {/* 詳細パネル */}
                   <LifeScheduleDayDetailPanel

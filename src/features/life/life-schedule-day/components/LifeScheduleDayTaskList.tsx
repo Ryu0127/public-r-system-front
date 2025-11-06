@@ -45,8 +45,8 @@ export const LifeScheduleDayTaskList: React.FC<LifeScheduleDayTaskListProps> = (
 }) => {
   return (
     <>
-      {/* ヘッダー */}
-      <div className="sticky top-0 bg-white z-10 p-2 border-b font-medium h-[37px]">
+      {/* ヘッダー（デスクトップのみ表示、モバイルではPresenterで表示） */}
+      <div className="hidden md:block sticky top-0 bg-white z-10 p-2 border-b font-medium h-[37px]">
         スケジュール項目
       </div>
 

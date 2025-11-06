@@ -5,6 +5,18 @@ import { Task } from '../hooks/useLifeScheduleDayState';
 import { toTimeString } from 'utils/dateUtil';
 import AreaOverlaySideSlide from 'components/molecules/areas/AreaOverlaySidePanel';
 
+/**
+ * Dateオブジェクトをdatetime-local形式（YYYY-MM-DDTHH:mm）に変換
+ */
+const formatDateTimeLocal = (date: Date): string => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+};
+
 export interface LifeScheduleDayDetailPanelProps {
     selectedData?: {
         task: Task | null;
@@ -12,7 +24,7 @@ export interface LifeScheduleDayDetailPanelProps {
     controls?: {
         taskControls: {
             closeTaskDetail: () => void;
-            onChangeForm: (event: React.ChangeEvent<HTMLSelectElement | HTMLTextAreaElement>, tmpId: number) => void;
+            onChangeForm: (event: React.ChangeEvent<HTMLSelectElement | HTMLTextAreaElement | HTMLInputElement>, tmpId: number) => void;
             registGoogleCalendar: (tmpId: number) => void;
         };
     };
@@ -33,12 +45,20 @@ export const LifeScheduleDayDetailPanel: React.FC<LifeScheduleDayDetailPanelProp
             {selectedData.task && (
                 <div className="h-full flex flex-col">
                     <div className="p-4 flex-1 overflow-y-auto">
-                        <div className="flex justify-between h-[100px] mb-4">
-                            <div>
-                                <h3 className="text-sm font-medium text-gray-500">スケジュール名</h3>
-                                <p className="text-lg font-medium">{selectedData.task.taskName}</p>
+                        <div className="flex justify-between items-start mb-4">
+                            <div className="flex-1 mr-4">
+                                <h3 className="text-sm font-medium text-gray-500 mb-1">スケジュール名</h3>
+                                <textarea
+                                    name="taskName"
+                                    className="w-full p-2 border rounded-md text-lg font-medium"
+                                    rows={6}
+                                    placeholder="スケジュール名"
+                                    value={selectedData.task.taskName}
+                                    onChange={(e) => controls.taskControls.onChangeForm(e, selectedData.task?.tmpId || 0)}
+                                    style={{ resize: 'none' }}
+                                />
                             </div>
-                            <div className="items-start h-[100px]">
+                            <div className="items-start">
                                 <ButtonIconClose
                                     size="small"
                                     onClick={controls.taskControls.closeTaskDetail}
@@ -55,13 +75,29 @@ export const LifeScheduleDayDetailPanel: React.FC<LifeScheduleDayDetailPanelProp
                         </div> */}
 
                         <div className="mb-4">
-                            <h3 className="text-sm font-medium text-gray-500">日時</h3>
-                            <p className="mt-1">
-                                {toTimeString(selectedData.task.startDateTime)} - {toTimeString(selectedData.task.endDateTime)}
-                            </p>
-                            <p className="text-sm text-gray-500 mt-1">
-                                {/* 所要時間: {differenceInMinutes(selectedTask.endDate, selectedTask.startDate) / 60} 時間 */}
-                            </p>
+                            <h3 className="text-sm font-medium text-gray-500 mb-2">日時</h3>
+                            <div className="space-y-2">
+                                <div>
+                                    <label className="block text-xs text-gray-500 mb-1">開始日時</label>
+                                    <input
+                                        type="datetime-local"
+                                        name="startDateTime"
+                                        className="w-full p-2 border rounded-md"
+                                        value={formatDateTimeLocal(selectedData.task.startDateTime)}
+                                        onChange={(e) => controls.taskControls.onChangeForm(e, selectedData.task?.tmpId || 0)}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs text-gray-500 mb-1">終了日時</label>
+                                    <input
+                                        type="datetime-local"
+                                        name="endDateTime"
+                                        className="w-full p-2 border rounded-md"
+                                        value={formatDateTimeLocal(selectedData.task.endDateTime)}
+                                        onChange={(e) => controls.taskControls.onChangeForm(e, selectedData.task?.tmpId || 0)}
+                                    />
+                                </div>
+                            </div>
                         </div>
 
                         {/* <div className="mb-4">
@@ -77,7 +113,7 @@ export const LifeScheduleDayDetailPanel: React.FC<LifeScheduleDayDetailPanelProp
                                 <textarea
                                     name="remarks"
                                     className="w-full p-2 border rounded-md"
-                                    rows={15}
+                                    rows={10}
                                     placeholder="備考"
                                     value={selectedData.task?.remarks || ""}
                                     onChange={(e) => controls.taskControls.onChangeForm(e, selectedData.task?.tmpId || 0)}

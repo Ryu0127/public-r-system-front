@@ -14,6 +14,7 @@ export interface LifeScheduleDayState {
   config: {
     isLoading: boolean;
     sidebarVisible: boolean;
+    taskListVisible: boolean; // タスクリストの表示/非表示（モバイル用）
     taskListRef: React.RefObject<HTMLDivElement>;
     timelineRef: React.RefObject<HTMLDivElement>;
     isScrolling: boolean; // スクロール中判定
@@ -70,10 +71,14 @@ export interface LifeScheduleDayActions {
     sidebarVisible: {
       toggle: () => void;
       close: () => void;
-    }
+    };
+    taskListVisible: {
+      toggle: () => void;
+      close: () => void;
+    };
   };
   // フォームアクション
-  updateFormValueTask: (event: React.ChangeEvent<HTMLSelectElement | HTMLTextAreaElement>, tmpId: number) => void;
+  updateFormValueTask: (event: React.ChangeEvent<HTMLSelectElement | HTMLTextAreaElement | HTMLInputElement>, tmpId: number) => void;
   // スクロールアクション
   startScroll: (clientX: number) => void;
   handleScroll: (clientX: number) => void;
@@ -126,6 +131,20 @@ const updateStateGroup = {
         config: {
           ...prev.config,
           sidebarVisible: isVisible
+        }
+      };
+    });
+  },
+  /**
+   * タスクリスト表示の更新
+   */
+  toTaskListVisible: (setState: React.Dispatch<React.SetStateAction<LifeScheduleDayState>>, isVisible: boolean) => {
+    setState(prev => {
+      return {
+        ...prev,
+        config: {
+          ...prev.config,
+          taskListVisible: isVisible
         }
       };
     });
@@ -231,6 +250,15 @@ const updatedTasks = (tasks: Task[], tmpId: number, name: string, value: string)
           }
         };
       }
+      // 日時フィールドの処理
+      if (name === 'startDateTime' || name === 'endDateTime') {
+        // datetime-local形式（YYYY-MM-DDTHH:mm）をDateオブジェクトに変換
+        const dateValue = new Date(value);
+        return {
+          ...task,
+          [name]: dateValue
+        };
+      }
       return {
         ...task,
         [name]: value
@@ -298,10 +326,18 @@ export const useLifeScheduleDayState = (
           updateStateGroup.toSidebarVisible(setState, false);
         }, [setState]),
       },
+      taskListVisible: {
+        toggle: useCallback(() => {
+          updateStateGroup.toTaskListVisible(setState, !state.config.taskListVisible);
+        }, [setState, state.config.taskListVisible]),
+        close: useCallback(() => {
+          updateStateGroup.toTaskListVisible(setState, false);
+        }, [setState]),
+      },
     },
 
     // フォームの値を変更
-    updateFormValueTask: useCallback((event: React.ChangeEvent<HTMLSelectElement | HTMLTextAreaElement>, tmpId: number) => {
+    updateFormValueTask: useCallback((event: React.ChangeEvent<HTMLSelectElement | HTMLTextAreaElement | HTMLInputElement>, tmpId: number) => {
       const { name, value } = event.target;
       setState(prev => {
         // 更新されたタスク配列を取得

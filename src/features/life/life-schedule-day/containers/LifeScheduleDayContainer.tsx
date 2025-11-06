@@ -14,6 +14,7 @@ const initialState: LifeScheduleDayState = {
   config: {
     isLoading: true,
     sidebarVisible: false,
+    taskListVisible: false, // モバイルではデフォルトで非表示
     taskListRef: { current: null },
     timelineRef: { current: null },
     isScrolling: false,
