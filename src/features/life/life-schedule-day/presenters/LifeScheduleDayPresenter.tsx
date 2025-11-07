@@ -337,13 +337,15 @@ const LifeScheduleDayPresenter: React.FC<PresenterProps> = ({
             </div>
 
             {/* モバイル・タブレット専用のタスク追加ボタン（画面下部固定） */}
-            <div className="md:hidden fixed bottom-20 left-1/2 transform -translate-x-1/2 z-50">
-              <ButtonCyan
-                addClass="w-40 shadow-lg"
-                text="タスクを追加"
-                onClick={uiProps.taskControls.onAddTask}
-              />
-            </div>
+            {!state.config.openDetailPanel && (
+              <div className="md:hidden fixed bottom-[70px] left-1/2 transform -translate-x-1/2 z-50">
+                <ButtonCyan
+                  addClass="w-64 shadow-lg"
+                  text="タスクを追加"
+                  onClick={uiProps.taskControls.onAddTask}
+                />
+              </div>
+            )}
 
             {/* フッター */}
             <LifeScheduleDayFotter
