@@ -261,6 +261,15 @@ const LifeScheduleDayPresenter: React.FC<PresenterProps> = ({
     };
   }, [state.selectedData.resizingTask.tmpId, actions]);
 
+  // 日付変更ハンドラー
+  const handleDateChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedDate = event.target.value; // yyyy-mm-dd 形式
+    if (selectedDate) {
+      // usageYmdパラメータでリダイレクト
+      window.location.href = `/life/life-schedule-day?usageYmd=${selectedDate}`;
+    }
+  }, []);
+
   return (
     <LayoutBaseTs
       sidebarContent={
@@ -275,6 +284,22 @@ const LifeScheduleDayPresenter: React.FC<PresenterProps> = ({
           <Loading />
         ) : (
             <div className="flex flex-col bg-gray-100">
+            {/* 日付選択バー */}
+            <div className="bg-white shadow-sm p-3">
+              <div className="flex justify-between items-center">
+                <h1 className="text-lg font-semibold text-gray-800">日次スケジュール</h1>
+                <div className="flex items-center gap-2">
+                  <label htmlFor="date-selector" className="text-sm text-gray-600">日付:</label>
+                  <input
+                    id="date-selector"
+                    type="date"
+                    className="border rounded px-3 py-1.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                    value={state.requestParams.currentDate.toISOString().slice(0, 10)}
+                    onChange={handleDateChange}
+                  />
+                </div>
+              </div>
+            </div>
             {/* メインコンテンツ */}
             <div className="flex-1 p-4">
               <div className="bg-white rounded-lg shadow overflow-hidden">
