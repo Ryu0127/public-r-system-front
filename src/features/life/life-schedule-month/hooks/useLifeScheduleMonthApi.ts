@@ -1,14 +1,5 @@
 import { useCallback } from "react";
 import { useLifeScheduleDayTaskGetApi } from "hooks/api/life/useLifeScheduleDayTaskGetApi";
-import { LifeScheduleDayTaskApiRequest, useLifeScheduleDayTaskPostApi } from "hooks/api/life/useLifeScheduleDayTaskPostApi";
-import { EventsGoogleCalendarRegistPostApiRequest, useEventsGoogleCalendarRegistPostApi } from "hooks/api/events/useEventsGoogleCalendarRegistPostApi";
-
-// API操作インターフェース
-interface ApiResponse<T> {
-  success: boolean;
-  data?: T;
-  error?: Error;
-}
 
 /**
  * 日次スケジュールAPI Hooks

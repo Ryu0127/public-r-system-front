@@ -1,7 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
-import { useLifeScheduleDayTaskGetApi } from 'hooks/api/life/useLifeScheduleDayTaskGetApi';
+import { useCallback, useEffect } from 'react';
 import { LifeScheduleDayTaskApiTask } from 'hooks/api/life/useLifeScheduleDayTaskGetApi';
-import { useLifeScheduleDayApi } from 'features/life/life-schedule-day/hooks/useLifeScheduleDayApi';
 import { useLifeScheduleMonthApi } from './useLifeScheduleMonthApi';
 
 export interface LifeScheduleMonthState {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import useTitle from 'utils/useTitle';
 import { LifeScheduleMonthState, useLifeScheduleMonthState } from '../hooks/useLifeScheduleMonthState';
 import LifeScheduleMonthPresenter from '../presenters/LifeScheduleMonthPresenter';
