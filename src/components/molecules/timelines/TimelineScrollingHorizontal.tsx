@@ -181,8 +181,28 @@ const TimelineScrollingHorizontal: React.FC<TimelineScrollingHorizontalProps> = 
             </div>
             {/* タスクエリア */}
             <div className="pb-[86px]">
-                {tasks.map((task) => (
-                    <div key={task.taskId} className={`grid h-[110px] border-b ${gridColsClass}`}>
+                {tasks.map((task) => {
+                    // タスクの開始と終了のタイムスロットインデックスを計算
+                    const startSlotIndex = timeSlots.findIndex(slot => isStartTime(task, slot.date));
+                    const taskDurationMinutes = (task.endDateTime.getTime() - task.startDateTime.getTime()) / 60000;
+                    const taskSlotCount = Math.ceil(taskDurationMinutes / splitTime);
+
+                    return (
+                    <div key={task.taskId} className={`grid h-[110px] border-b ${gridColsClass} relative`}>
+                        {/* スケジュール名（スマホ・タブレット表示のみ、タスク全体にまたがる） */}
+                        {startSlotIndex >= 0 && (
+                            <div
+                                className="md:hidden absolute top-1 flex items-start pointer-events-none z-10"
+                                style={{
+                                    left: `calc(${startSlotIndex} * (100% / ${timeSlots.length}))`,
+                                    width: `calc(${taskSlotCount} * (100% / ${timeSlots.length}))`
+                                }}
+                            >
+                                <span className="text-xs font-medium text-gray-700 px-1 whitespace-nowrap">
+                                    {task.taskName}
+                                </span>
+                            </div>
+                        )}
                         {timeSlots.map((slot, index) => {
                             const isInRange = isInTimeRange(task, slot.date);
                             const isStart = isStartTime(task, slot.date);
@@ -213,12 +233,12 @@ const TimelineScrollingHorizontal: React.FC<TimelineScrollingHorizontalProps> = 
                                                 // モバイル用：ロングタップ検出
                                                 const touch = e.touches[0];
                                                 const taskId = task.tmpId.toString();
-                                                
+
                                                 // タッチ位置を記録
                                                 touchStartPositions.current.set(taskId, { x: touch.clientX, y: touch.clientY });
                                                 // ロングタップフラグをリセット
                                                 isLongPress.current.set(taskId, false);
-                                                
+
                                                 // ロングタップ検出タイマーを開始（100ms）
                                                 const timer = setTimeout(() => {
                                                   isLongPress.current.set(taskId, true);
@@ -226,30 +246,30 @@ const TimelineScrollingHorizontal: React.FC<TimelineScrollingHorizontalProps> = 
                                                   console.log('[ロングタップ検出]', { tmpId: task.tmpId, type: 'move', clientX: touch.clientX, timestamp: Date.now() });
                                                   onDragStart(task.tmpId, 'move', e);
                                                 }, 100);
-                                                
+
                                                 longPressTimers.current.set(taskId, timer);
                                               }}
                                               onTouchEnd={(e) => {
                                                 // タッチ終了時の処理
                                                 const taskId = task.tmpId.toString();
                                                 const timer = longPressTimers.current.get(taskId);
-                                                
+
                                                 // タイマーをクリア
                                                 if (timer) {
                                                   clearTimeout(timer);
                                                   longPressTimers.current.delete(taskId);
                                                 }
-                                                
+
                                                 // ロングタップでなかった場合（タップ）は詳細パネルを開く
                                                 if (!isLongPress.current.get(taskId)) {
                                                   const startPos = touchStartPositions.current.get(taskId);
                                                   const endTouch = e.changedTouches[0];
-                                                  
+
                                                   // タッチ位置が大きく移動していない場合のみタップと判定
                                                   if (startPos && endTouch) {
                                                     const deltaX = Math.abs(endTouch.clientX - startPos.x);
                                                     const deltaY = Math.abs(endTouch.clientY - startPos.y);
-                                                    
+
                                                     // 10px以内の移動ならタップと判定
                                                     if (deltaX < 10 && deltaY < 10) {
                                                       e.preventDefault();
@@ -260,7 +280,7 @@ const TimelineScrollingHorizontal: React.FC<TimelineScrollingHorizontalProps> = 
                                                     }
                                                   }
                                                 }
-                                                
+
                                                 // クリーンアップ
                                                 isLongPress.current.delete(taskId);
                                                 touchStartPositions.current.delete(taskId);
@@ -270,12 +290,12 @@ const TimelineScrollingHorizontal: React.FC<TimelineScrollingHorizontalProps> = 
                                                 const taskId = task.tmpId.toString();
                                                 const startPos = touchStartPositions.current.get(taskId);
                                                 const currentTouch = e.touches[0];
-                                                
+
                                                 // タッチ位置が大きく移動した場合はロングタップタイマーをキャンセル
                                                 if (startPos && currentTouch) {
                                                   const deltaX = Math.abs(currentTouch.clientX - startPos.x);
                                                   const deltaY = Math.abs(currentTouch.clientY - startPos.y);
-                                                  
+
                                                   // 10px以上移動した場合はタイマーをキャンセル
                                                   if (deltaX > 10 || deltaY > 10) {
                                                     const timer = longPressTimers.current.get(taskId);
@@ -287,6 +307,7 @@ const TimelineScrollingHorizontal: React.FC<TimelineScrollingHorizontalProps> = 
                                                 }
                                               }}
                                             />
+
                                             {/* 開始ハンドル */}
                                             {isStart && (
                                               <div
@@ -323,7 +344,8 @@ const TimelineScrollingHorizontal: React.FC<TimelineScrollingHorizontalProps> = 
                             );
                         })}
                     </div>
-                ))}
+                    );
+                })}
             </div>
         </>
     );
