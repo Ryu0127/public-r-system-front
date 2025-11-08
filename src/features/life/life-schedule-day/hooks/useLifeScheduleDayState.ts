@@ -653,7 +653,6 @@ export const useLifeScheduleDayState = (
   useEffect(() => {
     // 初期データ取得
     actions.fetchData(state.requestParams.currentDate);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return { actions };
