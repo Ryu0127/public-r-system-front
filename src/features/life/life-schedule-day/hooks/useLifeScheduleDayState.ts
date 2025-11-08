@@ -308,7 +308,7 @@ export const useLifeScheduleDayState = (
   const lastPositionRef = useRef(0);
 
   // アクション実装
-  const actions: LifeScheduleDayActions = useMemo(() => ({
+  const actions: LifeScheduleDayActions = {
     /**
      * 画面制御
      */
@@ -611,16 +611,7 @@ export const useLifeScheduleDayState = (
         }
       }
     }, [api, state.data.tasks, setState]),
-  }), [
-    api,
-    setState,
-    state.config.sidebarVisible,
-    state.config.taskListVisible,
-    state.config.timelineRef,
-    state.data.tasks,
-    state.requestParams.currentDate,
-    state.selectedData.resizingTask,
-  ]);
+  };
 
   // スクロール同期処理
   useEffect(() => {
@@ -662,7 +653,8 @@ export const useLifeScheduleDayState = (
   useEffect(() => {
     // 初期データ取得
     actions.fetchData();
-  }, [actions]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [api, state.requestParams.currentDate]);
 
   return { actions };
 };
