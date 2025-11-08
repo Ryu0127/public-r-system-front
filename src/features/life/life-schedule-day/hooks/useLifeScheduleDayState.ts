@@ -653,7 +653,7 @@ export const useLifeScheduleDayState = (
   useEffect(() => {
     // 初期データ取得
     actions.fetchData(state.requestParams.currentDate);
-  }, []);
+  }, [state.requestParams.currentDate.getTime()]); // 再レンダリング防止対応（タイムスタンプ比較）
 
   return { actions };
 };
