@@ -654,7 +654,7 @@ export const useLifeScheduleDayState = (
     // 初期データ取得
     actions.fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [api, state.requestParams.currentDate]);
+  }, [state.requestParams.currentDate.getTime()]);
 
   return { actions };
 };
