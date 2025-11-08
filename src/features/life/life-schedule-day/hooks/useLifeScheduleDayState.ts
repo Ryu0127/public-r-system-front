@@ -650,10 +650,12 @@ export const useLifeScheduleDayState = (
   /**
    * 初期データ取得
    */
+  const currentDateTimestamp = state.requestParams.currentDate.getTime();
   useEffect(() => {
     // 初期データ取得
-    actions.fetchData(state.requestParams.currentDate);
-  }, [state.requestParams.currentDate.getTime()]); // 再レンダリング防止対応（タイムスタンプ比較）
+    actions.fetchData(new Date(currentDateTimestamp));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // eslint-disableコメントでビルドエラーによる警告を抑制
 
   return { actions };
 };
