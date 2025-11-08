@@ -1,5 +1,4 @@
-import React from 'react';
-import { CHeader, CContainer } from '@coreui/react';
+import { CHeader } from '@coreui/react';
 
 const HeaderCoreUi = ({ headerContent, addCss="", onClick }) => {
   return (

@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React from 'react';
 
 interface ButtonIconCloseProps {
     size?: 'small' | 'medium' | 'large';

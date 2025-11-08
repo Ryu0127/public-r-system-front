@@ -58,8 +58,6 @@ const LifeScheduleDayContainer: React.FC = () => {
   const [state, setState] = useState<LifeScheduleDayState>(() => {
     // 初期表示日を設定
     const currentDate = new Date(getDateDefaultNow(usageYmd));
-    // 日付選択オプションを生成
-    const dateOptions = generateDateOptions(currentDate);
     // タイムスロットを生成
     const timeSlots = generateTimeSlots(currentDate);
     return {
@@ -83,22 +81,6 @@ const LifeScheduleDayContainer: React.FC = () => {
       actions={actions}
     />
   );
-};
-
-/**
- * 日付選択オプションを生成する
- */
-const generateDateOptions = (baseDate: Date): DateOption[] => {
-  const options: DateOption[] = [];
-  for (let i = -7; i <= 7; i++) {
-    const date = new Date(baseDate);
-    date.setDate(date.getDate() + i);
-    options.push({
-      value: date.toISOString(),
-      label: formatDateToJapanese(date)
-    });
-  }
-  return options;
 };
 
 /**

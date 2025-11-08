@@ -1,4 +1,4 @@
-import React, { useState, ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 import Sidebar from 'components/shared/Sidebar';
 import Overlay from 'components/Overlay';
 import HeaderCoreUi from 'components/molecules/headers/HeaderCoreUi';

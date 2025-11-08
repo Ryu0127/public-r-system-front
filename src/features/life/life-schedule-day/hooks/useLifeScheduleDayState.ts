@@ -577,7 +577,7 @@ export const useLifeScheduleDayState = (
           };
         });
       }
-    }, [setState]),
+    }, [api, setState]),
 
     // 更新
     update: useCallback(async () => {
@@ -594,7 +594,7 @@ export const useLifeScheduleDayState = (
          updateStateGroup.toViewActionLoading(setState, false);
         return;
       }
-    }, [state.data.tasks, setState]),
+    }, [api, state.data.tasks, setState]),
 
     // Googleカレンダーへの登録
     registGoogleCalendar: useCallback(async (tmpId: number) => {
@@ -610,7 +610,7 @@ export const useLifeScheduleDayState = (
           return;
         }
       }
-    }, [state.data.tasks, setState]),
+    }, [api, state.data.tasks, setState]),
   };
 
   // スクロール同期処理
@@ -645,7 +645,7 @@ export const useLifeScheduleDayState = (
         handleScroll('timeline', timelineElement.scrollTop);
       });
     }
-  }, [state.data.tasks, setState]);
+  }, [state.config, state.data.tasks, setState]);
 
   /**
    * 初期データ取得
@@ -653,7 +653,7 @@ export const useLifeScheduleDayState = (
   useEffect(() => {
     // 初期データ取得
     actions.fetchData();
-  }, []);
+  }, [actions]);
 
   return { actions };
 };
