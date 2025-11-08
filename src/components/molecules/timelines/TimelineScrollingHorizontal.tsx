@@ -192,13 +192,13 @@ const TimelineScrollingHorizontal: React.FC<TimelineScrollingHorizontalProps> = 
                         {/* スケジュール名（スマホ・タブレット表示のみ、タスク全体にまたがる） */}
                         {startSlotIndex >= 0 && (
                             <div
-                                className="md:hidden absolute top-6 h-12 flex items-center pointer-events-none z-10"
+                                className="md:hidden absolute top-1 flex items-start pointer-events-none z-10"
                                 style={{
                                     left: `calc(${startSlotIndex} * (100% / ${timeSlots.length}))`,
                                     width: `calc(${taskSlotCount} * (100% / ${timeSlots.length}))`
                                 }}
                             >
-                                <span className="text-xs font-medium text-white truncate px-1">
+                                <span className="text-xs font-medium text-gray-700 px-1 whitespace-normal break-words">
                                     {task.taskName}
                                 </span>
                             </div>
