@@ -95,7 +95,7 @@ export interface LifeScheduleDayActions {
   openTaskDetail: (tmpId: number) => void;
   closeTaskDetail: () => void;
   // 初期データ取得
-  fetchData: () => void;
+  fetchData: (date: Date) => void;
   // 更新アクション
   update: () => void;
   // Googleカレンダーへの登録
@@ -563,8 +563,8 @@ export const useLifeScheduleDayState = (
       }));
     }, [setState]),
 
-    fetchData: useCallback(async () => {
-      const apiResponse = await api.executeLifeScheduleDayTaskGet(state.requestParams.currentDate);
+    fetchData: useCallback(async (date: Date) => {
+      const apiResponse = await api.executeLifeScheduleDayTaskGet(date);
       if (apiResponse.success && apiResponse.data) {
         // APIレスポンスデータ変換（タスク一覧）
         const tasks = apiResponse.data.tasks.map((task, index) => transformerApiData.toResponseTask(task, index));
@@ -577,7 +577,7 @@ export const useLifeScheduleDayState = (
           };
         });
       }
-    }, [api, state.requestParams.currentDate, setState]),
+    }, [api, setState]),
 
     // 更新
     update: useCallback(async () => {
@@ -652,9 +652,9 @@ export const useLifeScheduleDayState = (
    */
   useEffect(() => {
     // 初期データ取得
-    actions.fetchData();
+    actions.fetchData(state.requestParams.currentDate);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.requestParams.currentDate.getTime()]);
+  }, []);
 
   return { actions };
 };
