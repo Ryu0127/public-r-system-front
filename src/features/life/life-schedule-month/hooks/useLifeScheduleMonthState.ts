@@ -218,7 +218,8 @@ export const useLifeScheduleMonthState = (
   useEffect(() => {
     // 初期データ取得
     actions.fetchMonthData(state.requestParams.currentMonth);
-  }, [actions, state.requestParams.currentMonth]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [api, state.requestParams.currentMonth]);
 
   return { actions };
 };
