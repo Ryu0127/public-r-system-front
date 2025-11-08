@@ -1,6 +1,8 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useLifeScheduleDayTaskGetApi } from 'hooks/api/life/useLifeScheduleDayTaskGetApi';
 import { LifeScheduleDayTaskApiTask } from 'hooks/api/life/useLifeScheduleDayTaskGetApi';
+import { useLifeScheduleDayApi } from 'features/life/life-schedule-day/hooks/useLifeScheduleDayApi';
+import { useLifeScheduleMonthApi } from './useLifeScheduleMonthApi';
 
 export interface LifeScheduleMonthState {
   // リクエストパラメータ
@@ -76,7 +78,7 @@ export const useLifeScheduleMonthState = (
   actions: LifeScheduleMonthActions;
 } => {
   // API Hooks
-  const { executeLifeScheduleDayTaskGet } = useLifeScheduleDayTaskGetApi();
+  const api = useLifeScheduleMonthApi();
 
   const actions: LifeScheduleMonthActions = {
     /**
@@ -143,62 +145,82 @@ export const useLifeScheduleMonthState = (
     /**
      * 月データ取得
      */
-    fetchMonthData: useCallback(
-      async (month: Date) => {
-        setState(prev => ({
-          ...prev,
-          config: {
-            ...prev.config,
-            isLoading: true,
-          },
-        }));
+    fetchMonthData: useCallback(async (month: Date) => {
+      const startDate = new Date(month.getFullYear(), month.getMonth(), 1);
+      const currentDate = new Date(startDate);
+      const apiResponse = await api.executeLifeScheduleDayTaskGet(currentDate);
+      const dateKey = formatDateKey(currentDate);
 
-        try {
-          // 月の最初の日と最後の日を取得
-          const startDate = new Date(month.getFullYear(), month.getMonth(), 1);
-          const endDate = new Date(month.getFullYear(), month.getMonth() + 1, 0);
+      const monthlyTasksMap: MonthlyTasksMap = {};
+      if (apiResponse.success && apiResponse.data) {
+        monthlyTasksMap[dateKey] = apiResponse.data.tasks.map(transformApiTask);
+      } else {
+        monthlyTasksMap[dateKey] = [];
+      }
 
-          // 月の各日のタスクを取得
-          const monthlyTasksMap: MonthlyTasksMap = {};
-          const currentDate = new Date(startDate);
+      setState(prev => ({
+        ...prev,
+        config: {
+          ...prev.config,
+          isLoading: false,
+        },
+        data: {
+          monthlyTasks: monthlyTasksMap,
+        },
+      }));
 
-          while (currentDate <= endDate) {
-            const dateKey = formatDateKey(currentDate);
-            const result = await executeLifeScheduleDayTaskGet(new Date(currentDate));
+        // try {
+        //   // 月の最初の日と最後の日を取得
+        //   const startDate = new Date(month.getFullYear(), month.getMonth(), 1);
+        //   const endDate = new Date(month.getFullYear(), month.getMonth() + 1, 0);
 
-            if (result.apiResponse?.status && result.apiResponse?.data) {
-              monthlyTasksMap[dateKey] = result.apiResponse.data.tasks.map(transformApiTask);
-            } else {
-              monthlyTasksMap[dateKey] = [];
-            }
+        //   // 月の各日のタスクを取得
+        //   const monthlyTasksMap: MonthlyTasksMap = {};
+        //   const currentDate = new Date(startDate);
 
-            currentDate.setDate(currentDate.getDate() + 1);
-          }
+        //   while (currentDate <= endDate) {
+        //     const dateKey = formatDateKey(currentDate);
+        //     const result = await executeLifeScheduleDayTaskGet(new Date(currentDate));
 
-          setState(prev => ({
-            ...prev,
-            config: {
-              ...prev.config,
-              isLoading: false,
-            },
-            data: {
-              monthlyTasks: monthlyTasksMap,
-            },
-          }));
-        } catch (error) {
-          console.error('Failed to fetch month data:', error);
-          setState(prev => ({
-            ...prev,
-            config: {
-              ...prev.config,
-              isLoading: false,
-            },
-          }));
-        }
-      },
-      [setState, executeLifeScheduleDayTaskGet]
-    ),
+        //     if (result.apiResponse?.status && result.apiResponse?.data) {
+        //       monthlyTasksMap[dateKey] = result.apiResponse.data.tasks.map(transformApiTask);
+        //     } else {
+        //       monthlyTasksMap[dateKey] = [];
+        //     }
+
+        //     currentDate.setDate(currentDate.getDate() + 1);
+        //   }
+
+        //   setState(prev => ({
+        //     ...prev,
+        //     config: {
+        //       ...prev.config,
+        //       isLoading: false,
+        //     },
+        //     data: {
+        //       monthlyTasks: monthlyTasksMap,
+        //     },
+        //   }));
+        // } catch (error) {
+        //   console.error('Failed to fetch month data:', error);
+        //   setState(prev => ({
+        //     ...prev,
+        //     config: {
+        //       ...prev.config,
+        //       isLoading: false,
+        //     },
+        //   }));
+        // }
+    }, [setState]),
   };
+
+  /**
+   * 初期データ取得
+   */
+  useEffect(() => {
+    // 初期データ取得
+    actions.fetchMonthData(state.requestParams.currentMonth);
+  }, []);
 
   return { actions };
 };

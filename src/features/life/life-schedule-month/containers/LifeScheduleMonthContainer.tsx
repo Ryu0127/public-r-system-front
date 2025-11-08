@@ -43,12 +43,12 @@ const LifeScheduleMonthContainer: React.FC = () => {
   // Actions Hook
   const { actions } = useLifeScheduleMonthState(state, setState);
 
-  // 月が変更されたらデータを再取得
-  useEffect(() => {
-    actions.fetchMonthData(state.requestParams.currentMonth);
-  }, [state.requestParams.currentMonth]);
-
-  return <LifeScheduleMonthPresenter state={state} actions={actions} />;
+  return (
+    <LifeScheduleMonthPresenter
+      state={state}
+      actions={actions}
+    />
+  );
 };
 
 export default LifeScheduleMonthContainer;
