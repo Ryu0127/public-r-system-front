@@ -45,16 +45,6 @@ export interface LifeScheduleMonthActions {
 }
 
 /**
- * 日付を yyyy-mm-dd 形式の文字列に変換
- */
-const formatDateKey = (date: Date): string => {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-};
-
-/**
  * APIタスクデータを月次タスクに変換
  */
 const transformApiTask = (apiTask: LifeScheduleMonthTaskApiTask): MonthTask => ({
@@ -193,7 +183,7 @@ export const useLifeScheduleMonthState = (
     // 月が変更されたときにデータを取得
     actions.fetchMonthData(state.requestParams.currentMonth);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.requestParams.currentMonth]); // currentMonthが変更されたときに再実行
+  }, []);
 
   return { actions };
 };
