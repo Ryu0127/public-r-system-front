@@ -181,8 +181,28 @@ const TimelineScrollingHorizontal: React.FC<TimelineScrollingHorizontalProps> = 
             </div>
             {/* タスクエリア */}
             <div className="pb-[86px]">
-                {tasks.map((task) => (
-                    <div key={task.taskId} className={`grid h-[110px] border-b ${gridColsClass}`}>
+                {tasks.map((task) => {
+                    // タスクの開始と終了のタイムスロットインデックスを計算
+                    const startSlotIndex = timeSlots.findIndex(slot => isStartTime(task, slot.date));
+                    const taskDurationMinutes = (task.endDateTime.getTime() - task.startDateTime.getTime()) / 60000;
+                    const taskSlotCount = Math.ceil(taskDurationMinutes / splitTime);
+
+                    return (
+                    <div key={task.taskId} className={`grid h-[110px] border-b ${gridColsClass} relative`}>
+                        {/* スケジュール名（スマホ・タブレット表示のみ、タスク全体にまたがる） */}
+                        {startSlotIndex >= 0 && (
+                            <div
+                                className="md:hidden absolute top-6 h-12 flex items-center pointer-events-none z-10"
+                                style={{
+                                    left: `calc(${startSlotIndex} * (100% / ${timeSlots.length}))`,
+                                    width: `calc(${taskSlotCount} * (100% / ${timeSlots.length}))`
+                                }}
+                            >
+                                <span className="text-xs font-medium text-white truncate px-1">
+                                    {task.taskName}
+                                </span>
+                            </div>
+                        )}
                         {timeSlots.map((slot, index) => {
                             const isInRange = isInTimeRange(task, slot.date);
                             const isStart = isStartTime(task, slot.date);
@@ -286,16 +306,8 @@ const TimelineScrollingHorizontal: React.FC<TimelineScrollingHorizontalProps> = 
                                                   }
                                                 }
                                               }}
-                                            >
-                                              {/* スケジュール名（スマホ・タブレット表示のみ） */}
-                                              {isStart && (
-                                                <div className="md:hidden absolute left-1 top-0 h-full flex items-center pointer-events-none">
-                                                  <span className="text-xs font-medium text-white truncate max-w-[200px]">
-                                                    {task.taskName}
-                                                  </span>
-                                                </div>
-                                              )}
-                                            </div>
+                                            />
+
                                             {/* 開始ハンドル */}
                                             {isStart && (
                                               <div
@@ -332,7 +344,8 @@ const TimelineScrollingHorizontal: React.FC<TimelineScrollingHorizontalProps> = 
                             );
                         })}
                     </div>
-                ))}
+                    );
+                })}
             </div>
         </>
     );
