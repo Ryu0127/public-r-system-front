@@ -198,7 +198,7 @@ const TimelineScrollingHorizontal: React.FC<TimelineScrollingHorizontalProps> = 
                                     width: `calc(${taskSlotCount} * (100% / ${timeSlots.length}))`
                                 }}
                             >
-                                <span className="text-xs font-medium text-gray-700 px-1 whitespace-normal break-words">
+                                <span className="text-xs font-medium text-gray-700 px-1 whitespace-nowrap">
                                     {task.taskName}
                                 </span>
                             </div>
