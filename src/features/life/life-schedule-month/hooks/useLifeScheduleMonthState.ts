@@ -1,5 +1,5 @@
 import { useCallback, useEffect } from 'react';
-import { LifeScheduleDayTaskApiTask } from 'hooks/api/life/useLifeScheduleDayTaskGetApi';
+import { LifeScheduleMonthTaskApiTask } from 'hooks/api/life/useLifeScheduleMonthTaskGetApi';
 import { useLifeScheduleMonthApi } from './useLifeScheduleMonthApi';
 
 export interface LifeScheduleMonthState {
@@ -57,7 +57,7 @@ const formatDateKey = (date: Date): string => {
 /**
  * APIタスクデータを月次タスクに変換
  */
-const transformApiTask = (apiTask: LifeScheduleDayTaskApiTask): MonthTask => ({
+const transformApiTask = (apiTask: LifeScheduleMonthTaskApiTask): MonthTask => ({
   taskId: apiTask.taskId,
   taskName: apiTask.taskName,
   startDateTime: new Date(apiTask.startDateTime),
@@ -144,82 +144,56 @@ export const useLifeScheduleMonthState = (
      * 月データ取得
      */
     fetchMonthData: useCallback(async (month: Date) => {
-      const startDate = new Date(month.getFullYear(), month.getMonth(), 1);
-      const currentDate = new Date(startDate);
-      const apiResponse = await api.executeLifeScheduleDayTaskGet(currentDate);
-      const dateKey = formatDateKey(currentDate);
+      try {
+        // 月次API呼び出し（1回の呼び出しで月全体のタスクを取得）
+        const apiResponse = await api.executeLifeScheduleMonthTaskGet(month);
 
-      const monthlyTasksMap: MonthlyTasksMap = {};
-      if (apiResponse.success && apiResponse.data) {
-        monthlyTasksMap[dateKey] = apiResponse.data.tasks.map(transformApiTask);
-      } else {
-        monthlyTasksMap[dateKey] = [];
+        const monthlyTasksMap: MonthlyTasksMap = {};
+
+        if (apiResponse.success && apiResponse.data) {
+          // タスクをscheduleDate（yyyy-mm-dd形式）でグループ化
+          apiResponse.data.tasks.forEach((task) => {
+            const dateKey = task.scheduleDate; // APIレスポンスのscheduleDateをそのまま使用
+
+            if (!monthlyTasksMap[dateKey]) {
+              monthlyTasksMap[dateKey] = [];
+            }
+
+            monthlyTasksMap[dateKey].push(transformApiTask(task));
+          });
+        }
+
+        setState(prev => ({
+          ...prev,
+          config: {
+            ...prev.config,
+            isLoading: false,
+          },
+          data: {
+            monthlyTasks: monthlyTasksMap,
+          },
+        }));
+      } catch (error) {
+        console.error('Failed to fetch month data:', error);
+        setState(prev => ({
+          ...prev,
+          config: {
+            ...prev.config,
+            isLoading: false,
+          },
+        }));
       }
-
-      setState(prev => ({
-        ...prev,
-        config: {
-          ...prev.config,
-          isLoading: false,
-        },
-        data: {
-          monthlyTasks: monthlyTasksMap,
-        },
-      }));
-
-        // try {
-        //   // 月の最初の日と最後の日を取得
-        //   const startDate = new Date(month.getFullYear(), month.getMonth(), 1);
-        //   const endDate = new Date(month.getFullYear(), month.getMonth() + 1, 0);
-
-        //   // 月の各日のタスクを取得
-        //   const monthlyTasksMap: MonthlyTasksMap = {};
-        //   const currentDate = new Date(startDate);
-
-        //   while (currentDate <= endDate) {
-        //     const dateKey = formatDateKey(currentDate);
-        //     const result = await executeLifeScheduleDayTaskGet(new Date(currentDate));
-
-        //     if (result.apiResponse?.status && result.apiResponse?.data) {
-        //       monthlyTasksMap[dateKey] = result.apiResponse.data.tasks.map(transformApiTask);
-        //     } else {
-        //       monthlyTasksMap[dateKey] = [];
-        //     }
-
-        //     currentDate.setDate(currentDate.getDate() + 1);
-        //   }
-
-        //   setState(prev => ({
-        //     ...prev,
-        //     config: {
-        //       ...prev.config,
-        //       isLoading: false,
-        //     },
-        //     data: {
-        //       monthlyTasks: monthlyTasksMap,
-        //     },
-        //   }));
-        // } catch (error) {
-        //   console.error('Failed to fetch month data:', error);
-        //   setState(prev => ({
-        //     ...prev,
-        //     config: {
-        //       ...prev.config,
-        //       isLoading: false,
-        //     },
-        //   }));
-        // }
     }, [api, setState]),
   };
 
   /**
-   * 初期データ取得
+   * 月が変更されたときのデータ取得
    */
   useEffect(() => {
-    // 初期データ取得
+    // 月が変更されたときにデータを取得
     actions.fetchMonthData(state.requestParams.currentMonth);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // eslint-disableコメントでビルドエラーによる警告を抑制
+  }, [state.requestParams.currentMonth]); // currentMonthが変更されたときに再実行
 
   return { actions };
 };
