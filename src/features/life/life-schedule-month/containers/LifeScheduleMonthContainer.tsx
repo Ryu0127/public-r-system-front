@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import useTitle from 'utils/useTitle';
 import { LifeScheduleMonthState, useLifeScheduleMonthState } from '../hooks/useLifeScheduleMonthState';
 import LifeScheduleMonthPresenter from '../presenters/LifeScheduleMonthPresenter';
+import { getYearMonthDefaultNow } from 'utils/dateUtil';
 
 const initialState: LifeScheduleMonthState = {
   requestParams: {
@@ -23,18 +24,21 @@ const initialState: LifeScheduleMonthState = {
 const LifeScheduleMonthContainer: React.FC = () => {
   useTitle('月次スケジュール');
 
+  // URLパラメータ
+  const urlParams = new URLSearchParams(window.location.search);
+  const usageYmd = urlParams.get('yearMonth');
+  
   // 初期値設定
   const [state, setState] = useState<LifeScheduleMonthState>(() => {
-    const today = new Date();
-    today.setDate(1); // 月の1日に設定
-    today.setHours(0, 0, 0, 0);
+    // 初期表示年月を設定
+    const currentMonth = new Date(getYearMonthDefaultNow(usageYmd));
     return {
-      ...initialState,
-      requestParams: {
-        currentMonth: today,
-      },
-    };
-  });
+    ...initialState,
+    requestParams: {
+      currentMonth: currentMonth,
+    },
+  };
+});
 
   // Actions Hook
   const { actions } = useLifeScheduleMonthState(state, setState);
