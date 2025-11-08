@@ -3,7 +3,7 @@ import Select from 'components/atoms/Select';
 import React from 'react';
 import { Task } from '../hooks/useLifeScheduleDayState';
 import ButtonIconInfo from 'components/atoms/buttons/ButtonIconInfo';
-import { formatDateTime, toTimeString } from 'utils/dateUtil';
+import { toTimeString } from 'utils/dateUtil';
 
 export interface LifeScheduleDayTaskListProps {
   config?: {

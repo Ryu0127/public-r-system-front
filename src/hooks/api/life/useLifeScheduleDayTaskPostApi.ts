@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import useFetchDataTs from 'utils/useFetchDataTs';
 
 export interface LifeScheduleDayTaskApiResponse {

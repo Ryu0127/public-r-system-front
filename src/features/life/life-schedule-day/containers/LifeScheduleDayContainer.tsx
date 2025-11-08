@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useState } from 'react';
 import useTitle from 'utils/useTitle';
 import { DateOption } from '../components/LifeScheduleDayDateSelector';
 import { LifeScheduleDayState, useLifeScheduleDayState } from '../hooks/useLifeScheduleDayState';

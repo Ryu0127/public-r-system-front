@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef } from 'react';
 import { LifeScheduleDayActions, LifeScheduleDayState, Project } from '../hooks/useLifeScheduleDayState';
 import { LifeScheduleDayTaskList } from '../components/LifeScheduleDayTaskList';
 import { LifeScheduleDayTimeline } from '../components/LifeScheduleDayTimeline';
-import { LifeScheduleDayDetailPanel, LifeScheduleDayDetailPanelProps } from '../components/LifeScheduleDayDetailPanel';
+import { LifeScheduleDayDetailPanel } from '../components/LifeScheduleDayDetailPanel';
 import LifeScheduleDayFotter from '../components/LifeScheduleDayFotter';
 import Loading from 'components/Loading';
 import AreaOverlaySidePanel from 'components/molecules/areas/AreaOverlaySidePanel';
