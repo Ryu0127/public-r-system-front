@@ -218,7 +218,7 @@ export const useLifeScheduleMonthState = (
   useEffect(() => {
     // 初期データ取得
     actions.fetchMonthData(state.requestParams.currentMonth);
-  }, [actions]);
+  }, [actions, state.requestParams.currentMonth]);
 
   return { actions };
 };

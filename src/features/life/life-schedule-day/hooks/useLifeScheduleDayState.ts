@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useLifeScheduleDayApi } from './useLifeScheduleDayApi';
 import { LifeScheduleDayTaskApiTask } from 'hooks/api/life/useLifeScheduleDayTaskGetApi';
 import { LifeScheduleDayTaskApiRequestTask } from 'hooks/api/life/useLifeScheduleDayTaskPostApi';
@@ -308,7 +308,7 @@ export const useLifeScheduleDayState = (
   const lastPositionRef = useRef(0);
 
   // アクション実装
-  const actions: LifeScheduleDayActions = {
+  const actions: LifeScheduleDayActions = useMemo(() => ({
     /**
      * 画面制御
      */
@@ -577,7 +577,7 @@ export const useLifeScheduleDayState = (
           };
         });
       }
-    }, [api, setState]),
+    }, [api, state.requestParams.currentDate, setState]),
 
     // 更新
     update: useCallback(async () => {
@@ -594,7 +594,7 @@ export const useLifeScheduleDayState = (
          updateStateGroup.toViewActionLoading(setState, false);
         return;
       }
-    }, [api, state.data.tasks, setState]),
+    }, [api, state.requestParams.currentDate, state.data.tasks, setState]),
 
     // Googleカレンダーへの登録
     registGoogleCalendar: useCallback(async (tmpId: number) => {
@@ -611,7 +611,16 @@ export const useLifeScheduleDayState = (
         }
       }
     }, [api, state.data.tasks, setState]),
-  };
+  }), [
+    api,
+    setState,
+    state.config.sidebarVisible,
+    state.config.taskListVisible,
+    state.config.timelineRef,
+    state.data.tasks,
+    state.requestParams.currentDate,
+    state.selectedData.resizingTask,
+  ]);
 
   // スクロール同期処理
   useEffect(() => {

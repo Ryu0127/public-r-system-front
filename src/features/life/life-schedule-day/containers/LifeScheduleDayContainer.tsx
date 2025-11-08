@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import useTitle from 'utils/useTitle';
-import { DateOption } from '../components/LifeScheduleDayDateSelector';
 import { LifeScheduleDayState, useLifeScheduleDayState } from '../hooks/useLifeScheduleDayState';
 import LifeScheduleDayPresenter from '../presenters/LifeScheduleDayPresenter';
 import { getDateDefaultNow } from 'utils/dateUtil';
@@ -116,18 +115,6 @@ const isNowHour = (date: Date): boolean => {
   // 現在時刻との差が15分以内かどうかを判定
   const before = new Date(now.getTime() - 15 * 60000);
   return date >= before && date < now;
-};
-
-/**
- * 日付を日本語形式にフォーマットする
- */
-const formatDateToJapanese = (date: Date): string => {
-  const days = ['日', '月', '火', '水', '木', '金', '土'];
-  const year = date.getFullYear();
-  const month = date.getMonth() + 1;
-  const day = date.getDate();
-  const dayOfWeek = days[date.getDay()];
-  return `${year}年${month}月${day}日 (${dayOfWeek})`;
 };
 
 export default LifeScheduleDayContainer;
