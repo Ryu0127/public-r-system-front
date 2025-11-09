@@ -246,7 +246,7 @@ const updatedTasks = (tasks: Task[], tmpId: number, name: string, value: string 
       if (name === 'projectId') {
         return {
           ...task,
-          [name]: value,
+          projectId: value as string,
           selectData: {
             masterTaskId: value as string,
             masterTaskColor: getProjectColors()[Number(value)],
@@ -266,12 +266,13 @@ const updatedTasks = (tasks: Task[], tmpId: number, name: string, value: string 
       if (name === 'notificationRequestFlag') {
         return {
           ...task,
-          [name]: value as boolean
+          notificationRequestFlag: value as boolean
         };
       }
+      // その他のフィールド（taskName, remarksなど）
       return {
         ...task,
-        [name]: value
+        [name]: value as string
       };
     }
     return task;
