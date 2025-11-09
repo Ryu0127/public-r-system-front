@@ -105,6 +105,20 @@ export const LifeScheduleDayDetailPanel: React.FC<LifeScheduleDayDetailPanelProp
                         </div> */}
 
                         <div className="mb-4">
+                            <h3 className="text-sm font-medium text-gray-500 mb-2">通知設定</h3>
+                            <label className="flex items-center cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    name="notificationRequestFlag"
+                                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                                    checked={selectedData.task.notificationRequestFlag}
+                                    onChange={(e) => controls.taskControls.onChangeForm(e, selectedData.task?.tmpId || 0)}
+                                />
+                                <span className="ml-2 text-sm text-gray-700">通知を有効にする</span>
+                            </label>
+                        </div>
+
+                        <div className="mb-4">
                             <h3 className="text-sm font-medium text-gray-500">備考</h3>
                             <p className="mt-1 text-gray-700">
                                 <textarea

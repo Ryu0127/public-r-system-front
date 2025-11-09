@@ -57,6 +57,7 @@ export interface Task {
   endDateTime: Date;
   projectId: string;
   remarks: string | null;
+  notificationRequestFlag: boolean;
   selectData: {
     masterTaskId: string;
   };
@@ -209,6 +210,7 @@ const transformerApiData = {
     endDateTime: new Date(apiResponse.endDateTime),
     projectId: apiResponse.projectId,
     remarks: apiResponse.remarks,
+    notificationRequestFlag: apiResponse.notificationRequestFlag,
     selectData: {
       masterTaskId: apiResponse.projectId,
     },
@@ -221,6 +223,7 @@ const transformerApiData = {
     endDateTime: task.endDateTime.toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' }),
     projectId: task.projectId.toString(),
     remarks: task.remarks,
+    notificationRequestFlag: task.notificationRequestFlag,
   }),
   toRequestParamEventsGoogleCalendarRegist: (task: Task): EventsGoogleCalendarRegistPostApiRequest => ({
       summary: task.taskName,
@@ -237,15 +240,15 @@ const getProjectColors = (): string[] => {
 };
 
 // フォーム値変更時のタスク更新
-const updatedTasks = (tasks: Task[], tmpId: number, name: string, value: string): Task[] => {
+const updatedTasks = (tasks: Task[], tmpId: number, name: string, value: string | boolean): Task[] => {
   return tasks.map(task => {
     if (task.tmpId === tmpId) {
       if (name === 'projectId') {
         return {
           ...task,
-          [name]: value,
+          projectId: value as string,
           selectData: {
-            masterTaskId: value,
+            masterTaskId: value as string,
             masterTaskColor: getProjectColors()[Number(value)],
           }
         };
@@ -253,15 +256,23 @@ const updatedTasks = (tasks: Task[], tmpId: number, name: string, value: string)
       // 日時フィールドの処理
       if (name === 'startDateTime' || name === 'endDateTime') {
         // datetime-local形式（YYYY-MM-DDTHH:mm）をDateオブジェクトに変換
-        const dateValue = new Date(value);
+        const dateValue = new Date(value as string);
         return {
           ...task,
           [name]: dateValue
         };
       }
+      // 通知フラグの処理（boolean値）
+      if (name === 'notificationRequestFlag') {
+        return {
+          ...task,
+          notificationRequestFlag: value as boolean
+        };
+      }
+      // その他のフィールド（taskName, remarksなど）
       return {
         ...task,
-        [name]: value
+        [name]: value as string
       };
     }
     return task;
@@ -338,7 +349,9 @@ export const useLifeScheduleDayState = (
 
     // フォームの値を変更
     updateFormValueTask: useCallback((event: React.ChangeEvent<HTMLSelectElement | HTMLTextAreaElement | HTMLInputElement>, tmpId: number) => {
-      const { name, value } = event.target;
+      const { name, type } = event.target;
+      // チェックボックスの場合はcheckedを、それ以外はvalueを取得
+      const value = type === 'checkbox' ? (event.target as HTMLInputElement).checked : event.target.value;
       setState(prev => {
         // 更新されたタスク配列を取得
         const updatedTasksList = updatedTasks(prev.data.tasks, tmpId, name, value);
@@ -519,6 +532,7 @@ export const useLifeScheduleDayState = (
               endDateTime: new Date(prev.requestParams.currentDate.setHours(19, 0, 0)),
               projectId: '',
               remarks: '',
+              notificationRequestFlag: false,
               selectData: {
                 masterTaskId: '',
                 masterTaskColor: '',

@@ -16,6 +16,7 @@ export interface LifeScheduleDayTaskApiRequestTask {
   endDateTime: string;
   projectId: string;
   remarks: string | null;
+  notificationRequestFlag: boolean;
 }
 
 const getApiUrl = (): string => {
