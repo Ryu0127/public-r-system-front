@@ -24,6 +24,7 @@ export interface LifeScheduleDayState {
   item: {
     timeSlots: TimeSlot[];
     projects: Project[];
+    schedules: Schedule[]; // 予定一覧
   }
   // 画面データ
   data: {
@@ -40,6 +41,7 @@ export interface LifeScheduleDayState {
       originalEndDate?: Date | null;
     };
     selectedTask: Task | null;
+    selectedSchedule: Schedule | null; // 選択中の予定
   };
 }
 
@@ -61,6 +63,15 @@ export interface Task {
   selectData: {
     masterTaskId: string;
   };
+  projectColor: string;
+}
+
+export interface Schedule {
+  scheduleId: string;
+  scheduleName: string;
+  startDateTime: Date;
+  endDateTime: Date;
+  projectId: string;
   projectColor: string;
 }
 
@@ -101,6 +112,11 @@ export interface LifeScheduleDayActions {
   update: () => void;
   // Googleカレンダーへの登録
   registGoogleCalendar: (tmpId: number) => void;
+  // 予定関連アクション
+  scheduleActions: {
+    selectSchedule: (scheduleId: string) => void;
+    fetchSchedules: (date: Date) => void;
+  };
 }
 
 /**
@@ -625,6 +641,50 @@ export const useLifeScheduleDayState = (
         }
       }
     }, [api, state.data.tasks, setState]),
+
+    // 予定関連アクション
+    scheduleActions: {
+      /**
+       * 予定を選択
+       */
+      selectSchedule: useCallback((scheduleId: string) => {
+        setState(prev => {
+          const schedule = prev.item.schedules.find(s => s.scheduleId === scheduleId);
+          return {
+            ...prev,
+            selectedData: {
+              ...prev.selectedData,
+              selectedSchedule: schedule || null,
+            },
+          };
+        });
+      }, [setState]),
+
+      /**
+       * 予定一覧を取得
+       */
+      fetchSchedules: useCallback(async (date: Date) => {
+        const apiResponse = await api.executeLifeScheduleDayScheduleGet(date);
+        if (apiResponse.success && apiResponse.data) {
+          const schedules = apiResponse.data.schedules;
+          setState(prev => {
+            // デフォルトで最初の予定を選択
+            const selectedSchedule = schedules.length > 0 ? schedules[0] : null;
+            return {
+              ...prev,
+              item: {
+                ...prev.item,
+                schedules: schedules,
+              },
+              selectedData: {
+                ...prev.selectedData,
+                selectedSchedule: selectedSchedule,
+              },
+            };
+          });
+        }
+      }, [api, setState]),
+    },
   };
 
   // スクロール同期処理
@@ -666,8 +726,10 @@ export const useLifeScheduleDayState = (
    */
   const currentDateTimestamp = state.requestParams.currentDate.getTime();
   useEffect(() => {
-    // 初期データ取得
-    actions.fetchData(new Date(currentDateTimestamp));
+    // 初期データ取得（タスクと予定）
+    const currentDate = new Date(currentDateTimestamp);
+    actions.fetchData(currentDate);
+    actions.scheduleActions.fetchSchedules(currentDate);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // eslint-disableコメントでビルドエラーによる警告を抑制
 
