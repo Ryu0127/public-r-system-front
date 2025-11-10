@@ -1,7 +1,7 @@
 import ButtonCyan from 'components/atoms/buttons/ButtonCyan';
 import Select from 'components/atoms/Select';
 import React from 'react';
-import { Task } from '../hooks/useLifeScheduleDayState';
+import { Task, Schedule } from '../hooks/useLifeScheduleDayState';
 import ButtonIconInfo from 'components/atoms/buttons/ButtonIconInfo';
 import { toTimeString } from 'utils/dateUtil';
 
@@ -25,6 +25,7 @@ export interface LifeScheduleDayTaskListProps {
       onChangeForm: (event: React.ChangeEvent<HTMLSelectElement | HTMLTextAreaElement>, tmpId: number) => void;
     };
   };
+  selectedSchedule?: Schedule | null;
 }
 
 /**
@@ -42,6 +43,7 @@ export const LifeScheduleDayTaskList: React.FC<LifeScheduleDayTaskListProps> = (
       onChangeForm: () => {},
     },
   },
+  selectedSchedule = null,
 }) => {
   return (
     <>
@@ -49,6 +51,26 @@ export const LifeScheduleDayTaskList: React.FC<LifeScheduleDayTaskListProps> = (
       <div className="hidden md:block sticky top-0 bg-white z-10 p-2 border-b font-medium h-[37px]">
         スケジュール項目
       </div>
+
+      {/* 予定行（1行目・表示のみ） */}
+      {selectedSchedule && (
+        <div className="h-[110px] p-3 border-b bg-blue-50">
+          {/* 予定名 */}
+          <div className="font-medium text-blue-900 truncate">
+            {selectedSchedule.scheduleName}
+          </div>
+          {/* プロジェクト表示（編集不可） */}
+          <div className="text-sm text-blue-700 mt-1">
+            予定
+          </div>
+          {/* 時間 */}
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-blue-700 mt-1">
+              {toTimeString(selectedSchedule.startDateTime)} - {toTimeString(selectedSchedule.endDateTime)}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* タスクリスト */}
       {data?.tasks.map((task) => {

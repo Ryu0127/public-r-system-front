@@ -3,6 +3,7 @@ import { LifeScheduleDayActions, LifeScheduleDayState, Project } from '../hooks/
 import { LifeScheduleDayTaskList } from '../components/LifeScheduleDayTaskList';
 import { LifeScheduleDayTimeline } from '../components/LifeScheduleDayTimeline';
 import { LifeScheduleDayDetailPanel } from '../components/LifeScheduleDayDetailPanel';
+import { LifeScheduleDayScheduleSelector } from '../components/LifeScheduleDayScheduleSelector';
 import LifeScheduleDayFotter from '../components/LifeScheduleDayFotter';
 import Loading from 'components/Loading';
 import AreaOverlaySidePanel from 'components/molecules/areas/AreaOverlaySidePanel';
@@ -303,6 +304,13 @@ const LifeScheduleDayPresenter: React.FC<PresenterProps> = ({
             {/* メインコンテンツ */}
             <div className="flex-1 p-4">
               <div className="bg-white rounded-lg shadow overflow-hidden">
+                {/* 予定セレクタ */}
+                <LifeScheduleDayScheduleSelector
+                  schedules={state.item.schedules}
+                  selectedSchedule={state.selectedData.selectedSchedule}
+                  onSelectSchedule={actions.scheduleActions.selectSchedule}
+                />
+
                 {/* タスクリストとタイムライン */}
                 <div className="flex h-[calc(100vh-15rem)] overflow-hidden relative">
                   {/* タスクリスト（モバイルでは非表示、デスクトップでは常に表示） */}
@@ -314,11 +322,12 @@ const LifeScheduleDayPresenter: React.FC<PresenterProps> = ({
                       data={{ tasks: state.data.tasks }}
                       item={{ masterTasks: dataTransformer.toMasterTask(state.item.projects) }}
                       controls={{ taskControls: uiProps.taskControls }}
+                      selectedSchedule={state.selectedData.selectedSchedule}
                     />
                   </div>
-                  
+
                   {/* タイムライン */}
-                  <div 
+                  <div
                     className="w-auto flex-1 overflow-x-auto cursor-grab active:cursor-grabbing"
                     ref={(el) => {
                       if (state.config.timelineRef) {
@@ -337,12 +346,13 @@ const LifeScheduleDayPresenter: React.FC<PresenterProps> = ({
                         timeSlots: state.item.timeSlots,
                         masterTasks: dataTransformer.toMasterTask(state.item.projects),
                       }}
-                      controls={{ 
+                      controls={{
                         taskControls: {
                           ...uiProps.taskControls,
                           onTaskTap: uiProps.taskControls.onTaskTap,
                         }
                       }}
+                      selectedSchedule={state.selectedData.selectedSchedule}
                     />
                   </div>
                 </div>

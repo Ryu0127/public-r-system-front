@@ -2,6 +2,7 @@ import { useCallback } from "react";
 import { useLifeScheduleDayTaskGetApi } from "hooks/api/life/useLifeScheduleDayTaskGetApi";
 import { LifeScheduleDayTaskApiRequest, useLifeScheduleDayTaskPostApi } from "hooks/api/life/useLifeScheduleDayTaskPostApi";
 import { EventsGoogleCalendarRegistPostApiRequest, useEventsGoogleCalendarRegistPostApi } from "hooks/api/events/useEventsGoogleCalendarRegistPostApi";
+import { useLifeScheduleDayScheduleGetApi } from "hooks/api/life/useLifeScheduleDayScheduleGetApi";
 
 // API操作インターフェース
 interface ApiResponse<T> {
@@ -19,6 +20,7 @@ export const useLifeScheduleDayApi = () => {
   const { executeLifeScheduleDayTaskGet } = useLifeScheduleDayTaskGetApi();
   const { executeLifeScheduleDayTaskPost } = useLifeScheduleDayTaskPostApi();
   const { executeEventsGoogleCalendarRegist } = useEventsGoogleCalendarRegistPostApi();
+  const { executeLifeScheduleDayScheduleGet } = useLifeScheduleDayScheduleGetApi();
 
   return {
     // タスク一覧取得
@@ -30,7 +32,7 @@ export const useLifeScheduleDayApi = () => {
       };
     }, [executeLifeScheduleDayTaskGet]),
 
-    // タスク更新 
+    // タスク更新
     update: useCallback(async (requestParams: LifeScheduleDayTaskApiRequest): Promise<ApiResponse<boolean>> => {
       const result = await executeLifeScheduleDayTaskPost(requestParams);
       return {
@@ -47,5 +49,14 @@ export const useLifeScheduleDayApi = () => {
         data: result !== null
       };
     }, [executeEventsGoogleCalendarRegist]),
+
+    // 予定一覧取得
+    executeLifeScheduleDayScheduleGet: useCallback(async (date: Date) => {
+      const result = await executeLifeScheduleDayScheduleGet(date);
+      return {
+        success: result.success,
+        data: result.data?.data
+      };
+    }, [executeLifeScheduleDayScheduleGet]),
   };
 };

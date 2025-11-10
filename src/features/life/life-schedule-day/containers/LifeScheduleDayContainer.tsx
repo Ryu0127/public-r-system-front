@@ -23,6 +23,7 @@ const initialState: LifeScheduleDayState = {
   item: {
     timeSlots: [],
     projects: [],
+    schedules: [],
   },
   // データ項目
   data: {
@@ -37,6 +38,7 @@ const initialState: LifeScheduleDayState = {
       startX: null
     },
     selectedTask: null,
+    selectedSchedule: null,
   },
 };
 
