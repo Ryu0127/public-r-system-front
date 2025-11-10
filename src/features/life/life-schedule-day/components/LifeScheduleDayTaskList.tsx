@@ -54,14 +54,14 @@ export const LifeScheduleDayTaskList: React.FC<LifeScheduleDayTaskListProps> = (
 
       {/* 予定行（1行目・表示のみ） */}
       {selectedSchedule && (
-        <div className="h-[110px] p-3 border-b bg-blue-50">
-          {/* 予定名 */}
-          <div className="font-medium text-blue-900 truncate">
-            {selectedSchedule.scheduleName}
-          </div>
+        <div className="h-[85px] p-3 pt-1 border-b bg-blue-50">
           {/* プロジェクト表示（編集不可） */}
           <div className="text-sm text-blue-700 mt-1">
             予定
+          </div>
+          {/* 予定名 */}
+          <div className="font-medium text-blue-900 truncate">
+            {selectedSchedule.scheduleName}
           </div>
           {/* 時間 */}
           <div className="flex items-center justify-between">

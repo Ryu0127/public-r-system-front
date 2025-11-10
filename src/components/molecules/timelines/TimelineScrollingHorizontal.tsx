@@ -5,6 +5,7 @@ export interface TimelineScrollingHorizontalProps {
     tasks: Task[];
     splitTime: number;
     gridColsClass: string;
+    headerAddClass?: string;
     onDragStart: (tmpId: number, type: 'start' | 'end' | 'move', event: React.MouseEvent | React.TouchEvent) => void;
     onTaskTap?: (tmpId: number) => void; // タスクタップ時のコールバック（モバイル用）
 }
@@ -29,7 +30,7 @@ export interface Task {
     remarks: string | null;
 }
 
-const TimelineScrollingHorizontal: React.FC<TimelineScrollingHorizontalProps> = ({ timeSlots, tasks, splitTime, gridColsClass, onDragStart, onTaskTap }) => {
+const TimelineScrollingHorizontal: React.FC<TimelineScrollingHorizontalProps> = ({ timeSlots, tasks, splitTime, gridColsClass, headerAddClass, onDragStart, onTaskTap }) => {
     // タスクバーとハンドルのrefを保存
     const taskRefs = useRef<Map<string, HTMLDivElement>>(new Map());
     const startHandleRefs = useRef<Map<string, HTMLDivElement>>(new Map());
@@ -168,7 +169,7 @@ const TimelineScrollingHorizontal: React.FC<TimelineScrollingHorizontalProps> = 
     return (
         <>
             {/* 時間軸ヘッダー */}
-            <div className={`grid border-b sticky top-0 h-[37px] bg-white z-10 ${gridColsClass}`}>
+            <div className={`grid border-b sticky top-0 h-[37px] bg-white z-10 ${gridColsClass} ${headerAddClass}`}>
                 {timeSlots.map((slot, index) => {
                     const isNowHourSlot = slot.isNowHour;
                     const isTimeView = slot.isTimeView;
@@ -221,7 +222,7 @@ const TimelineScrollingHorizontal: React.FC<TimelineScrollingHorizontalProps> = 
                                                   taskRefs.current.delete(task.tmpId.toString());
                                                 }
                                               }}
-                                              className={`absolute top-6 h-12 cursor-move touch-none`}
+                                              className={`absolute top-6 h-16 cursor-move touch-none`}
                                               style={{
                                                 left: '0',
                                                 width: `100%`,
@@ -318,7 +319,7 @@ const TimelineScrollingHorizontal: React.FC<TimelineScrollingHorizontalProps> = 
                                                     startHandleRefs.current.delete(task.tmpId.toString());
                                                   }
                                                 }}
-                                                className="absolute top-6 left-0 w-1 h-12 bg-black cursor-ew-resize hover:bg-blue-500 transition-colors touch-none"
+                                                className="absolute top-6 left-0 w-1 h-16 bg-black cursor-ew-resize hover:bg-blue-500 transition-colors touch-none"
                                                 style={{ width: '4px', left: '-2px' }}
                                                 onMouseDown={(e) => onDragStart(task.tmpId, 'start', e)}
                                               />
@@ -333,7 +334,7 @@ const TimelineScrollingHorizontal: React.FC<TimelineScrollingHorizontalProps> = 
                                                     endHandleRefs.current.delete(task.tmpId.toString());
                                                   }
                                                 }}
-                                                className="absolute top-6 right-0 w-1 h-12 bg-black cursor-ew-resize hover:bg-blue-500 transition-colors touch-none"
+                                                className="absolute top-6 right-0 w-1 h-16 bg-black cursor-ew-resize hover:bg-blue-500 transition-colors touch-none"
                                                 style={{ width: '4px', right: '-2px' }}
                                                 onMouseDown={(e) => onDragStart(task.tmpId, 'end', e)}
                                               />

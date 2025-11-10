@@ -76,7 +76,7 @@ export const LifeScheduleDayTimeline: React.FC<Props> = ({
 
       {/* 予定行（表示のみ・編集不可） */}
       {selectedSchedule && (
-        <div className="h-[110px] border-b bg-blue-50 relative">
+        <div className="h-[85px] border-b bg-blue-50 relative">
           <div className="grid grid-cols-[repeat(96,minmax(35px,1fr))] h-full">
             {item.timeSlots.map((slot, index) => (
               <div
@@ -93,7 +93,7 @@ export const LifeScheduleDayTimeline: React.FC<Props> = ({
             );
             return (
               <div
-                className="absolute top-2 h-[calc(100%-16px)] rounded shadow-sm border-2 border-blue-400 bg-blue-200 flex items-center px-2"
+                className="absolute top-2 h-16 rounded shadow-sm border-2 border-blue-400 bg-blue-200 flex items-center px-2"
                 style={{
                   gridColumnStart: startCol,
                   gridColumnEnd: endCol,
@@ -117,6 +117,7 @@ export const LifeScheduleDayTimeline: React.FC<Props> = ({
         tasks={data?.tasks}
         splitTime={15}
         gridColsClass="grid-cols-[repeat(96,minmax(35px,1fr))]"
+        headerAddClass="hidden"
         onDragStart={controls.taskControls.onDragStart}
         onTaskTap={controls.taskControls.onTaskTap}
       />

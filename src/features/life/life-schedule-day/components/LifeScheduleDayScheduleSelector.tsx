@@ -1,5 +1,6 @@
 import React from 'react';
 import { Schedule } from '../hooks/useLifeScheduleDayState';
+import { toTimeString } from 'utils/dateUtil';
 
 export interface LifeScheduleDayScheduleSelectorProps {
   schedules: Schedule[];
@@ -36,7 +37,7 @@ export const LifeScheduleDayScheduleSelector: React.FC<LifeScheduleDayScheduleSe
         ) : (
           schedules.map((schedule) => (
             <option key={schedule.scheduleId} value={schedule.scheduleId}>
-              {schedule.scheduleName}
+              ( {toTimeString(schedule.startDateTime)} - {toTimeString(schedule.endDateTime)} ) {schedule.scheduleName}
             </option>
           ))
         )}
