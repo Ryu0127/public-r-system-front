@@ -1,4 +1,3 @@
-import { useCallback } from 'react';
 
 /**
  * 予定取得APIレスポンス
