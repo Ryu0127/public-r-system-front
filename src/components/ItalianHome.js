@@ -244,6 +244,7 @@ const ItalianHome = () => {
               return (
                 <div
                   key={feature.id}
+                  onClick={() => window.location.href = feature.link}
                   className={`group bg-white/60 backdrop-blur-sm rounded-3xl p-8 border border-gray-200 ${colors.hover} hover:bg-white/80 transition-all duration-500 hover:scale-105 hover:shadow-2xl cursor-pointer`}
                 >
                   {/* アイコン背景 */}
