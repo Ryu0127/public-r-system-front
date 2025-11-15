@@ -153,29 +153,30 @@ const HashtagSearch = () => {
         </header>
 
         {/* 使い方セクション */}
-        <section className="max-w-5xl mx-auto mb-8 bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-gray-200 shadow-lg animate-fade-in" style={{ animationDelay: '0.1s' }}>
+        <section className="max-w-2xl mx-auto mb-8 bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-gray-200 shadow-lg animate-fade-in" style={{ animationDelay: '0.1s' }}>
           <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
             <span className="text-[#1DA1F2]">ℹ</span>
             使い方
           </h2>
-          <div className="grid md:grid-cols-2 gap-6 text-sm text-gray-700">
-            <div>
-              <h3 className="font-semibold text-[#1DA1F2] mb-2">【ハッシュタグ投稿】</h3>
+          {mode === 'post' ? (
+            <div className="text-sm text-gray-700">
+              <h3 className="font-semibold text-[#1DA1F2] mb-2">【ハッシュタグ投稿モード】</h3>
               <ol className="list-decimal list-inside space-y-1">
                 <li>投稿したいハッシュタグを選択</li>
                 <li>「Xで投稿する」ボタンをクリック</li>
-                <li>Xの投稿画面が開きます</li>
+                <li>新しいタブでXの投稿画面が開きます</li>
               </ol>
             </div>
-            <div>
-              <h3 className="font-semibold text-[#1DA1F2] mb-2">【タグ検索】</h3>
+          ) : (
+            <div className="text-sm text-gray-700">
+              <h3 className="font-semibold text-[#1DA1F2] mb-2">【タグ検索モード】</h3>
               <ol className="list-decimal list-inside space-y-1">
                 <li>検索したいハッシュタグを入力</li>
                 <li>「Xで検索する」ボタンをクリック、またはEnterキー</li>
-                <li>Xの検索結果が表示されます</li>
+                <li>新しいタブでXの検索結果が表示されます</li>
               </ol>
             </div>
-          </div>
+          )}
         </section>
 
         {/* モード切り替えタブ */}
@@ -284,18 +285,23 @@ const HashtagSearch = () => {
             </div>
 
             {/* 投稿ボタン */}
-            <button
-              onClick={handlePostToTwitter}
-              disabled={selectedTags.length === 0}
-              className={`w-full py-4 rounded-xl font-semibold text-lg transition-all duration-300 flex items-center justify-center gap-2 ${
-                selectedTags.length > 0
-                  ? 'bg-gradient-to-r from-[#1DA1F2] to-[#0d8bd9] hover:from-[#0d8bd9] hover:to-[#1DA1F2] text-white shadow-xl shadow-blue-500/40 hover:shadow-2xl hover:shadow-blue-500/50 hover:scale-105'
-                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-              }`}
-            >
-              <TwitterIcon />
-              Xで投稿する
-            </button>
+            <div>
+              <button
+                onClick={handlePostToTwitter}
+                disabled={selectedTags.length === 0}
+                className={`w-full py-4 rounded-xl font-semibold text-lg transition-all duration-300 flex items-center justify-center gap-2 ${
+                  selectedTags.length > 0
+                    ? 'bg-gradient-to-r from-[#1DA1F2] to-[#0d8bd9] hover:from-[#0d8bd9] hover:to-[#1DA1F2] text-white shadow-xl shadow-blue-500/40 hover:shadow-2xl hover:shadow-blue-500/50 hover:scale-105'
+                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                }`}
+              >
+                <TwitterIcon />
+                Xで投稿する
+              </button>
+              <p className="text-xs text-gray-500 text-center mt-3">
+                ※ ボタンを押下すると、新しいタブでX(Twitter)の投稿画面が開きます
+              </p>
+            </div>
           </div>
           )}
 
@@ -377,18 +383,23 @@ const HashtagSearch = () => {
             </div>
 
             {/* 検索ボタン */}
-            <button
-              onClick={handleSearchOnTwitter}
-              disabled={!searchQuery.trim()}
-              className={`w-full py-4 rounded-xl font-semibold text-lg transition-all duration-300 flex items-center justify-center gap-2 ${
-                searchQuery.trim()
-                  ? 'bg-gradient-to-r from-[#1DA1F2] to-[#0d8bd9] hover:from-[#0d8bd9] hover:to-[#1DA1F2] text-white shadow-xl shadow-blue-500/40 hover:shadow-2xl hover:shadow-blue-500/50 hover:scale-105'
-                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-              }`}
-            >
-              <SearchIcon />
-              Xで検索する
-            </button>
+            <div>
+              <button
+                onClick={handleSearchOnTwitter}
+                disabled={!searchQuery.trim()}
+                className={`w-full py-4 rounded-xl font-semibold text-lg transition-all duration-300 flex items-center justify-center gap-2 ${
+                  searchQuery.trim()
+                    ? 'bg-gradient-to-r from-[#1DA1F2] to-[#0d8bd9] hover:from-[#0d8bd9] hover:to-[#1DA1F2] text-white shadow-xl shadow-blue-500/40 hover:shadow-2xl hover:shadow-blue-500/50 hover:scale-105'
+                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                }`}
+              >
+                <SearchIcon />
+                Xで検索する
+              </button>
+              <p className="text-xs text-gray-500 text-center mt-3">
+                ※ ボタンを押下すると、新しいタブでX(Twitter)の検索結果画面が開きます
+              </p>
+            </div>
           </div>
           )}
         </div>
