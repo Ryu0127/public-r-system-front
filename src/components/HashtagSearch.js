@@ -355,7 +355,7 @@ const HashtagSearch = () => {
 
           {/* サブタイトル */}
           <p className="text-lg text-gray-600 font-light">
-            ハッシュタグを選択して投稿、または検索できます
+            ハッシュタグを選択して投稿、または検索のサポートができます
           </p>
         </header>
 
