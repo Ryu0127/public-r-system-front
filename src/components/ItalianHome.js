@@ -1,35 +1,35 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import LoadingScreen from './LoadingScreen';
 import LimitedTimeTopicModal from './LimitedTimeTopicModal';
 
-const APP_TITLE = 'Hashtag Maximizer';
+const APP_TITLE = '推し活サポート';
 
 // 機能データ
 const features = [
   {
     id: 'talent-hashtag',
-    title: 'Talent Hashtag Post/Search',
-    description: 'Post and search optimal hashtags for each talent to effectively communicate',
+    title: 'タレント別ハッシュタグ投稿/検索',
+    description: '各タレントごとの応援ハッシュタグを投稿/検索ができます',
     icon: 'Hash',
     link: '/talent-hashtag',
     color: 'amber',
   },
-  {
-    id: 'trending-tags',
-    title: 'Trending Tag Analysis',
-    description: 'Analyze and visualize popular hashtags in real-time',
-    icon: 'TrendingUp',
-    link: '/trending-tags',
-    color: 'sky',
-  },
-  {
-    id: 'tag-analytics',
-    title: 'Tag Performance',
-    description: 'Detailed analysis of engagement for posted hashtags',
-    icon: 'BarChart3',
-    link: '/tag-analytics',
-    color: 'emerald',
-  },
+  // {
+  //   id: 'trending-tags',
+  //   title: 'Trending Tag Analysis',
+  //   description: 'Analyze and visualize popular hashtags in real-time',
+  //   icon: 'TrendingUp',
+  //   link: '/trending-tags',
+  //   color: 'sky',
+  // },
+  // {
+  //   id: 'tag-analytics',
+  //   title: 'Tag Performance',
+  //   description: 'Detailed analysis of engagement for posted hashtags',
+  //   icon: 'BarChart3',
+  //   link: '/tag-analytics',
+  //   color: 'emerald',
+  // },
 ];
 
 // 更新履歴データ
@@ -89,9 +89,9 @@ const changeLogs = [
 // 期間限定トピック
 const limitedTimeTopic = {
   id: 'campaign-2025-winter',
-  title: '🎉 Winter Campaign Now Open!',
+  title: "ときのそら　New Year's Party 2026「Dreams in Motion」",
   content:
-    "Get 30% off premium features! Use code WINTER2025 at checkout.\n\nCampaign runs until December 31st. Don't miss this limited-time offer!\n\nPremium features include:\n• Advanced analytics dashboard\n• AI-powered tag suggestions\n• Priority support\n• Custom tag templates",
+    "ときのそら　がおくる新年最初のライブイベント",
   startDate: '2025-11-15',
   endDate: '2025-12-31',
 };
@@ -179,7 +179,7 @@ const ItalianHome = () => {
             <div className="inline-flex items-center gap-3 px-6 py-3 bg-white/80 backdrop-blur-sm rounded-full border border-amber-200 shadow-lg">
               <span className="text-amber-600 text-2xl">✦</span>
               <span className="text-amber-700 text-sm font-medium uppercase tracking-wider">
-                Hashtag Maximizer
+                R-SYSTEM
               </span>
               <span className="text-sky-600 text-2xl">✦</span>
             </div>
@@ -195,13 +195,11 @@ const ItalianHome = () => {
 
           {/* サブタイトル */}
           <p className="text-xl md:text-2xl text-gray-600 font-light max-w-3xl mx-auto">
-            Maximize your hashtag utilization on X (formerly Twitter).
-            <br />
-            Enhance your reach with efficient posting and searching.
+            こちらのサイトは、推し活をサポートするファン作成サイトです。
           </p>
 
           {/* CTAボタン */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-8">
+          {/* <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-8">
             <button className="bg-gradient-to-r from-amber-500 via-sky-500 to-emerald-500 hover:from-amber-600 hover:via-sky-600 hover:to-emerald-600 text-white font-semibold px-8 py-6 text-lg rounded-full shadow-2xl shadow-sky-500/40 hover:shadow-3xl hover:shadow-sky-500/50 transition-all duration-500 hover:scale-110 border-2 border-white/30">
               <span className="mr-2">✦</span>
               Get Started
@@ -211,7 +209,7 @@ const ItalianHome = () => {
             <button className="bg-white/60 backdrop-blur-sm border-2 border-gray-300 hover:bg-white/80 hover:border-amber-400 text-gray-700 font-semibold px-8 py-6 text-lg rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
               Learn More
             </button>
-          </div>
+          </div> */}
 
           {/* 装飾的な区切り線 */}
           <div className="flex items-center justify-center gap-3 opacity-40 pt-8">
@@ -229,11 +227,11 @@ const ItalianHome = () => {
               className="text-4xl md:text-5xl font-bold text-gray-800"
               style={{ fontFamily: "'Playfair Display', serif" }}
             >
-              Key Features
+              主な機能
             </h2>
-            <p className="text-gray-600 text-lg font-light">
+            {/* <p className="text-gray-600 text-lg font-light">
               Powerful tools to maximize your hashtag strategy
-            </p>
+            </p> */}
           </div>
 
           {/* 機能カード */}
@@ -280,7 +278,7 @@ const ItalianHome = () => {
               className="text-4xl md:text-5xl font-bold text-gray-800"
               style={{ fontFamily: "'Playfair Display', serif" }}
             >
-              Update History
+              変更履歴
             </h2>
           </div>
 
