@@ -82,10 +82,22 @@ const HashtagSearch = () => {
   // タグ検索機能の状態
   const [searchQuery, setSearchQuery] = useState('');
 
+  // タレントリストを取得
+  const talentList = Object.entries(talentHashtags).map(([key, value]) => ({
+    key,
+    name: value.name,
+  }));
+
   // 選択中のタレントのハッシュタグデータを取得
   const currentTalent = talentHashtags[selectedTalent];
   const predefinedHashtags = currentTalent.hashtags;
   const quickSearchTags = predefinedHashtags.slice(0, 6);
+
+  // タレント変更ハンドラ
+  const handleTalentChange = (e) => {
+    setSelectedTalent(e.target.value);
+    setSelectedTags([]);
+  };
 
   // ハッシュタグの選択/解除
   const toggleTag = (tag) => {
@@ -184,33 +196,33 @@ const HashtagSearch = () => {
 
         {/* タレント選択セクション */}
         <section className="max-w-2xl mx-auto mb-8 animate-fade-in" style={{ animationDelay: '0.05s' }}>
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-2 border border-gray-200 shadow-lg inline-flex gap-2 w-full">
-            <button
-              onClick={() => {
-                setSelectedTalent('tokinosora');
-                setSelectedTags([]);
-              }}
-              className={`flex-1 py-3 px-6 rounded-xl font-semibold transition-all duration-300 ${
-                selectedTalent === 'tokinosora'
-                  ? 'bg-gradient-to-r from-amber-400 to-amber-600 text-white shadow-lg shadow-amber-500/30'
-                  : 'bg-transparent text-gray-600 hover:bg-gray-100'
-              }`}
-            >
-              ときのそら
-            </button>
-            <button
-              onClick={() => {
-                setSelectedTalent('roboco');
-                setSelectedTags([]);
-              }}
-              className={`flex-1 py-3 px-6 rounded-xl font-semibold transition-all duration-300 ${
-                selectedTalent === 'roboco'
-                  ? 'bg-gradient-to-r from-pink-400 to-pink-600 text-white shadow-lg shadow-pink-500/30'
-                  : 'bg-transparent text-gray-600 hover:bg-gray-100'
-              }`}
-            >
-              ロボ子さん
-            </button>
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-200 shadow-lg">
+            <label htmlFor="talent-select" className="block text-sm font-semibold text-gray-700 mb-3">
+              タレントを選択
+            </label>
+            <div className="relative">
+              <select
+                id="talent-select"
+                value={selectedTalent}
+                onChange={handleTalentChange}
+                className="w-full px-4 py-3 pr-10 bg-white border-2 border-gray-200 focus:border-[#1DA1F2] focus:outline-none rounded-xl text-gray-800 font-medium transition-all duration-200 cursor-pointer appearance-none"
+              >
+                {talentList.map((talent) => (
+                  <option key={talent.key} value={talent.key}>
+                    {talent.name}
+                  </option>
+                ))}
+              </select>
+              {/* カスタム矢印 */}
+              <div className="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none text-gray-400">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+            </div>
+            <p className="text-xs text-gray-500 mt-2">
+              選択中: <span className="font-semibold text-[#1DA1F2]">{currentTalent.name}</span>
+            </p>
           </div>
         </section>
 
