@@ -11,7 +11,7 @@ const features = [
     title: 'タレント別 ハッシュタグ投稿/検索 サポート',
     description: '各タレントごとの応援ハッシュタグを選択して投稿/検索のサポートができます',
     icon: 'Hash',
-    link: '/talent-hashtag',
+    link: '/talent-hashtag-support',
     color: 'amber',
   },
   // {
