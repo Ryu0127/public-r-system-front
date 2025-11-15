@@ -231,6 +231,9 @@ const HashtagSearch = () => {
   // 選択されたイベントハッシュタグの状態（イベント情報を保持）
   const [selectedEventHashtags, setSelectedEventHashtags] = useState([]);
 
+  // イベントURLを投稿に含めるかどうか
+  const [includeEventUrl, setIncludeEventUrl] = useState(true);
+
   // タグ検索機能の状態
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -313,8 +316,10 @@ const HashtagSearch = () => {
     // ハッシュタグを改行区切りで結合
     const hashtags = selectedTags.map((tag) => `#${tag}`).join('\n');
 
-    // イベントURLを取得（選択されたイベントハッシュタグがある場合）
-    const eventUrls = selectedEventHashtags.map((event) => event.url).join('\n');
+    // イベントURLを取得（選択されたイベントハッシュタグがあり、かつチェックボックスがONの場合）
+    const eventUrls = includeEventUrl && selectedEventHashtags.length > 0
+      ? selectedEventHashtags.map((event) => event.url).join('\n')
+      : '';
 
     // ハッシュタグとイベントURLを結合
     const tweetText = eventUrls
@@ -664,13 +669,28 @@ const HashtagSearch = () => {
                       ))}
                     </div>
                     {selectedEventHashtags.length > 0 && (
-                      <div className="pt-2 border-t border-gray-300">
-                        <p className="text-xs text-gray-600 mb-1 font-semibold">イベントURL:</p>
-                        {selectedEventHashtags.map((event, index) => (
-                          <div key={index} className="text-xs text-blue-600 break-all">
-                            {event.url}
+                      <div className="pt-2 border-t border-gray-300 space-y-2">
+                        <label className="flex items-center gap-2 cursor-pointer group">
+                          <input
+                            type="checkbox"
+                            checked={includeEventUrl}
+                            onChange={(e) => setIncludeEventUrl(e.target.checked)}
+                            className="w-4 h-4 text-[#1DA1F2] bg-white border-gray-300 rounded focus:ring-[#1DA1F2] focus:ring-2 cursor-pointer"
+                          />
+                          <span className="text-xs text-gray-700 font-semibold group-hover:text-[#1DA1F2] transition-colors">
+                            イベントURLを投稿に含める
+                          </span>
+                        </label>
+                        {includeEventUrl && (
+                          <div>
+                            <p className="text-xs text-gray-600 mb-1 font-semibold">イベントURL:</p>
+                            {selectedEventHashtags.map((event, index) => (
+                              <div key={index} className="text-xs text-blue-600 break-all">
+                                {event.url}
+                              </div>
+                            ))}
                           </div>
-                        ))}
+                        )}
                       </div>
                     )}
                   </div>
@@ -698,8 +718,8 @@ const HashtagSearch = () => {
               </button>
               <p className="text-xs text-gray-500 text-center mt-3">
                 ※ ボタンを押下すると、新しいタブでXの投稿画面が開きます
-                {selectedEventHashtags.length > 0 && (
-                  <><br />※ イベントハッシュタグを選択した場合、イベントURLも投稿に含まれます</>
+                {selectedEventHashtags.length > 0 && includeEventUrl && (
+                  <><br />※ イベントURLが投稿に含まれます</>
                 )}
               </p>
             </div>
