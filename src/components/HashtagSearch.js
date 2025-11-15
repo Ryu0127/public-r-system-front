@@ -382,14 +382,17 @@ const HashtagSearch = () => {
                   選択中のハッシュタグ
                 </h3>
                 <div className="flex items-center gap-2">
-                  {selectedTags.length > 0 && (
-                    <button
-                      onClick={() => setSelectedTags([])}
-                      className="px-3 py-1 text-xs font-medium text-gray-600 hover:text-red-600 bg-gray-100 hover:bg-red-50 rounded-lg transition-all duration-200 border border-gray-200 hover:border-red-300"
-                    >
-                      クリア
-                    </button>
-                  )}
+                  <button
+                    onClick={() => setSelectedTags([])}
+                    disabled={selectedTags.length === 0}
+                    className={`px-3 py-1 text-xs font-medium rounded-lg transition-all duration-200 border ${
+                      selectedTags.length > 0
+                        ? 'text-gray-600 hover:text-red-600 bg-gray-100 hover:bg-red-50 border-gray-200 hover:border-red-300 cursor-pointer'
+                        : 'text-gray-400 bg-gray-50 border-gray-100 cursor-not-allowed'
+                    }`}
+                  >
+                    クリア
+                  </button>
                   <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#1DA1F2] text-white text-sm font-bold shadow-md">
                     {selectedTags.length}
                   </span>
@@ -511,14 +514,17 @@ const HashtagSearch = () => {
                 <h3 className="text-sm font-semibold text-gray-700">
                   検索プレビュー
                 </h3>
-                {searchQuery.trim() && (
-                  <button
-                    onClick={() => setSearchQuery('')}
-                    className="px-3 py-1 text-xs font-medium text-gray-600 hover:text-red-600 bg-gray-100 hover:bg-red-50 rounded-lg transition-all duration-200 border border-gray-200 hover:border-red-300"
-                  >
-                    クリア
-                  </button>
-                )}
+                <button
+                  onClick={() => setSearchQuery('')}
+                  disabled={!searchQuery.trim()}
+                  className={`px-3 py-1 text-xs font-medium rounded-lg transition-all duration-200 border ${
+                    searchQuery.trim()
+                      ? 'text-gray-600 hover:text-red-600 bg-gray-100 hover:bg-red-50 border-gray-200 hover:border-red-300 cursor-pointer'
+                      : 'text-gray-400 bg-gray-50 border-gray-100 cursor-not-allowed'
+                  }`}
+                >
+                  クリア
+                </button>
               </div>
               <div className="min-h-[80px] p-4 bg-gray-50 rounded-xl border border-gray-200 flex items-center justify-center">
                 {searchQuery.trim() ? (
