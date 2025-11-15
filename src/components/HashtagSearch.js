@@ -1,11 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
 
-const APP_TITLE = 'タレント別ハッシュタグ投稿/検索';
+const APP_TITLE = 'タレント別 ハッシュタグ投稿/検索 サポート';
 
 // タレントごとのハッシュタグデータ
 const talentHashtags = {
   tokinosora: {
-    name: 'ときのそら',
+    name: 'ときのそら | Tokino Sora',
     hashtags: [
       { id: 1, tag: 'ときのそら', description: '一般' },
       { id: 2, tag: 'soraArt', description: 'ファンアート' },
@@ -24,7 +24,7 @@ const talentHashtags = {
     ],
   },
   roboco: {
-    name: 'ロボ子さん',
+    name: 'ロボ子さん | Robocosan',
     hashtags: [
       { id: 1, tag: 'robo_co', description: '公式' },
       { id: 2, tag: 'ロボ子Art', description: 'ファンアート' },
