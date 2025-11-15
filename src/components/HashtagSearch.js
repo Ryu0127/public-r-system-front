@@ -285,7 +285,7 @@ const HashtagSearch = () => {
               <input
                 id="talent-combobox"
                 type="text"
-                value={talentSearchQuery}
+                value={isDropdownOpen ? talentSearchQuery : currentTalent.name}
                 onChange={(e) => {
                   setTalentSearchQuery(e.target.value);
                   setIsDropdownOpen(true);
@@ -303,8 +303,8 @@ const HashtagSearch = () => {
 
               {/* ドロップダウンリスト */}
               {isDropdownOpen && filteredTalentList.length > 0 && (
-                <div className="absolute z-10 w-full mt-2 bg-white border-2 border-gray-200 rounded-xl shadow-xl max-h-60 overflow-y-auto">
-                  {filteredTalentList.map((talent) => (
+                <div className="absolute z-50 w-full mt-2 bg-white border-2 border-gray-200 rounded-xl shadow-xl max-h-60 overflow-y-auto">
+                  {filteredTalentList.slice(0, 10).map((talent) => (
                     <div
                       key={talent.key}
                       onClick={() => handleTalentSelect(talent.key)}
@@ -322,7 +322,7 @@ const HashtagSearch = () => {
 
               {/* 結果が見つからない場合 */}
               {isDropdownOpen && talentSearchQuery && filteredTalentList.length === 0 && (
-                <div className="absolute z-10 w-full mt-2 bg-white border-2 border-gray-200 rounded-xl shadow-xl p-4 text-center text-gray-500">
+                <div className="absolute z-50 w-full mt-2 bg-white border-2 border-gray-200 rounded-xl shadow-xl p-4 text-center text-gray-500">
                   該当するタレントが見つかりません
                 </div>
               )}
