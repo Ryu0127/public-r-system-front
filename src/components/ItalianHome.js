@@ -187,15 +187,15 @@ const ItalianHome = () => {
 
           {/* タイトル */}
           <h1
-            className="text-5xl md:text-7xl font-bold text-gray-800"
+            className="text-5xl md:text-6xl font-bold text-gray-800"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
             {APP_TITLE}
           </h1>
 
           {/* サブタイトル */}
-          <p className="text-xl md:text-2xl text-gray-600 font-light max-w-3xl mx-auto">
-            こちらのサイトは、推し活をサポートするファン作成サイトです。
+          <p className="text-lg md:text-xl text-gray-600 font-light max-w-3xl mx-auto">
+            こちらのサイトは、推し活をサポートするためのファン作成サイトとなります。
           </p>
 
           {/* CTAボタン */}
