@@ -8,8 +8,8 @@ const APP_TITLE = '推し活サポート';
 const features = [
   {
     id: 'talent-hashtag',
-    title: 'タレント別ハッシュタグ投稿/検索',
-    description: '各タレントごとの応援ハッシュタグを投稿/検索ができます',
+    title: 'タレント別 ハッシュタグ投稿/検索 サポート',
+    description: '各タレントごとの応援ハッシュタグを選択して投稿/検索のサポートができます',
     icon: 'Hash',
     link: '/talent-hashtag',
     color: 'amber',
