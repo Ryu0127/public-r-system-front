@@ -2,26 +2,44 @@ import { useState } from 'react';
 
 const APP_TITLE = 'X(Twitter)ハッシュタグヘルパー';
 
-// 事前定義されたハッシュタグ
-const predefinedHashtags = [
-  { id: 1, tag: 'ときのそら', description: '一般' },
-  { id: 2, tag: 'soraArt', description: 'ファンアート' },
-  { id: 3, tag: 'そらArt', description: 'ファンアート' },
-  { id: 4, tag: 'ときのそら生放送', description: '生放送' },
-  { id: 5, tag: 'ときのそら聴いたよ', description: '楽曲感想' },
-  { id: 6, tag: 'ときのそら読んだよ', description: '書籍感想' },
-  { id: 7, tag: 'ときのそら聞いたよ', description: 'ボイス感想' },
-  { id: 8, tag: 'ときのそら撮ったよ', description: 'ホロリー' },
-  { id: 9, tag: 'ときのそらMMD', description: 'MMD' },
-  { id: 10, tag: 'ときのそら実況するってよ', description: '実況動画' },
-  { id: 11, tag: 'ときのそらスペース', description: 'Twitterスペース' },
-  { id: 12, tag: 'ときのそらクラフト', description: 'マインクラフト関係' },
-  { id: 13, tag: 'ときのそらFC', description: 'ファンクラブ限定放送' },
-  { id: 14, tag: 'ときのそらと一緒', description: 'ぬいぐるみ・ホロリー写真投稿用' },
-];
-
-// クイック検索用のハッシュタグ(6個)
-const quickSearchTags = predefinedHashtags.slice(0, 6);
+// タレントごとのハッシュタグデータ
+const talentHashtags = {
+  tokinosora: {
+    name: 'ときのそら',
+    hashtags: [
+      { id: 1, tag: 'ときのそら', description: '一般' },
+      { id: 2, tag: 'soraArt', description: 'ファンアート' },
+      { id: 3, tag: 'そらArt', description: 'ファンアート' },
+      { id: 4, tag: 'ときのそら生放送', description: '生放送' },
+      { id: 5, tag: 'ときのそら聴いたよ', description: '楽曲感想' },
+      { id: 6, tag: 'ときのそら読んだよ', description: '書籍感想' },
+      { id: 7, tag: 'ときのそら聞いたよ', description: 'ボイス感想' },
+      { id: 8, tag: 'ときのそら撮ったよ', description: 'ホロリー' },
+      { id: 9, tag: 'ときのそらMMD', description: 'MMD' },
+      { id: 10, tag: 'ときのそら実況するってよ', description: '実況動画' },
+      { id: 11, tag: 'ときのそらスペース', description: 'Twitterスペース' },
+      { id: 12, tag: 'ときのそらクラフト', description: 'マインクラフト関係' },
+      { id: 13, tag: 'ときのそらFC', description: 'ファンクラブ限定放送' },
+      { id: 14, tag: 'ときのそらと一緒', description: 'ぬいぐるみ・ホロリー写真投稿用' },
+    ],
+  },
+  roboco: {
+    name: 'ロボ子さん',
+    hashtags: [
+      { id: 1, tag: 'robo_co', description: '公式' },
+      { id: 2, tag: 'ロボ子Art', description: 'ファンアート' },
+      { id: 3, tag: 'ロボ子生放送', description: '生放送' },
+      { id: 4, tag: 'ろぼじゅーる', description: 'スケジュール' },
+      { id: 5, tag: 'ろぼさー', description: 'ファントーク' },
+      { id: 6, tag: '聴いたよロボ子さん', description: 'ボイス感想' },
+      { id: 7, tag: 'RBCSPACE', description: 'Twitterスペース' },
+      { id: 8, tag: 'ロボ子レクション', description: '切り抜き' },
+      { id: 9, tag: 'カスタムロボ子さん', description: '配信で使用できる提供素材' },
+      { id: 10, tag: 'みてみてろぼろぼ', description: 'ロボ子さんが見る見るタグ' },
+      { id: 11, tag: 'RBNAIL', description: 'ろぼさー作サムネ' },
+    ],
+  },
+};
 
 // Twitterアイコンコンポーネント
 const TwitterIcon = () => (
@@ -52,6 +70,9 @@ const HomeIcon = () => (
 );
 
 const HashtagSearch = () => {
+  // タレント選択の状態
+  const [selectedTalent, setSelectedTalent] = useState('tokinosora');
+
   // モード切り替えの状態 ('post' または 'search')
   const [mode, setMode] = useState('post');
 
@@ -60,6 +81,11 @@ const HashtagSearch = () => {
 
   // タグ検索機能の状態
   const [searchQuery, setSearchQuery] = useState('');
+
+  // 選択中のタレントのハッシュタグデータを取得
+  const currentTalent = talentHashtags[selectedTalent];
+  const predefinedHashtags = currentTalent.hashtags;
+  const quickSearchTags = predefinedHashtags.slice(0, 6);
 
   // ハッシュタグの選択/解除
   const toggleTag = (tag) => {
@@ -156,6 +182,38 @@ const HashtagSearch = () => {
           </p>
         </header>
 
+        {/* タレント選択セクション */}
+        <section className="max-w-2xl mx-auto mb-8 animate-fade-in" style={{ animationDelay: '0.05s' }}>
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-2 border border-gray-200 shadow-lg inline-flex gap-2 w-full">
+            <button
+              onClick={() => {
+                setSelectedTalent('tokinosora');
+                setSelectedTags([]);
+              }}
+              className={`flex-1 py-3 px-6 rounded-xl font-semibold transition-all duration-300 ${
+                selectedTalent === 'tokinosora'
+                  ? 'bg-gradient-to-r from-amber-400 to-amber-600 text-white shadow-lg shadow-amber-500/30'
+                  : 'bg-transparent text-gray-600 hover:bg-gray-100'
+              }`}
+            >
+              ときのそら
+            </button>
+            <button
+              onClick={() => {
+                setSelectedTalent('roboco');
+                setSelectedTags([]);
+              }}
+              className={`flex-1 py-3 px-6 rounded-xl font-semibold transition-all duration-300 ${
+                selectedTalent === 'roboco'
+                  ? 'bg-gradient-to-r from-pink-400 to-pink-600 text-white shadow-lg shadow-pink-500/30'
+                  : 'bg-transparent text-gray-600 hover:bg-gray-100'
+              }`}
+            >
+              ロボ子さん
+            </button>
+          </div>
+        </section>
+
         {/* 使い方セクション */}
         <section className="max-w-2xl mx-auto mb-8 bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-gray-200 shadow-lg animate-fade-in" style={{ animationDelay: '0.1s' }}>
           <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
@@ -222,9 +280,14 @@ const HashtagSearch = () => {
                 <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#1DA1F2] to-[#0d8bd9] text-white flex items-center justify-center shadow-lg shadow-blue-500/30">
                   <HashIcon />
                 </div>
-                <h2 className="text-2xl font-bold text-gray-800" style={{ fontFamily: "'Playfair Display', serif" }}>
-                  ハッシュタグ投稿
-                </h2>
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-800" style={{ fontFamily: "'Playfair Display', serif" }}>
+                    ハッシュタグ投稿
+                  </h2>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {currentTalent.name}
+                  </p>
+                </div>
               </div>
               <p className="text-sm text-gray-600">
                 複数のハッシュタグを選択してXに投稿できます
@@ -323,9 +386,14 @@ const HashtagSearch = () => {
                 <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#1DA1F2] to-[#0d8bd9] text-white flex items-center justify-center shadow-lg shadow-blue-500/30">
                   <SearchIcon />
                 </div>
-                <h2 className="text-2xl font-bold text-gray-800" style={{ fontFamily: "'Playfair Display', serif" }}>
-                  タグ検索
-                </h2>
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-800" style={{ fontFamily: "'Playfair Display', serif" }}>
+                    タグ検索
+                  </h2>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {currentTalent.name}
+                  </p>
+                </div>
               </div>
               <p className="text-sm text-gray-600">
                 ハッシュタグを入力してXで検索できます
