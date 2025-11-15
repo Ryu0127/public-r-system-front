@@ -31,8 +31,17 @@ const LoadingScreen = ({ duration = 3000, onLoadingComplete }) => {
     duration: `${3 + Math.random() * 2}s`,
   }));
 
+  // 背景クリックを無効化
+  const handleBackgroundClick = (e) => {
+    e.stopPropagation();
+    // 何もしない（ローディング中はクリック無効）
+  };
+
   return (
-    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-gradient-to-br from-sky-50 via-white to-amber-50">
+    <div
+      className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-gradient-to-br from-sky-50 via-white to-amber-50"
+      onClick={handleBackgroundClick}
+    >
       {/* フローティングパーティクル */}
       {particles.map((particle) => (
         <div
