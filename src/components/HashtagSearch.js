@@ -4,16 +4,20 @@ const APP_TITLE = 'X(Twitter)ハッシュタグヘルパー';
 
 // 事前定義されたハッシュタグ
 const predefinedHashtags = [
-  { id: 1, label: 'プログラミング', tag: 'プログラミング' },
-  { id: 2, label: 'Web開発', tag: 'Web開発' },
-  { id: 3, label: 'React', tag: 'React' },
-  { id: 4, label: 'TypeScript', tag: 'TypeScript' },
-  { id: 5, label: 'JavaScript', tag: 'JavaScript' },
-  { id: 6, label: 'フロントエンド', tag: 'フロントエンド' },
-  { id: 7, label: 'バックエンド', tag: 'バックエンド' },
-  { id: 8, label: 'デザイン', tag: 'デザイン' },
-  { id: 9, label: 'UI/UX', tag: 'UI_UX' },
-  { id: 10, label: 'エンジニア', tag: 'エンジニア' },
+  { id: 1, tag: 'ときのそら', description: '一般' },
+  { id: 2, tag: 'soraArt', description: 'ファンアート' },
+  { id: 3, tag: 'そらArt', description: 'ファンアート' },
+  { id: 4, tag: 'ときのそら生放送', description: '生放送' },
+  { id: 5, tag: 'ときのそら聴いたよ', description: '楽曲感想' },
+  { id: 6, tag: 'ときのそら読んだよ', description: '書籍感想' },
+  { id: 7, tag: 'ときのそら聞いたよ', description: 'ボイス感想' },
+  { id: 8, tag: 'ときのそら撮ったよ', description: 'ホロリー' },
+  { id: 9, tag: 'ときのそらMMD', description: 'MMD' },
+  { id: 10, tag: 'ときのそら実況するってよ', description: '実況動画' },
+  { id: 11, tag: 'ときのそらスペース', description: 'Twitterスペース' },
+  { id: 12, tag: 'ときのそらクラフト', description: 'マインクラフト関係' },
+  { id: 13, tag: 'ときのそらFC', description: 'ファンクラブ限定放送' },
+  { id: 14, tag: 'ときのそらと一緒', description: 'ぬいぐるみ・ホロリー写真投稿用' },
 ];
 
 // クイック検索用のハッシュタグ(6個)
@@ -232,11 +236,11 @@ const HashtagSearch = () => {
               <h3 className="text-sm font-semibold text-gray-700 mb-3">
                 投稿するハッシュタグを選択
               </h3>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 gap-3 max-h-[400px] overflow-y-auto pr-2">
                 {predefinedHashtags.map((hashtag) => (
                   <label
                     key={hashtag.id}
-                    className={`flex items-center gap-2 px-4 py-3 rounded-xl border-2 cursor-pointer transition-all duration-200 ${
+                    className={`flex items-center justify-between gap-3 px-4 py-3 rounded-xl border-2 cursor-pointer transition-all duration-200 ${
                       selectedTags.includes(hashtag.tag)
                         ? 'bg-[#1DA1F2] border-[#1DA1F2] text-white shadow-lg shadow-blue-500/30'
                         : 'bg-white border-gray-200 hover:border-[#1DA1F2] text-gray-700'
@@ -248,7 +252,12 @@ const HashtagSearch = () => {
                       onChange={() => toggleTag(hashtag.tag)}
                       className="hidden"
                     />
-                    <span className="text-sm font-medium">{hashtag.label}</span>
+                    <div className="flex flex-col gap-1 flex-1 min-w-0">
+                      <span className="text-sm font-medium truncate">#{hashtag.tag}</span>
+                      <span className={`text-xs ${selectedTags.includes(hashtag.tag) ? 'text-blue-100' : 'text-gray-500'}`}>
+                        {hashtag.description}
+                      </span>
+                    </div>
                   </label>
                 ))}
               </div>
@@ -328,14 +337,19 @@ const HashtagSearch = () => {
               <h3 className="text-sm font-semibold text-gray-700 mb-3">
                 クイック検索
               </h3>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 gap-3">
                 {quickSearchTags.map((hashtag) => (
                   <button
                     key={hashtag.id}
                     onClick={() => handleQuickSearch(hashtag.tag)}
-                    className="px-4 py-3 bg-white border-2 border-gray-200 hover:border-[#1DA1F2] hover:bg-[#1DA1F2] hover:text-white rounded-xl text-sm font-medium text-gray-700 transition-all duration-200 hover:shadow-lg hover:shadow-blue-500/30"
+                    className="px-4 py-3 bg-white border-2 border-gray-200 hover:border-[#1DA1F2] hover:bg-[#1DA1F2] hover:text-white rounded-xl text-left transition-all duration-200 hover:shadow-lg hover:shadow-blue-500/30 group"
                   >
-                    #{hashtag.label}
+                    <div className="flex flex-col gap-1">
+                      <span className="text-sm font-medium text-gray-700 group-hover:text-white">#{hashtag.tag}</span>
+                      <span className="text-xs text-gray-500 group-hover:text-blue-100">
+                        {hashtag.description}
+                      </span>
+                    </div>
                   </button>
                 ))}
               </div>
@@ -352,7 +366,7 @@ const HashtagSearch = () => {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  placeholder="例: React"
+                  placeholder="例: ときのそら"
                   className="w-full px-4 py-4 pr-12 bg-white border-2 border-gray-200 focus:border-[#1DA1F2] focus:outline-none rounded-xl text-gray-800 placeholder-gray-400 transition-all duration-200"
                 />
                 <div className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400">
