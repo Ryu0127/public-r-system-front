@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 
-const APP_TITLE = 'X(Twitter)ハッシュタグヘルパー';
+const APP_TITLE = 'タレント別ハッシュタグ投稿/検索';
 
 // タレントごとのハッシュタグデータ
 const talentHashtags = {
@@ -345,18 +345,12 @@ const HashtagSearch = () => {
 
           {/* タイトル */}
           <div className="flex justify-center items-center gap-3 mb-4">
-            <div className="text-[#1DA1F2]">
-              <TwitterIcon />
-            </div>
             <h1
               className="text-4xl md:text-5xl font-bold text-gray-800"
               style={{ fontFamily: "'Playfair Display', serif" }}
             >
               {APP_TITLE}
             </h1>
-            <div className="text-[#1DA1F2]">
-              <HashIcon />
-            </div>
           </div>
 
           {/* サブタイトル */}
@@ -567,11 +561,11 @@ const HashtagSearch = () => {
                     : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                 }`}
               >
-                <TwitterIcon />
+                <HashIcon />
                 Xで投稿する
               </button>
               <p className="text-xs text-gray-500 text-center mt-3">
-                ※ ボタンを押下すると、新しいタブでX(Twitter)の投稿画面が開きます
+                ※ ボタンを押下すると、新しいタブでXの投稿画面が開きます
               </p>
             </div>
           </div>
@@ -697,7 +691,7 @@ const HashtagSearch = () => {
                 Xで検索する
               </button>
               <p className="text-xs text-gray-500 text-center mt-3">
-                ※ ボタンを押下すると、新しいタブでX(Twitter)の検索結果画面が開きます
+                ※ ボタンを押下すると、新しいタブでXの検索結果画面が開きます
               </p>
             </div>
           </div>
