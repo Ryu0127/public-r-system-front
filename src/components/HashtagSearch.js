@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 const APP_TITLE = 'X(Twitter)ハッシュタグヘルパー';
 
@@ -82,22 +82,48 @@ const HashtagSearch = () => {
   // タグ検索機能の状態
   const [searchQuery, setSearchQuery] = useState('');
 
+  // コンボボックスの状態
+  const [talentSearchQuery, setTalentSearchQuery] = useState('');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const comboboxRef = useRef(null);
+
   // タレントリストを取得
   const talentList = Object.entries(talentHashtags).map(([key, value]) => ({
     key,
     name: value.name,
   }));
 
+  // フィルタリングされたタレントリスト
+  const filteredTalentList = talentList.filter((talent) =>
+    talent.name.toLowerCase().includes(talentSearchQuery.toLowerCase())
+  );
+
   // 選択中のタレントのハッシュタグデータを取得
   const currentTalent = talentHashtags[selectedTalent];
   const predefinedHashtags = currentTalent.hashtags;
   const quickSearchTags = predefinedHashtags.slice(0, 6);
 
-  // タレント変更ハンドラ
-  const handleTalentChange = (e) => {
-    setSelectedTalent(e.target.value);
+  // タレント選択ハンドラ
+  const handleTalentSelect = (talentKey) => {
+    setSelectedTalent(talentKey);
     setSelectedTags([]);
+    setTalentSearchQuery('');
+    setIsDropdownOpen(false);
   };
+
+  // 外側クリックでドロップダウンを閉じる
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (comboboxRef.current && !comboboxRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   // ハッシュタグの選択/解除
   const toggleTag = (tag) => {
@@ -194,38 +220,6 @@ const HashtagSearch = () => {
           </p>
         </header>
 
-        {/* タレント選択セクション */}
-        <section className="max-w-2xl mx-auto mb-8 animate-fade-in" style={{ animationDelay: '0.05s' }}>
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-200 shadow-lg">
-            <label htmlFor="talent-select" className="block text-sm font-semibold text-gray-700 mb-3">
-              タレントを選択
-            </label>
-            <div className="relative">
-              <select
-                id="talent-select"
-                value={selectedTalent}
-                onChange={handleTalentChange}
-                className="w-full px-4 py-3 pr-10 bg-white border-2 border-gray-200 focus:border-[#1DA1F2] focus:outline-none rounded-xl text-gray-800 font-medium transition-all duration-200 cursor-pointer appearance-none"
-              >
-                {talentList.map((talent) => (
-                  <option key={talent.key} value={talent.key}>
-                    {talent.name}
-                  </option>
-                ))}
-              </select>
-              {/* カスタム矢印 */}
-              <div className="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none text-gray-400">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </div>
-            </div>
-            <p className="text-xs text-gray-500 mt-2">
-              選択中: <span className="font-semibold text-[#1DA1F2]">{currentTalent.name}</span>
-            </p>
-          </div>
-        </section>
-
         {/* 使い方セクション */}
         <section className="max-w-2xl mx-auto mb-8 bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-gray-200 shadow-lg animate-fade-in" style={{ animationDelay: '0.1s' }}>
           <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
@@ -281,11 +275,69 @@ const HashtagSearch = () => {
           </div>
         </section>
 
+        {/* タレント選択コンボボックス */}
+        <section className="max-w-2xl mx-auto mb-8 animate-fade-in" style={{ animationDelay: '0.2s' }}>
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-200 shadow-lg">
+            <label htmlFor="talent-combobox" className="block text-sm font-semibold text-gray-700 mb-3">
+              タレントを選択
+            </label>
+            <div className="relative" ref={comboboxRef}>
+              <input
+                id="talent-combobox"
+                type="text"
+                value={talentSearchQuery}
+                onChange={(e) => {
+                  setTalentSearchQuery(e.target.value);
+                  setIsDropdownOpen(true);
+                }}
+                onFocus={() => setIsDropdownOpen(true)}
+                placeholder="タレント名を入力して検索..."
+                className="w-full px-4 py-3 pr-10 bg-white border-2 border-gray-200 focus:border-[#1DA1F2] focus:outline-none rounded-xl text-gray-800 transition-all duration-200"
+              />
+              {/* 検索アイコン */}
+              <div className="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none text-gray-400">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+
+              {/* ドロップダウンリスト */}
+              {isDropdownOpen && filteredTalentList.length > 0 && (
+                <div className="absolute z-10 w-full mt-2 bg-white border-2 border-gray-200 rounded-xl shadow-xl max-h-60 overflow-y-auto">
+                  {filteredTalentList.map((talent) => (
+                    <div
+                      key={talent.key}
+                      onClick={() => handleTalentSelect(talent.key)}
+                      className={`px-4 py-3 cursor-pointer transition-all duration-200 ${
+                        talent.key === selectedTalent
+                          ? 'bg-[#1DA1F2] text-white'
+                          : 'hover:bg-blue-50 text-gray-700'
+                      }`}
+                    >
+                      {talent.name}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* 結果が見つからない場合 */}
+              {isDropdownOpen && talentSearchQuery && filteredTalentList.length === 0 && (
+                <div className="absolute z-10 w-full mt-2 bg-white border-2 border-gray-200 rounded-xl shadow-xl p-4 text-center text-gray-500">
+                  該当するタレントが見つかりません
+                </div>
+              )}
+            </div>
+            <p className="text-xs text-gray-500 mt-2">
+              選択中: <span className="font-semibold text-[#1DA1F2]">{currentTalent.name}</span>
+            </p>
+          </div>
+        </section>
+
         {/* メイン機能エリア */}
         <div className="max-w-2xl mx-auto">
           {/* ハッシュタグ選択・投稿機能 */}
           {mode === 'post' && (
-          <div className="bg-white/60 backdrop-blur-sm rounded-3xl p-8 border border-gray-200 shadow-xl hover:shadow-2xl transition-all duration-300 animate-fade-in" style={{ animationDelay: '0.2s' }}>
+          <div className="bg-white/60 backdrop-blur-sm rounded-3xl p-8 border border-gray-200 shadow-xl hover:shadow-2xl transition-all duration-300 animate-fade-in" style={{ animationDelay: '0.25s' }}>
             {/* カードヘッダー */}
             <div className="mb-6">
               <div className="flex items-center gap-3 mb-3">
@@ -391,7 +443,7 @@ const HashtagSearch = () => {
 
           {/* タグ検索機能 */}
           {mode === 'search' && (
-          <div className="bg-white/60 backdrop-blur-sm rounded-3xl p-8 border border-gray-200 shadow-xl hover:shadow-2xl transition-all duration-300 animate-fade-in" style={{ animationDelay: '0.2s' }}>
+          <div className="bg-white/60 backdrop-blur-sm rounded-3xl p-8 border border-gray-200 shadow-xl hover:shadow-2xl transition-all duration-300 animate-fade-in" style={{ animationDelay: '0.25s' }}>
             {/* カードヘッダー */}
             <div className="mb-6">
               <div className="flex items-center gap-3 mb-3">
