@@ -17,7 +17,7 @@ function App() {
         <Route path="/old-home" element={<Home title="Home Page" message="Welcome to the home page!" />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/settings" element={<Settings />} />
-        <Route path="/talent-hashtag" element={<HashtagSearch />} />
+        <Route path="/talent-hashtag-support" element={<HashtagSearch />} />
         {/* 生活管理システム */}
         <Route path="/life/life-schedule-day" element={<LifeScheduleDayContainer />} />
         <Route path="/life/life-schedule-month" element={<LifeScheduleMonthContainer />} />

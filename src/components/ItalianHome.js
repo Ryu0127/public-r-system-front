@@ -7,7 +7,7 @@ const APP_TITLE = '推し活サポート';
 // 機能データ
 const features = [
   {
-    id: 'talent-hashtag',
+    id: 'talent-hashtag-support',
     title: 'タレント別 ハッシュタグ投稿/検索 サポート',
     description: '各タレントごとの応援ハッシュタグを選択して投稿/検索のサポートができます',
     icon: 'Hash',
