@@ -48,6 +48,9 @@ const HomeIcon = () => (
 );
 
 const HashtagSearch = () => {
+  // モード切り替えの状態 ('post' または 'search')
+  const [mode, setMode] = useState('post');
+
   // ハッシュタグ投稿機能の状態
   const [selectedTags, setSelectedTags] = useState([]);
 
@@ -150,7 +153,7 @@ const HashtagSearch = () => {
         </header>
 
         {/* 使い方セクション */}
-        <section className="max-w-5xl mx-auto mb-12 bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-gray-200 shadow-lg animate-fade-in" style={{ animationDelay: '0.1s' }}>
+        <section className="max-w-5xl mx-auto mb-8 bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-gray-200 shadow-lg animate-fade-in" style={{ animationDelay: '0.1s' }}>
           <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
             <span className="text-[#1DA1F2]">ℹ</span>
             使い方
@@ -175,9 +178,38 @@ const HashtagSearch = () => {
           </div>
         </section>
 
+        {/* モード切り替えタブ */}
+        <section className="max-w-2xl mx-auto mb-8 animate-fade-in" style={{ animationDelay: '0.15s' }}>
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-2 border border-gray-200 shadow-lg inline-flex gap-2 w-full">
+            <button
+              onClick={() => setMode('post')}
+              className={`flex-1 py-4 px-6 rounded-xl font-semibold text-lg transition-all duration-300 flex items-center justify-center gap-2 ${
+                mode === 'post'
+                  ? 'bg-gradient-to-r from-[#1DA1F2] to-[#0d8bd9] text-white shadow-lg shadow-blue-500/30'
+                  : 'bg-transparent text-gray-600 hover:bg-gray-100'
+              }`}
+            >
+              <HashIcon />
+              ハッシュタグ投稿
+            </button>
+            <button
+              onClick={() => setMode('search')}
+              className={`flex-1 py-4 px-6 rounded-xl font-semibold text-lg transition-all duration-300 flex items-center justify-center gap-2 ${
+                mode === 'search'
+                  ? 'bg-gradient-to-r from-[#1DA1F2] to-[#0d8bd9] text-white shadow-lg shadow-blue-500/30'
+                  : 'bg-transparent text-gray-600 hover:bg-gray-100'
+              }`}
+            >
+              <SearchIcon />
+              タグ検索
+            </button>
+          </div>
+        </section>
+
         {/* メイン機能エリア */}
-        <div className="grid lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
-          {/* 左カラム: ハッシュタグ選択・投稿機能 */}
+        <div className="max-w-2xl mx-auto">
+          {/* ハッシュタグ選択・投稿機能 */}
+          {mode === 'post' && (
           <div className="bg-white/60 backdrop-blur-sm rounded-3xl p-8 border border-gray-200 shadow-xl hover:shadow-2xl transition-all duration-300 animate-fade-in" style={{ animationDelay: '0.2s' }}>
             {/* カードヘッダー */}
             <div className="mb-6">
@@ -265,9 +297,11 @@ const HashtagSearch = () => {
               Xで投稿する
             </button>
           </div>
+          )}
 
-          {/* 右カラム: タグ検索機能 */}
-          <div className="bg-white/60 backdrop-blur-sm rounded-3xl p-8 border border-gray-200 shadow-xl hover:shadow-2xl transition-all duration-300 animate-fade-in" style={{ animationDelay: '0.3s' }}>
+          {/* タグ検索機能 */}
+          {mode === 'search' && (
+          <div className="bg-white/60 backdrop-blur-sm rounded-3xl p-8 border border-gray-200 shadow-xl hover:shadow-2xl transition-all duration-300 animate-fade-in" style={{ animationDelay: '0.2s' }}>
             {/* カードヘッダー */}
             <div className="mb-6">
               <div className="flex items-center gap-3 mb-3">
@@ -356,6 +390,7 @@ const HashtagSearch = () => {
               Xで検索する
             </button>
           </div>
+          )}
         </div>
 
         {/* フッター */}
