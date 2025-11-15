@@ -227,8 +227,9 @@ const ItalianHome = () => {
               className="text-4xl md:text-5xl font-bold text-gray-800"
               style={{ fontFamily: "'Playfair Display', serif" }}
             >
-              主な機能
+              ✦Key Features
             </h2>
+            <span className="text-gray-600 text-lg font-light">主な機能</span>
             {/* <p className="text-gray-600 text-lg font-light">
               Powerful tools to maximize your hashtag strategy
             </p> */}
@@ -278,8 +279,9 @@ const ItalianHome = () => {
               className="text-4xl md:text-5xl font-bold text-gray-800"
               style={{ fontFamily: "'Playfair Display', serif" }}
             >
-              変更履歴
+              ✦Change history
             </h2>
+            <span className="text-gray-600 text-lg font-light">変更履歴</span>
           </div>
 
           {/* 更新履歴カード */}
