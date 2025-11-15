@@ -573,26 +573,26 @@ const HashtagSearch = () => {
             </div>
 
             {/* モーダルコンテンツ */}
-            <div className="px-8 py-6">
-              {mode === 'post' ? (
-                <div className="text-gray-700">
-                  <h3 className="text-xl font-bold text-[#1DA1F2] mb-4">【ハッシュタグ投稿モード】</h3>
-                  <ol className="list-decimal list-inside space-y-3 text-base">
-                    <li>投稿したいハッシュタグを選択</li>
-                    <li>「Xで投稿する」ボタンをクリック</li>
-                    <li>新しいタブでXの投稿画面が開きます</li>
-                  </ol>
-                </div>
-              ) : (
-                <div className="text-gray-700">
-                  <h3 className="text-xl font-bold text-[#1DA1F2] mb-4">【タグ検索モード】</h3>
-                  <ol className="list-decimal list-inside space-y-3 text-base">
-                    <li>検索したいハッシュタグを入力</li>
-                    <li>「Xで検索する」ボタンをクリック、またはEnterキー</li>
-                    <li>新しいタブでXの検索結果が表示されます</li>
-                  </ol>
-                </div>
-              )}
+            <div className="px-8 py-6 space-y-6">
+              {/* ハッシュタグ投稿モード */}
+              <div className="text-gray-700">
+                <h3 className="text-xl font-bold text-[#1DA1F2] mb-4">【ハッシュタグ投稿モード】</h3>
+                <ol className="list-decimal list-inside space-y-3 text-base">
+                  <li>投稿したいハッシュタグを選択</li>
+                  <li>「Xで投稿する」ボタンをクリック</li>
+                  <li>新しいタブでXの投稿画面が開きます</li>
+                </ol>
+              </div>
+
+              {/* タグ検索モード */}
+              <div className="text-gray-700">
+                <h3 className="text-xl font-bold text-[#1DA1F2] mb-4">【タグ検索モード】</h3>
+                <ol className="list-decimal list-inside space-y-3 text-base">
+                  <li>検索したいハッシュタグを入力</li>
+                  <li>「Xで検索する」ボタンをクリック、またはEnterキー</li>
+                  <li>新しいタブでXの検索結果が表示されます</li>
+                </ol>
+              </div>
             </div>
           </div>
         </div>
