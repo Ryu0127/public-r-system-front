@@ -175,7 +175,7 @@ const HashtagSearch = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-blue-50 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-blue-50 relative">
       {/* 背景装飾 */}
       <div className="absolute top-20 right-20 w-32 h-32 border-4 border-blue-200 rounded-full opacity-20 animate-spin-slow" />
       <div
@@ -276,8 +276,8 @@ const HashtagSearch = () => {
         </section>
 
         {/* タレント選択コンボボックス */}
-        <section className="max-w-2xl mx-auto mb-8 animate-fade-in" style={{ animationDelay: '0.2s' }}>
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-200 shadow-lg">
+        <section className="max-w-2xl mx-auto mb-8 animate-fade-in overflow-visible" style={{ animationDelay: '0.2s' }}>
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-200 shadow-lg overflow-visible">
             <label htmlFor="talent-combobox" className="block text-sm font-semibold text-gray-700 mb-3">
               タレントを選択
             </label>
@@ -303,7 +303,7 @@ const HashtagSearch = () => {
 
               {/* ドロップダウンリスト */}
               {isDropdownOpen && filteredTalentList.length > 0 && (
-                <div className="absolute z-50 w-full mt-2 bg-white border-2 border-gray-200 rounded-xl shadow-xl max-h-60 overflow-y-auto">
+                <div className="absolute z-[9999] w-full mt-2 bg-white border-2 border-gray-200 rounded-xl shadow-xl max-h-60 overflow-y-auto">
                   {filteredTalentList.slice(0, 10).map((talent) => (
                     <div
                       key={talent.key}
@@ -322,7 +322,7 @@ const HashtagSearch = () => {
 
               {/* 結果が見つからない場合 */}
               {isDropdownOpen && talentSearchQuery && filteredTalentList.length === 0 && (
-                <div className="absolute z-50 w-full mt-2 bg-white border-2 border-gray-200 rounded-xl shadow-xl p-4 text-center text-gray-500">
+                <div className="absolute z-[9999] w-full mt-2 bg-white border-2 border-gray-200 rounded-xl shadow-xl p-4 text-center text-gray-500">
                   該当するタレントが見つかりません
                 </div>
               )}
