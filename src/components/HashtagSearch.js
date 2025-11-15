@@ -381,9 +381,19 @@ const HashtagSearch = () => {
                 <h3 className="text-sm font-semibold text-gray-700">
                   選択中のハッシュタグ
                 </h3>
-                <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#1DA1F2] text-white text-sm font-bold shadow-md">
-                  {selectedTags.length}
-                </span>
+                <div className="flex items-center gap-2">
+                  {selectedTags.length > 0 && (
+                    <button
+                      onClick={() => setSelectedTags([])}
+                      className="px-3 py-1 text-xs font-medium text-gray-600 hover:text-red-600 bg-gray-100 hover:bg-red-50 rounded-lg transition-all duration-200 border border-gray-200 hover:border-red-300"
+                    >
+                      クリア
+                    </button>
+                  )}
+                  <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#1DA1F2] text-white text-sm font-bold shadow-md">
+                    {selectedTags.length}
+                  </span>
+                </div>
               </div>
               <div className="min-h-[80px] p-4 bg-gray-50 rounded-xl border border-gray-200">
                 {selectedTags.length > 0 ? (
@@ -497,9 +507,19 @@ const HashtagSearch = () => {
 
             {/* プレビュー */}
             <div className="mb-6">
-              <h3 className="text-sm font-semibold text-gray-700 mb-3">
-                検索プレビュー
-              </h3>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-semibold text-gray-700">
+                  検索プレビュー
+                </h3>
+                {searchQuery.trim() && (
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    className="px-3 py-1 text-xs font-medium text-gray-600 hover:text-red-600 bg-gray-100 hover:bg-red-50 rounded-lg transition-all duration-200 border border-gray-200 hover:border-red-300"
+                  >
+                    クリア
+                  </button>
+                )}
+              </div>
               <div className="min-h-[80px] p-4 bg-gray-50 rounded-xl border border-gray-200 flex items-center justify-center">
                 {searchQuery.trim() ? (
                   <span className="inline-flex items-center gap-1 px-4 py-2 bg-[#1DA1F2] text-white text-lg rounded-full shadow-md">
