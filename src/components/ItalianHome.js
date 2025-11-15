@@ -91,7 +91,7 @@ const limitedTimeTopic = {
   id: 'campaign-2025-winter',
   title: "ときのそら　New Year's Party 2026「Dreams in Motion」",
   content:
-    "ときのそら　がおくる新年最初のライブイベント",
+    "ときのそら　新年最初のライブイベント",
   startDate: '2025-11-15',
   endDate: '2025-12-31',
 };
