@@ -276,7 +276,7 @@ const HashtagSearch = () => {
         </section>
 
         {/* タレント選択コンボボックス */}
-        <section className="max-w-2xl mx-auto mb-8 animate-fade-in overflow-visible" style={{ animationDelay: '0.2s' }}>
+        <section className="max-w-2xl mx-auto mb-8 animate-fade-in overflow-visible relative z-[10000]" style={{ animationDelay: '0.2s' }}>
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-200 shadow-lg overflow-visible">
             <label htmlFor="talent-combobox" className="block text-sm font-semibold text-gray-700 mb-3">
               タレントを選択
