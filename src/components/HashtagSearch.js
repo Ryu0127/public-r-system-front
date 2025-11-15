@@ -87,6 +87,9 @@ const HashtagSearch = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const comboboxRef = useRef(null);
 
+  // 使い方モーダルの状態
+  const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
+
   // タレントリストを取得
   const talentList = Object.entries(talentHashtags).map(([key, value]) => ({
     key,
@@ -187,14 +190,23 @@ const HashtagSearch = () => {
       <div className="relative z-10 max-w-7xl mx-auto px-4 py-8 md:py-12">
         {/* ヘッダー */}
         <header className="text-center mb-12 animate-fade-in">
-          {/* ホームに戻るボタン */}
-          <div className="flex justify-start mb-6">
+          {/* ホームに戻るボタンと使い方ボタン */}
+          <div className="flex justify-between items-center mb-6">
             <button
               onClick={handleBackToHome}
               className="inline-flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full border border-gray-200 hover:border-blue-400 shadow-md hover:shadow-lg transition-all duration-300 text-gray-700 hover:text-blue-600"
             >
               <HomeIcon />
               <span className="text-sm font-medium">ホームに戻る</span>
+            </button>
+            <button
+              onClick={() => setIsHelpModalOpen(true)}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full border border-gray-200 hover:border-blue-400 shadow-md hover:shadow-lg transition-all duration-300 text-gray-700 hover:text-blue-600"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span className="text-sm font-medium">使い方</span>
             </button>
           </div>
 
@@ -219,33 +231,6 @@ const HashtagSearch = () => {
             ハッシュタグを選択して投稿、または検索できます
           </p>
         </header>
-
-        {/* 使い方セクション */}
-        <section className="max-w-2xl mx-auto mb-8 bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-gray-200 shadow-lg animate-fade-in" style={{ animationDelay: '0.1s' }}>
-          <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-            <span className="text-[#1DA1F2]">ℹ</span>
-            使い方
-          </h2>
-          {mode === 'post' ? (
-            <div className="text-sm text-gray-700">
-              <h3 className="font-semibold text-[#1DA1F2] mb-2">【ハッシュタグ投稿モード】</h3>
-              <ol className="list-decimal list-inside space-y-1">
-                <li>投稿したいハッシュタグを選択</li>
-                <li>「Xで投稿する」ボタンをクリック</li>
-                <li>新しいタブでXの投稿画面が開きます</li>
-              </ol>
-            </div>
-          ) : (
-            <div className="text-sm text-gray-700">
-              <h3 className="font-semibold text-[#1DA1F2] mb-2">【タグ検索モード】</h3>
-              <ol className="list-decimal list-inside space-y-1">
-                <li>検索したいハッシュタグを入力</li>
-                <li>「Xで検索する」ボタンをクリック、またはEnterキー</li>
-                <li>新しいタブでXの検索結果が表示されます</li>
-              </ol>
-            </div>
-          )}
-        </section>
 
         {/* モード切り替えタブ */}
         <section className="max-w-2xl mx-auto mb-8 animate-fade-in" style={{ animationDelay: '0.15s' }}>
@@ -560,6 +545,58 @@ const HashtagSearch = () => {
           </p>
         </footer>
       </div>
+
+      {/* 使い方モーダル */}
+      {isHelpModalOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[10001] flex items-center justify-center p-4 animate-fade-in"
+          onClick={() => setIsHelpModalOpen(false)}
+        >
+          <div
+            className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[80vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* モーダルヘッダー */}
+            <div className="sticky top-0 bg-white border-b border-gray-200 px-8 py-6 rounded-t-3xl flex items-center justify-between">
+              <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-3">
+                <span className="text-[#1DA1F2] text-3xl">ℹ</span>
+                使い方
+              </h2>
+              <button
+                onClick={() => setIsHelpModalOpen(false)}
+                className="w-10 h-10 rounded-full hover:bg-gray-100 transition-colors duration-200 flex items-center justify-center text-gray-500 hover:text-gray-700"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* モーダルコンテンツ */}
+            <div className="px-8 py-6">
+              {mode === 'post' ? (
+                <div className="text-gray-700">
+                  <h3 className="text-xl font-bold text-[#1DA1F2] mb-4">【ハッシュタグ投稿モード】</h3>
+                  <ol className="list-decimal list-inside space-y-3 text-base">
+                    <li>投稿したいハッシュタグを選択</li>
+                    <li>「Xで投稿する」ボタンをクリック</li>
+                    <li>新しいタブでXの投稿画面が開きます</li>
+                  </ol>
+                </div>
+              ) : (
+                <div className="text-gray-700">
+                  <h3 className="text-xl font-bold text-[#1DA1F2] mb-4">【タグ検索モード】</h3>
+                  <ol className="list-decimal list-inside space-y-3 text-base">
+                    <li>検索したいハッシュタグを入力</li>
+                    <li>「Xで検索する」ボタンをクリック、またはEnterキー</li>
+                    <li>新しいタブでXの検索結果が表示されます</li>
+                  </ol>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
