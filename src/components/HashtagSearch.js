@@ -485,10 +485,30 @@ const HashtagSearch = () => {
                           {event.eventName}
                         </h3>
                         <div className="flex items-center gap-2 flex-wrap">
-                          {/* ハッシュタグ */}
-                          <span className="inline-flex items-center gap-1 px-3 py-1 bg-[#1DA1F2] text-white text-sm font-medium rounded-full shadow-md">
+                          {/* ハッシュタグ（クリック可能） */}
+                          <button
+                            onClick={() => {
+                              if (mode === 'post') {
+                                // 投稿モード: タグを選択/解除
+                                toggleTag(event.tag);
+                              } else {
+                                // 検索モード: 検索クエリに設定
+                                setSearchQuery(event.tag);
+                              }
+                            }}
+                            className={`inline-flex items-center gap-1 px-3 py-1 text-sm font-medium rounded-full shadow-md transition-all duration-200 hover:scale-105 ${
+                              mode === 'post' && selectedTags.includes(event.tag)
+                                ? 'bg-gradient-to-r from-[#1DA1F2] to-[#0d8bd9] text-white ring-2 ring-offset-2 ring-[#1DA1F2]'
+                                : 'bg-[#1DA1F2] text-white hover:bg-[#0d8bd9]'
+                            }`}
+                          >
                             #{event.tag}
-                          </span>
+                            {mode === 'post' && selectedTags.includes(event.tag) && (
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                              </svg>
+                            )}
+                          </button>
                           {/* 種類 */}
                           <span className="inline-flex items-center gap-1 px-3 py-1 bg-white text-gray-700 text-xs font-medium rounded-full border border-gray-200">
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
