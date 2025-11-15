@@ -21,15 +21,7 @@ const LoadingScreen = ({ duration = 3000, onLoadingComplete }) => {
     return () => clearInterval(interval);
   }, [duration, onLoadingComplete]);
 
-  // フローティングパーティクルの生成
-  const particles = Array.from({ length: 12 }, (_, i) => ({
-    id: i,
-    left: `${10 + Math.random() * 80}%`,
-    top: `${10 + Math.random() * 80}%`,
-    color: ['text-amber-400', 'text-sky-400', 'text-emerald-400'][i % 3],
-    delay: `${Math.random() * 2}s`,
-    duration: `${3 + Math.random() * 2}s`,
-  }));
+  // フローティングパーティクルを削除（背景のチカチカを抑えるため）
 
   // 背景クリックを無効化
   const handleBackgroundClick = (e) => {
@@ -42,22 +34,6 @@ const LoadingScreen = ({ duration = 3000, onLoadingComplete }) => {
       className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-gradient-to-br from-sky-50 via-white to-amber-50"
       onClick={handleBackgroundClick}
     >
-      {/* フローティングパーティクル */}
-      {particles.map((particle) => (
-        <div
-          key={particle.id}
-          className={`absolute ${particle.color} text-2xl animate-float-elegant`}
-          style={{
-            left: particle.left,
-            top: particle.top,
-            animationDelay: particle.delay,
-            animationDuration: particle.duration,
-          }}
-        >
-          ✦
-        </div>
-      ))}
-
       {/* 中央の円形ローダー */}
       <div className="relative mb-16">
         {/* 外側リング（ゴールド） */}
@@ -71,19 +47,13 @@ const LoadingScreen = ({ duration = 3000, onLoadingComplete }) => {
 
         {/* 内側の円（グラデーション） */}
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-24 h-24 bg-gradient-to-br from-amber-400 via-sky-400 to-emerald-400 rounded-full animate-pulse shadow-xl shadow-sky-500/40">
+          <div className="w-24 h-24 bg-gradient-to-br from-amber-400 via-sky-400 to-emerald-400 rounded-full shadow-xl shadow-sky-500/40">
             {/* 中心アイコン */}
-            <div className="flex items-center justify-center w-full h-full text-white text-3xl animate-pulse">
+            <div className="flex items-center justify-center w-full h-full text-white text-3xl">
               ✦
             </div>
           </div>
         </div>
-
-        {/* 周回する装飾ドット - 上部（アンバー） */}
-        <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-3 h-3 bg-amber-500 rounded-full shadow-lg shadow-amber-500/50 animate-spin" style={{ animationDuration: '8s' }} />
-
-        {/* 周回する装飾ドット - 下部（スカイブルー） */}
-        <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-3 h-3 bg-sky-500 rounded-full shadow-lg shadow-sky-500/50 animate-spin-slow" />
 
         {/* 実際のコンテナサイズ */}
         <div className="w-32 h-32" />
@@ -109,10 +79,7 @@ const LoadingScreen = ({ duration = 3000, onLoadingComplete }) => {
           <div
             className="absolute left-0 top-0 h-full bg-gradient-to-r from-amber-500 via-sky-500 to-emerald-500 rounded-full transition-all duration-300 ease-out"
             style={{ width: `${progress}%` }}
-          >
-            {/* シマー効果 */}
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent animate-shimmer" />
-          </div>
+          />
         </div>
 
         {/* パーセンテージ表示 */}
