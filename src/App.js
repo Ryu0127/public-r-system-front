@@ -1,6 +1,5 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import OshiKatsuSaportContainer from 'features/home/oshi-katsu-saport/containers/OshiKatsuSaportContainer';
-import Home from './components/Home';
 import Profile from './components/Profile';
 import Settings from './components/Settings';
 import HashtagSearch from './components/HashtagSearch';
@@ -13,7 +12,6 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<OshiKatsuSaportContainer />} />
-        <Route path="/old-old-home" element={<Home title="Home Page" message="Welcome to the home page!" />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/talent-hashtag-support" element={<HashtagSearch />} />
