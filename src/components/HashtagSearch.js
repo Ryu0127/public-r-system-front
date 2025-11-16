@@ -228,6 +228,12 @@ const HashtagSearch = () => {
   // ハッシュタグ投稿機能の状態
   const [selectedTags, setSelectedTags] = useState([]);
 
+  // 選択されたイベントハッシュタグの状態（イベント情報を保持）
+  const [selectedEventHashtags, setSelectedEventHashtags] = useState([]);
+
+  // イベントURLを投稿に含めるかどうか
+  const [includeEventUrl, setIncludeEventUrl] = useState(true);
+
   // タグ検索機能の状態
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -260,6 +266,7 @@ const HashtagSearch = () => {
   const handleTalentSelect = (talentKey) => {
     setSelectedTalent(talentKey);
     setSelectedTags([]);
+    setSelectedEventHashtags([]);
     setTalentSearchQuery('');
     setIsDropdownOpen(false);
   };
@@ -287,6 +294,18 @@ const HashtagSearch = () => {
     }
   };
 
+  // イベントハッシュタグの選択/解除
+  const toggleEventHashtag = (eventHashtag) => {
+    // タグの選択/解除
+    if (selectedTags.includes(eventHashtag.tag)) {
+      setSelectedTags(selectedTags.filter((t) => t !== eventHashtag.tag));
+      setSelectedEventHashtags(selectedEventHashtags.filter((e) => e.id !== eventHashtag.id));
+    } else {
+      setSelectedTags([...selectedTags, eventHashtag.tag]);
+      setSelectedEventHashtags([...selectedEventHashtags, eventHashtag]);
+    }
+  };
+
   // Xで投稿する
   const handlePostToTwitter = () => {
     if (selectedTags.length === 0) {
@@ -294,8 +313,20 @@ const HashtagSearch = () => {
       return;
     }
 
+    // ハッシュタグを改行区切りで結合
     const hashtags = selectedTags.map((tag) => `#${tag}`).join('\n');
-    const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(hashtags)}`;
+
+    // イベントURLを取得（選択されたイベントハッシュタグがあり、かつチェックボックスがONの場合）
+    const eventUrls = includeEventUrl && selectedEventHashtags.length > 0
+      ? selectedEventHashtags.map((event) => event.url).join('\n')
+      : '';
+
+    // イベントURLとハッシュタグを結合（イベントURLが上、その直下にハッシュタグ）
+    const tweetText = eventUrls
+      ? `${eventUrls}\n${hashtags}`
+      : hashtags;
+
+    const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
     window.open(tweetUrl, '_blank');
   };
 
@@ -489,8 +520,8 @@ const HashtagSearch = () => {
                           <button
                             onClick={() => {
                               if (mode === 'post') {
-                                // 投稿モード: タグを選択/解除
-                                toggleTag(event.tag);
+                                // 投稿モード: イベントハッシュタグを選択/解除（URLも保持）
+                                toggleEventHashtag(event);
                               } else {
                                 // 検索モード: 検索クエリに設定
                                 setSearchQuery(event.tag);
@@ -606,7 +637,10 @@ const HashtagSearch = () => {
                 </h3>
                 <div className="flex items-center gap-2">
                   <button
-                    onClick={() => setSelectedTags([])}
+                    onClick={() => {
+                      setSelectedTags([]);
+                      setSelectedEventHashtags([]);
+                    }}
                     disabled={selectedTags.length === 0}
                     className={`px-3 py-1 text-xs font-medium rounded-lg transition-all duration-200 border ${
                       selectedTags.length > 0
@@ -623,15 +657,42 @@ const HashtagSearch = () => {
               </div>
               <div className="min-h-[80px] p-4 bg-gray-50 rounded-xl border border-gray-200">
                 {selectedTags.length > 0 ? (
-                  <div className="flex flex-wrap gap-2">
-                    {selectedTags.map((tag, index) => (
-                      <span
-                        key={index}
-                        className="inline-flex items-center gap-1 px-3 py-1 bg-[#1DA1F2] text-white text-sm rounded-full shadow-md"
-                      >
-                        #{tag}
-                      </span>
-                    ))}
+                  <div className="space-y-3">
+                    <div className="flex flex-wrap gap-2">
+                      {selectedTags.map((tag, index) => (
+                        <span
+                          key={index}
+                          className="inline-flex items-center gap-1 px-3 py-1 bg-[#1DA1F2] text-white text-sm rounded-full shadow-md"
+                        >
+                          #{tag}
+                        </span>
+                      ))}
+                    </div>
+                    {selectedEventHashtags.length > 0 && (
+                      <div className="pt-2 border-t border-gray-300 space-y-2">
+                        <label className="flex items-center gap-2 cursor-pointer group">
+                          <input
+                            type="checkbox"
+                            checked={includeEventUrl}
+                            onChange={(e) => setIncludeEventUrl(e.target.checked)}
+                            className="w-4 h-4 text-[#1DA1F2] bg-white border-gray-300 rounded focus:ring-[#1DA1F2] focus:ring-2 cursor-pointer"
+                          />
+                          <span className="text-xs text-gray-700 font-semibold group-hover:text-[#1DA1F2] transition-colors">
+                            イベントURLを投稿に含める
+                          </span>
+                        </label>
+                        {includeEventUrl && (
+                          <div>
+                            <p className="text-xs text-gray-600 mb-1 font-semibold">イベントURL:</p>
+                            {selectedEventHashtags.map((event, index) => (
+                              <div key={index} className="text-xs text-blue-600 break-all">
+                                {event.url}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <p className="text-gray-400 text-sm text-center py-4">
@@ -657,6 +718,9 @@ const HashtagSearch = () => {
               </button>
               <p className="text-xs text-gray-500 text-center mt-3">
                 ※ ボタンを押下すると、新しいタブでXの投稿画面が開きます
+                {selectedEventHashtags.length > 0 && includeEventUrl && (
+                  <><br />※ イベントURLが投稿に含まれます</>
+                )}
               </p>
             </div>
           </div>
