@@ -321,9 +321,9 @@ const HashtagSearch = () => {
       ? selectedEventHashtags.map((event) => event.url).join('\n')
       : '';
 
-    // ハッシュタグとイベントURLを結合
+    // イベントURLとハッシュタグを結合（イベントURLが上、その直下にハッシュタグ）
     const tweetText = eventUrls
-      ? `${hashtags}\n\n${eventUrls}`
+      ? `${eventUrls}\n${hashtags}`
       : hashtags;
 
     const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
