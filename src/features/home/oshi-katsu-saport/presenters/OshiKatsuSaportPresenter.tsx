@@ -4,11 +4,11 @@ import LimitedTimeTopicModal from 'components/LimitedTimeTopicModal';
 import HeroSection from '../components/HeroSection';
 import FeaturesSection from '../components/FeaturesSection';
 import ChangeLogsSection from '../components/ChangeLogsSection';
-import { OshiKatsuSaportState } from '../hooks/useOshiKatsuSaportState';
+import { OshiKatsuSaportState, OshiKatsuSaportActions } from '../hooks/useOshiKatsuSaportState';
 
 interface OshiKatsuSaportPresenterProps {
   state: OshiKatsuSaportState;
-  actions: {};
+  actions: OshiKatsuSaportActions;
 }
 
 const OshiKatsuSaportPresenter: React.FC<OshiKatsuSaportPresenterProps> = ({
