@@ -5,6 +5,7 @@ import Settings from './components/Settings';
 import HashtagSearchContainer from 'features/oshi-katsu-saport/hashtag-search/containers/HashtagSearchContainer';
 import LifeScheduleDayContainer from 'features/life/life-schedule-day/containers/LifeScheduleDayContainer';
 import LifeScheduleMonthContainer from 'features/life/life-schedule-month/containers/LifeScheduleMonthContainer';
+import LoginContainer from 'features/auth/login/containers/LoginContainer';
 import './App.css';
 
 function App() {
@@ -12,6 +13,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<OshiKatsuSaportContainer />} />
+        <Route path="/login" element={<LoginContainer />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/talent-hashtag-support" element={<HashtagSearchContainer />} />
