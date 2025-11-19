@@ -20,6 +20,14 @@ export const useAuth = () => {
 
   useEffect(() => {
     const checkAuth = async () => {
+      // 既に認証トークンがある場合は、自動ログイン処理をスキップ
+      const existingToken = localStorage.getItem('token');
+      if (existingToken) {
+        setIsAuthenticated(true);
+        setIsChecking(false);
+        return;
+      }
+
       // 自動ログイントークンを取得
       const autoLoginToken = getCookie('autoLoginToken');
 
@@ -56,7 +64,8 @@ export const useAuth = () => {
     };
 
     checkAuth();
-  }, [navigate, location, executeAutoLogin]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // 初回マウント時のみ実行
 
   return { isAuthenticated, isChecking };
 };
