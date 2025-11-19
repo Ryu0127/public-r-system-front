@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import useTitle from 'utils/useTitle';
+import { useAuth } from 'hooks/auth/useAuth';
 import { LifeScheduleDayState, useLifeScheduleDayState } from '../hooks/useLifeScheduleDayState';
 import LifeScheduleDayPresenter from '../presenters/LifeScheduleDayPresenter';
 import { getDateDefaultNow } from 'utils/dateUtil';
@@ -51,6 +52,9 @@ const initialState: LifeScheduleDayState = {
 const LifeScheduleDayContainer: React.FC = () => {
   useTitle('日次スケジュール');
 
+  // 認証チェック
+  const { isAuthenticated, isChecking } = useAuth();
+
   // URLパラメータ
   const urlParams = new URLSearchParams(window.location.search);
   const usageYmd = urlParams.get('usageYmd');
@@ -75,6 +79,11 @@ const LifeScheduleDayContainer: React.FC = () => {
 
   // Actions Hook
   const { actions } = useLifeScheduleDayState(state, setState);
+
+  // 認証チェック中または未認証の場合は何も表示しない
+  if (isChecking || !isAuthenticated) {
+    return null;
+  }
 
   return (
     <LifeScheduleDayPresenter

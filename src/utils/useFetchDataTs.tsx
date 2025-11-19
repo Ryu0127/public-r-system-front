@@ -30,11 +30,19 @@ const useFetchDataTs = () => {
 
     try {
       console.log('api-call...');
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+      };
+
+      // localStorageから認証トークンを取得してヘッダーに付与
+      const token = localStorage.getItem('token');
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       const fetchOptions: RequestInit = {
         method,
-        headers: {
-          'Content-Type': 'application/json',
-        }
+        headers,
       };
 
       if (method !== 'GET' && requestParam) {

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import useTitle from 'utils/useTitle';
+import { useAuth } from 'hooks/auth/useAuth';
 import { LifeScheduleMonthState, useLifeScheduleMonthState } from '../hooks/useLifeScheduleMonthState';
 import LifeScheduleMonthPresenter from '../presenters/LifeScheduleMonthPresenter';
 import { getYearMonthDefaultNow } from 'utils/dateUtil';
@@ -24,6 +25,9 @@ const initialState: LifeScheduleMonthState = {
 const LifeScheduleMonthContainer: React.FC = () => {
   useTitle('月次スケジュール');
 
+  // 認証チェック
+  const { isAuthenticated, isChecking } = useAuth();
+
   // URLパラメータ
   const urlParams = new URLSearchParams(window.location.search);
   const usageYmd = urlParams.get('yearMonth');
@@ -42,6 +46,11 @@ const LifeScheduleMonthContainer: React.FC = () => {
 
   // Actions Hook
   const { actions } = useLifeScheduleMonthState(state, setState);
+
+  // 認証チェック中または未認証の場合は何も表示しない
+  if (isChecking || !isAuthenticated) {
+    return null;
+  }
 
   return (
     <LifeScheduleMonthPresenter
