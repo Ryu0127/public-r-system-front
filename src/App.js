@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import OshiKatsuSaportContainer from 'features/home/oshi-katsu-saport/containers/OshiKatsuSaportContainer';
 import Profile from './components/Profile';
 import Settings from './components/Settings';
@@ -8,9 +8,26 @@ import LifeScheduleMonthContainer from 'features/life/life-schedule-month/contai
 import LoginContainer from 'features/auth/login/containers/LoginContainer';
 import './App.css';
 
+// ページ遷移を追跡するコンポーネント
+function AnalyticsTracker() {
+  const location = useLocation();
+
+  useEffect(() => {
+    logPageView(location.pathname + location.search);
+  }, [location]);
+
+  return null;
+}
+
 function App() {
+  useEffect(() => {
+    // Googleアナリティクスの初期化
+    initGA();
+  }, []);
+
   return (
     <Router>
+      <AnalyticsTracker />
       <Routes>
         <Route path="/" element={<OshiKatsuSaportContainer />} />
         <Route path="/login" element={<LoginContainer />} />
