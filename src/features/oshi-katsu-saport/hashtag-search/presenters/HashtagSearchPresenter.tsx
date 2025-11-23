@@ -8,6 +8,7 @@ import { HashtagPostMode } from '../components/HashtagPostMode';
 import { HashtagSearchMode } from '../components/HashtagSearchMode';
 import { HelpModal } from '../components/HelpModal';
 import { Footer } from '../components/Footer';
+import { Talent } from 'hooks/api/oshi-katsu-saport/useTalentsGetApi';
 
 interface HashtagSearchPresenterProps {
   state: HashtagSearchState;
@@ -58,7 +59,12 @@ export const HashtagSearchPresenter: React.FC<HashtagSearchPresenterProps> = ({
           searchQuery={state.ui.talentSearchQuery}
           isDropdownOpen={state.config.isDropdownOpen}
           onSearchQueryChange={actions.setTalentSearchQuery}
-          onTalentSelect={actions.selectTalent}
+          onTalentSelect={(talent: Talent) => actions.selectTalent({
+            id: talent.id,
+            talentName: talent.talentName,
+            talentNameEn: talent.talentNameEn,
+            talentNameJoin: talent.talentName + '（' + talent.talentNameEn + '）',
+          })}
           onDropdownOpenChange={actions.setIsDropdownOpen}
         />
 

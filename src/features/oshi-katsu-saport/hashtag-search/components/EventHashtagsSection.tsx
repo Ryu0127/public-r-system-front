@@ -1,12 +1,12 @@
 import React from 'react';
-import { EventHashtag } from 'hooks/api/oshi-katsu-saport/useTalentHashtagsGetApi';
+import { TalentHashtagsApiEventHashtag } from 'hooks/api/oshi-katsu-saport/useTalentHashtagsGetApi';
 import { ExternalLinkIcon } from './Icons';
 
 interface EventHashtagsSectionProps {
-  eventHashtags: EventHashtag[];
+  eventHashtags: TalentHashtagsApiEventHashtag[];
   selectedTags: string[];
   mode: 'post' | 'search';
-  onEventHashtagToggle: (eventHashtag: EventHashtag) => void;
+  onEventHashtagToggle: (eventHashtag: TalentHashtagsApiEventHashtag) => void;
   onSearchQueryChange: (query: string) => void;
 }
 

@@ -8,18 +8,18 @@ export interface TalentHashtagsApiResponse {
       key: string;
       name: string;
     };
-    hashtags: Hashtag[];
-    eventHashtags: EventHashtag[];
+    hashtags: TalentHashtagsApiHashtag[];
+    eventHashtags: TalentHashtagsApiEventHashtag[];
   };
 }
 
-export interface Hashtag {
+export interface TalentHashtagsApiHashtag {
   id: number;
   tag: string;
   description: string;
 }
 
-export interface EventHashtag {
+export interface TalentHashtagsApiEventHashtag {
   id: number;
   tag: string;
   type: string;
@@ -27,23 +27,23 @@ export interface EventHashtag {
   url: string;
 }
 
-const getApiUrl = (talentKey: string): string => {
-  return `${process.env.REACT_APP_API_DOMAIN}/oshi-katsu-saport/talents/${talentKey}/hashtags`;
+const getApiUrl = (id: string): string => {
+  return `${process.env.REACT_APP_API_DOMAIN}/oshi-katsu-saport/talents/${id}/hashtags`;
 };
 
 /**
- * /oshi-katsu-saport/talents/{talentKey}/hashtags
+ * /oshi-katsu-saport/talents/{id}/hashtags
  * タレント別ハッシュタグ取得API
  */
 export const useTalentHashtagsGetApi = () => {
   const { loading, error, executeFetch } = useFetchDataTs();
 
   // APIリクエスト処理
-  const executeTalentHashtagsGet = async (talentKey: string) => {
+  const executeTalentHashtagsGet = async (id: string) => {
     try {
       // API実行
-      console.log(getApiUrl(talentKey));
-      const { response, error } = await executeFetch('GET', getApiUrl(talentKey));
+      console.log(getApiUrl(id));
+      const { response, error } = await executeFetch('GET', getApiUrl(id));
       const apiResponse = response as TalentHashtagsApiResponse;
       if (!apiResponse?.status) {
         // APIからエラーレスポンスが返却された場合

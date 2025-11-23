@@ -1,11 +1,11 @@
 import React from 'react';
-import { Hashtag } from 'hooks/api/oshi-katsu-saport/useTalentHashtagsGetApi';
-import { Talent } from 'hooks/api/oshi-katsu-saport/useTalentsGetApi';
+import { TalentHashtagsApiHashtag } from 'hooks/api/oshi-katsu-saport/useTalentHashtagsGetApi';
+import { Talent } from '../hooks/useHashtagSearchState';
 import { SearchIcon, getHashtagIcon } from './Icons';
 
 interface HashtagSearchModeProps {
   selectedTalent: Talent | null;
-  hashtags: Hashtag[];
+  hashtags: TalentHashtagsApiHashtag[];
   searchQuery: string;
   onSearchQueryChange: (query: string) => void;
   onQuickSearch: (tag: string) => void;
@@ -37,7 +37,7 @@ export const HashtagSearchMode: React.FC<HashtagSearchModeProps> = ({
               タグ検索
             </h2>
             <p className="text-xs text-gray-500 mt-1">
-              {selectedTalent?.name || '未選択'}
+              {selectedTalent?.talentNameJoin || '未選択'}
             </p>
           </div>
         </div>

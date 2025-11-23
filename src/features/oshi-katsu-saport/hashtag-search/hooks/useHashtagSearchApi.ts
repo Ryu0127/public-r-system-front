@@ -22,8 +22,8 @@ export const useHashtagSearchApi = () => {
     }, [executeTalentsGet]),
 
     // タレント別ハッシュタグ取得
-    executeTalentHashtagsGet: useCallback(async (talentKey: string) => {
-      const result = await executeTalentHashtagsGet(talentKey);
+    executeTalentHashtagsGet: useCallback(async (id: string) => {
+      const result = await executeTalentHashtagsGet(id);
       return {
         success: result.apiResponse?.status ?? false,
         data: result.apiResponse?.data

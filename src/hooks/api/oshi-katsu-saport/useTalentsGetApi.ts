@@ -9,8 +9,8 @@ export interface TalentsApiResponse {
 
 export interface Talent {
   id: string;
-  key: string;
-  name: string;
+  talentName: string;
+  talentNameEn: string;
 }
 
 const getApiUrl = (): string => {

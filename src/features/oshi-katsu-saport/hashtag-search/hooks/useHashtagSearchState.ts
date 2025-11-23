@@ -1,7 +1,6 @@
 import { useCallback, useEffect, Dispatch, SetStateAction } from 'react';
 import { useHashtagSearchApi } from './useHashtagSearchApi';
-import { Talent } from 'hooks/api/oshi-katsu-saport/useTalentsGetApi';
-import { Hashtag, EventHashtag } from 'hooks/api/oshi-katsu-saport/useTalentHashtagsGetApi';
+import { TalentHashtagsApiHashtag, TalentHashtagsApiEventHashtag } from 'hooks/api/oshi-katsu-saport/useTalentHashtagsGetApi';
 
 export interface HashtagSearchState {
   config: {
@@ -14,21 +13,28 @@ export interface HashtagSearchState {
   data: {
     talents: Talent[];
     selectedTalent: Talent | null;
-    hashtags: Hashtag[];
-    eventHashtags: EventHashtag[];
+    hashtags: TalentHashtagsApiHashtag[];
+    eventHashtags: TalentHashtagsApiEventHashtag[];
   };
   ui: {
     selectedTags: string[];
-    selectedEventHashtags: EventHashtag[];
+    selectedEventHashtags: TalentHashtagsApiEventHashtag[];
     searchQuery: string;
     talentSearchQuery: string;
   };
 }
 
+export interface Talent {
+  id: string;
+  talentName: string;
+  talentNameEn: string;
+  talentNameJoin: string;
+}
+
 export interface HashtagSearchActions {
   // データ取得アクション
   fetchTalents: () => void;
-  fetchTalentHashtags: (talentKey: string) => void;
+  fetchTalentHashtags: (id: string) => void;
 
   // タレント選択
   selectTalent: (talent: Talent) => void;
@@ -38,7 +44,7 @@ export interface HashtagSearchActions {
 
   // タグ選択
   toggleTag: (tag: string) => void;
-  toggleEventHashtag: (eventHashtag: EventHashtag) => void;
+  toggleEventHashtag: (eventHashtag: TalentHashtagsApiEventHashtag) => void;
   clearSelectedTags: () => void;
 
   // 検索クエリ
@@ -100,8 +106,8 @@ const updateState = {
    */
   toHashtags: (
     prev: HashtagSearchState,
-    hashtags: Hashtag[],
-    eventHashtags: EventHashtag[]
+    hashtags: TalentHashtagsApiHashtag[],
+    eventHashtags: TalentHashtagsApiEventHashtag[]
   ) => ({
     data: {
       ...prev.data,
@@ -151,12 +157,17 @@ export const useHashtagSearchState = (
         setState(prev => ({
           ...prev,
           ...updateState.toLoading(prev, false),
-          ...updateState.toTalents(prev, result.data?.talents ?? []),
+          ...updateState.toTalents(prev, result.data?.talents?.map(talent => ({
+            id: talent.id,
+            talentName: talent.talentName,
+            talentNameEn: talent.talentNameEn,
+            talentNameJoin: talent.talentName + '（' + talent.talentNameEn + '）',
+          })) ?? []),
         }));
 
         // 最初のタレントのハッシュタグを取得
         if (result.data?.talents && result.data.talents.length > 0) {
-          actions.fetchTalentHashtags(result.data.talents[0].key);
+          actions.fetchTalentHashtags(result.data.talents[0].id);
         }
       } catch (error) {
         console.error('Failed to fetch talents:', error);
@@ -167,11 +178,11 @@ export const useHashtagSearchState = (
     /**
      * タレント別ハッシュタグ取得
      */
-    fetchTalentHashtags: useCallback(async (talentKey: string) => {
+    fetchTalentHashtags: useCallback(async (id: string) => {
       try {
         updateStateGroup.toLoading(setState, true);
 
-        const result = await api.executeTalentHashtagsGet(talentKey);
+        const result = await api.executeTalentHashtagsGet(id);
 
         setState(prev => ({
           ...prev,
@@ -209,7 +220,7 @@ export const useHashtagSearchState = (
           isDropdownOpen: false,
         },
       }));
-      actions.fetchTalentHashtags(talent.key);
+      actions.fetchTalentHashtags(talent.id);
     }, []),
 
     /**
@@ -243,7 +254,7 @@ export const useHashtagSearchState = (
     /**
      * イベントハッシュタグ選択/解除
      */
-    toggleEventHashtag: useCallback((eventHashtag: EventHashtag) => {
+    toggleEventHashtag: useCallback((eventHashtag: TalentHashtagsApiEventHashtag) => {
       setState(prev => {
         const isSelected = prev.ui.selectedTags.includes(eventHashtag.tag);
         return {

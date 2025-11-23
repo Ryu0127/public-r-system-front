@@ -1,13 +1,13 @@
 import React from 'react';
-import { Hashtag, EventHashtag } from 'hooks/api/oshi-katsu-saport/useTalentHashtagsGetApi';
-import { Talent } from 'hooks/api/oshi-katsu-saport/useTalentsGetApi';
+import { TalentHashtagsApiHashtag, TalentHashtagsApiEventHashtag } from 'hooks/api/oshi-katsu-saport/useTalentHashtagsGetApi';
+import { Talent } from '../hooks/useHashtagSearchState';
 import { HashIcon, getHashtagIcon } from './Icons';
 
 interface HashtagPostModeProps {
   selectedTalent: Talent | null;
-  hashtags: Hashtag[];
+  hashtags: TalentHashtagsApiHashtag[];
   selectedTags: string[];
-  selectedEventHashtags: EventHashtag[];
+  selectedEventHashtags: TalentHashtagsApiEventHashtag[];
   includeEventUrl: boolean;
   onToggleTag: (tag: string) => void;
   onClearTags: () => void;
@@ -39,7 +39,7 @@ export const HashtagPostMode: React.FC<HashtagPostModeProps> = ({
               ハッシュタグ投稿
             </h2>
             <p className="text-xs text-gray-500 mt-1">
-              {selectedTalent?.name || '未選択'}
+              {selectedTalent?.talentNameJoin || '未選択'}
             </p>
           </div>
         </div>

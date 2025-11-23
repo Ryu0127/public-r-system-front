@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { Talent } from 'hooks/api/oshi-katsu-saport/useTalentsGetApi';
+import { Talent } from '../hooks/useHashtagSearchState';
 
 interface TalentSelectorProps {
   talents: Talent[];
@@ -24,7 +24,7 @@ export const TalentSelector: React.FC<TalentSelectorProps> = ({
 
   // フィルタリングされたタレントリスト
   const filteredTalents = talents.filter((talent) =>
-    talent.name.toLowerCase().includes(searchQuery.toLowerCase())
+    talent.talentNameJoin.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   // 外側クリックでドロップダウンを閉じる
@@ -51,7 +51,7 @@ export const TalentSelector: React.FC<TalentSelectorProps> = ({
           <input
             id="talent-combobox"
             type="text"
-            value={isDropdownOpen ? searchQuery : selectedTalent?.name || ''}
+            value={isDropdownOpen ? searchQuery : selectedTalent?.talentNameJoin || ''}
             onChange={(e) => {
               onSearchQueryChange(e.target.value);
               onDropdownOpenChange(true);
@@ -72,15 +72,15 @@ export const TalentSelector: React.FC<TalentSelectorProps> = ({
             <div className="absolute z-[9999] w-full mt-2 bg-white border-2 border-gray-200 rounded-xl shadow-xl max-h-60 overflow-y-auto">
               {filteredTalents.slice(0, 10).map((talent) => (
                 <div
-                  key={talent.key}
+                  key={talent.id}
                   onClick={() => onTalentSelect(talent)}
                   className={`px-4 py-3 cursor-pointer transition-all duration-200 ${
-                    talent.key === selectedTalent?.key
+                    talent.id === selectedTalent?.id
                       ? 'bg-[#1DA1F2] text-white'
                       : 'hover:bg-blue-50 text-gray-700'
                   }`}
                 >
-                  {talent.name}
+                  {talent.talentNameJoin}
                 </div>
               ))}
             </div>
@@ -94,7 +94,7 @@ export const TalentSelector: React.FC<TalentSelectorProps> = ({
           )}
         </div>
         <p className="text-xs text-gray-500 mt-2">
-          選択中: <span className="font-semibold text-[#1DA1F2]">{selectedTalent?.name || '未選択'}</span>
+          選択中: <span className="font-semibold text-[#1DA1F2]">{selectedTalent?.talentNameJoin || '未選択'}</span>
         </p>
       </div>
     </section>
