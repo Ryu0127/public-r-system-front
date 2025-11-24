@@ -28,7 +28,6 @@ export const useTalentsGetApi = () => {
   const executeTalentsGet = async () => {
     try {
       // API実行
-      console.log(getApiUrl());
       const { response, error } = await executeFetch('GET', getApiUrl());
       const apiResponse = response as TalentsApiResponse;
       if (!apiResponse?.status) {

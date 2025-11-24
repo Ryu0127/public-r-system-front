@@ -42,7 +42,6 @@ export const useTalentHashtagsGetApi = () => {
   const executeTalentHashtagsGet = async (id: string) => {
     try {
       // API実行
-      console.log(getApiUrl(id));
       const { response, error } = await executeFetch('GET', getApiUrl(id));
       const apiResponse = response as TalentHashtagsApiResponse;
       if (!apiResponse?.status) {
