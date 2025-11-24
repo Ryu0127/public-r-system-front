@@ -1,6 +1,7 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "推し活サポート",
+  "name": "推し活サポート - タレント応援・ハッシュタグ検索アプリ",
+  "description": "推し活をもっと楽しく！お気に入りのタレントをハッシュタグで検索・応援できる推し活サポートアプリケーション。",
   "icons": [
     {
       "src": "favicon.ico",
@@ -10,16 +11,21 @@
     {
       "src": "logo192.png",
       "type": "image/png",
-      "sizes": "192x192"
+      "sizes": "192x192",
+      "purpose": "any maskable"
     },
     {
       "src": "logo512.png",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "512x512",
+      "purpose": "any maskable"
     }
   ],
   "start_url": ".",
   "display": "standalone",
   "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "background_color": "#ffffff",
+  "categories": ["entertainment", "lifestyle"],
+  "lang": "ja",
+  "dir": "ltr"
 }
