@@ -62,7 +62,7 @@ const OshiKatsuSaportPresenter: React.FC<OshiKatsuSaportPresenterProps> = ({
         {/* フッター */}
         <footer className="text-center pt-10 border-t border-gray-200 animate-fade-in" style={{ animationDelay: '0.7s' }}>
           <p className="text-gray-500 text-sm font-light tracking-wide">
-            © 2025 推し活サポート. All rights reserved.
+            © 2025 ホロリス-V活サポート. All rights reserved.
           </p>
           <p className="text-gray-400 text-xs mt-2 italic">
             Built with React 19 + Tailwind CSS 4
