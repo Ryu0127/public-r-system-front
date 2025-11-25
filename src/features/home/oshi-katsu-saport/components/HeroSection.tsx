@@ -1,6 +1,6 @@
 import React from 'react';
 
-const APP_TITLE = 'ホロリス-V活サポート';
+const APP_TITLE = 'ホロリスの推し活サポート';
 
 const HeroSection: React.FC = () => {
   return (
@@ -26,7 +26,7 @@ const HeroSection: React.FC = () => {
 
       {/* サブタイトル */}
       <p className="text-lg md:text-xl text-gray-600 font-light max-w-3xl mx-auto">
-        こちらのサイトは、V活をサポートするためのファン作成サイトとなります。
+        こちらのサイトは、推し活をサポートするためのファン作成サイトとなります。
       </p>
 
       {/* 装飾的な区切り線 */}
