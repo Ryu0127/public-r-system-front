@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import useTitle from 'utils/useTitle';
+import { Helmet } from 'react-helmet-async';
 import { useAuth } from 'hooks/auth/useAuth';
 import { LifeScheduleDayState, useLifeScheduleDayState } from '../hooks/useLifeScheduleDayState';
 import LifeScheduleDayPresenter from '../presenters/LifeScheduleDayPresenter';
@@ -46,12 +46,10 @@ const initialState: LifeScheduleDayState = {
 /**
  * /life/life-schedule-day
  * 日次スケジュール画面
- * 
- * @returns 
+ *
+ * @returns
  */
 const LifeScheduleDayContainer: React.FC = () => {
-  useTitle('日次スケジュール');
-
   // 認証チェック
   const { isAuthenticated, isChecking } = useAuth();
 
@@ -86,10 +84,20 @@ const LifeScheduleDayContainer: React.FC = () => {
   }
 
   return (
-    <LifeScheduleDayPresenter
-      state={state}
-      actions={actions}
-    />
+    <>
+      <Helmet>
+        <title>日次スケジュール | ホロリスの推し活サポート</title>
+        <meta name="description" content="日別の生活スケジュールを管理。推し活と日常生活を両立させるための時間管理ツール。" />
+        <meta property="og:title" content="日次スケジュール | ホロリスの推し活サポート" />
+        <meta property="og:description" content="日別の生活スケジュールを管理。推し活と日常生活を両立させるための時間管理ツール。" />
+        <meta property="og:url" content="https://public-r-system-front.vercel.app/life/life-schedule-day" />
+        <link rel="canonical" href="https://public-r-system-front.vercel.app/life/life-schedule-day" />
+      </Helmet>
+      <LifeScheduleDayPresenter
+        state={state}
+        actions={actions}
+      />
+    </>
   );
 };
 
