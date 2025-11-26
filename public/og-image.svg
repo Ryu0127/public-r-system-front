@@ -1,0 +1,70 @@
+<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+  <!-- グラデーション背景 -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f0f9ff;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#ffffff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#fffbeb;stop-opacity:1" />
+    </linearGradient>
+
+    <!-- シャドウフィルター -->
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="4"/>
+      <feOffset dx="0" dy="2" result="offsetblur"/>
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.3"/>
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- 背景 -->
+  <rect width="1200" height="630" fill="url(#bgGradient)"/>
+
+  <!-- 装飾的な円 - 右上 -->
+  <circle cx="1050" cy="150" r="100" fill="none" stroke="#fbbf24" stroke-width="6" opacity="0.2"/>
+
+  <!-- 装飾的な円 - 左下 -->
+  <circle cx="150" cy="480" r="120" fill="none" stroke="#38bdf8" stroke-width="6" opacity="0.2"/>
+
+  <!-- メインコンテンツ背景 -->
+  <rect x="100" y="120" width="1000" height="390" rx="30" fill="white" fill-opacity="0.8" filter="url(#shadow)"/>
+
+  <!-- バッジ -->
+  <rect x="480" y="160" width="240" height="60" rx="30" fill="white" fill-opacity="0.9" stroke="#fbbf24" stroke-width="2"/>
+
+  <!-- バッジテキスト: R-SYSTEM -->
+  <text x="600" y="200" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="#b45309" text-anchor="middle" letter-spacing="4">R-SYSTEM</text>
+
+  <!-- 装飾記号 - 左 -->
+  <text x="500" y="200" font-family="Arial, sans-serif" font-size="28" fill="#f59e0b" text-anchor="middle">✦</text>
+
+  <!-- 装飾記号 - 右 -->
+  <text x="700" y="200" font-family="Arial, sans-serif" font-size="28" fill="#0ea5e9" text-anchor="middle">✦</text>
+
+  <!-- メインタイトル -->
+  <text x="600" y="310" font-family="'Times New Roman', serif" font-size="72" font-weight="700" fill="#1f2937" text-anchor="middle">ホロリスの</text>
+  <text x="600" y="390" font-family="'Times New Roman', serif" font-size="72" font-weight="700" fill="#1f2937" text-anchor="middle">推し活サポート</text>
+
+  <!-- サブタイトル -->
+  <text x="600" y="460" font-family="Arial, sans-serif" font-size="24" font-weight="300" fill="#4b5563" text-anchor="middle">推し活をもっと楽しく！</text>
+
+  <!-- 装飾的なライン - 左 -->
+  <line x1="380" y1="490" x2="480" y2="490" stroke="#fbbf24" stroke-width="2" opacity="0.4"/>
+
+  <!-- 装飾的なドット -->
+  <circle cx="490" cy="490" r="4" fill="#fbbf24" opacity="0.6"/>
+
+  <!-- 装飾的なライン - 右 -->
+  <line x1="710" y1="490" x2="810" y2="490" stroke="#fbbf24" stroke-width="2" opacity="0.4"/>
+
+  <!-- 装飾記号 - 下部 -->
+  <text x="520" y="568" font-family="Arial, sans-serif" font-size="32" fill="#fbbf24" text-anchor="middle" opacity="0.3">✦</text>
+  <text x="570" y="568" font-family="Arial, sans-serif" font-size="32" fill="#0ea5e9" text-anchor="middle" opacity="0.3">◆</text>
+  <text x="600" y="568" font-family="Arial, sans-serif" font-size="32" fill="#10b981" text-anchor="middle" opacity="0.3">✧</text>
+  <text x="630" y="568" font-family="Arial, sans-serif" font-size="32" fill="#fbbf24" text-anchor="middle" opacity="0.3">◆</text>
+  <text x="680" y="568" font-family="Arial, sans-serif" font-size="32" fill="#0ea5e9" text-anchor="middle" opacity="0.3">✦</text>
+</svg>
