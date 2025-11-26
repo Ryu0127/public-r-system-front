@@ -1,6 +1,6 @@
 import React from 'react';
 
-const APP_TITLE = '推し活サポート';
+const APP_TITLE = 'ホロリスの推し活サポート';
 
 const HeroSection: React.FC = () => {
   return (

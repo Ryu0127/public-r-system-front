@@ -16,10 +16,10 @@ const initialState: OshiKatsuSaportState = {
 
 /**
  * /
- * 推し活サポートホーム画面
+ * ホロリスの推し活サポートホーム画面
  */
 const OshiKatsuSaportContainer: React.FC = () => {
-  useTitle('推し活サポート');
+  useTitle('ホロリスの推し活サポート');
 
   const [state, setState] = useState<OshiKatsuSaportState>(initialState);
 
