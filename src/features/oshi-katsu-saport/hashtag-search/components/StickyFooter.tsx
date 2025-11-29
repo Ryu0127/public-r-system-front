@@ -63,13 +63,19 @@ export const StickyFooter: React.FC<StickyFooterProps> = ({
                 {/* 表示/非表示トグルボタン */}
                 <button
                   onClick={() => onShowSelectedTagsChange(!showSelectedTags)}
-                  className="flex items-center justify-center px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl transition-all duration-200 border border-gray-300"
+                  className="flex items-center justify-center gap-2 px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl transition-all duration-200 border border-gray-300 whitespace-nowrap"
                   title={showSelectedTags ? '選択中のハッシュタグを非表示' : '選択中のハッシュタグを表示'}
                 >
                   {showSelectedTags ? (
-                    <ChevronDownIcon className="w-5 h-5" />
+                    <>
+                      <ChevronDownIcon className="w-5 h-5" />
+                      <span className="text-sm font-medium">選択中を非表示</span>
+                    </>
                   ) : (
-                    <ChevronUpIcon className="w-5 h-5" />
+                    <>
+                      <ChevronUpIcon className="w-5 h-5" />
+                      <span className="text-sm font-medium">選択中を表示</span>
+                    </>
                   )}
                 </button>
 
@@ -115,13 +121,19 @@ export const StickyFooter: React.FC<StickyFooterProps> = ({
                 {/* 表示/非表示トグルボタン */}
                 <button
                   onClick={() => onShowSearchPreviewChange(!showSearchPreview)}
-                  className="flex items-center justify-center px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl transition-all duration-200 border border-gray-300"
+                  className="flex items-center justify-center gap-2 px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl transition-all duration-200 border border-gray-300 whitespace-nowrap"
                   title={showSearchPreview ? '検索プレビューを非表示' : '検索プレビューを表示'}
                 >
                   {showSearchPreview ? (
-                    <ChevronDownIcon className="w-5 h-5" />
+                    <>
+                      <ChevronDownIcon className="w-5 h-5" />
+                      <span className="text-sm font-medium">プレビュー非表示</span>
+                    </>
                   ) : (
-                    <ChevronUpIcon className="w-5 h-5" />
+                    <>
+                      <ChevronUpIcon className="w-5 h-5" />
+                      <span className="text-sm font-medium">プレビュー表示</span>
+                    </>
                   )}
                 </button>
 

@@ -10,8 +10,8 @@ const initialState: HashtagSearchState = {
     isDropdownOpen: false,
     isHelpModalOpen: false,
     includeEventUrl: true,
-    showSelectedTags: true,
-    showSearchPreview: true,
+    showSelectedTags: false,
+    showSearchPreview: false,
   },
   data: {
     talents: [],
