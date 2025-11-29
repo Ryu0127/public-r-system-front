@@ -1,7 +1,7 @@
 import React from 'react';
 import { TalentHashtagsApiHashtag } from 'hooks/api/oshi-katsu-saport/useTalentHashtagsGetApi';
 import { Talent } from '../hooks/useHashtagSearchState';
-import { getHashtagIcon } from './Icons';
+import { HashIcon, getHashtagIcon } from './Icons';
 
 interface HashtagPostModeProps {
   selectedTalent: Talent | null;
