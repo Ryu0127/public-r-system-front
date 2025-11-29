@@ -69,12 +69,12 @@ export const StickyFooter: React.FC<StickyFooterProps> = ({
                   {showSelectedTags ? (
                     <>
                       <ChevronDownIcon className="w-5 h-5" />
-                      <span className="text-sm font-medium">選択中を非表示</span>
+                      <span className="text-sm font-medium">選択中のハッシュタグを非表示</span>
                     </>
                   ) : (
                     <>
                       <ChevronUpIcon className="w-5 h-5" />
-                      <span className="text-sm font-medium">選択中を表示</span>
+                      <span className="text-sm font-medium">選択中のハッシュタグを表示</span>
                     </>
                   )}
                 </button>
@@ -102,6 +102,13 @@ export const StickyFooter: React.FC<StickyFooterProps> = ({
                   }
                 </p>
               )}
+
+              <p className="text-xs text-gray-500 text-center mt-2">
+                ※ ボタンを押下すると、新しいタブでXの投稿画面が開きます
+                {selectedEventHashtags.length > 0 && includeEventUrl && (
+                  <><br />※ イベントURLが投稿に含まれます</>
+                )}
+              </p>
             </>
           )}
 
@@ -127,12 +134,12 @@ export const StickyFooter: React.FC<StickyFooterProps> = ({
                   {showSearchPreview ? (
                     <>
                       <ChevronDownIcon className="w-5 h-5" />
-                      <span className="text-sm font-medium">プレビュー非表示</span>
+                      <span className="text-sm font-medium">検索プレビューを非表示</span>
                     </>
                   ) : (
                     <>
                       <ChevronUpIcon className="w-5 h-5" />
-                      <span className="text-sm font-medium">プレビュー表示</span>
+                      <span className="text-sm font-medium">検索プレビューを表示</span>
                     </>
                   )}
                 </button>
@@ -152,11 +159,18 @@ export const StickyFooter: React.FC<StickyFooterProps> = ({
                 </button>
               </div>
 
-              {!showSearchPreview && searchQuery.trim() && (
+              {!showSearchPreview && (
                 <p className="text-xs text-gray-500 text-center mt-2">
-                  検索ハッシュタグ: #{searchQuery.trim()}
+                  {searchQuery.trim()
+                    ? `検索ハッシュタグ: #${searchQuery.trim()}`
+                    : '検索するハッシュタグを入力してください'
+                  }
                 </p>
               )}
+
+              <p className="text-xs text-gray-500 text-center mt-2">
+                ※ ボタンを押下すると、新しいタブでXの検索結果画面が開きます
+              </p>
             </>
           )}
         </div>
