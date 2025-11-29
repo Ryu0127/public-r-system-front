@@ -104,10 +104,8 @@ export const StickyFooter: React.FC<StickyFooterProps> = ({
               )}
 
               <p className="text-xs text-gray-500 text-center mt-2">
-                ※ ボタンを押下すると、新しいタブでXの投稿画面が開きます
-                {selectedEventHashtags.length > 0 && includeEventUrl && (
-                  <><br />※ イベントURLが投稿に含まれます</>
-                )}
+                ※ 投稿ボタンを押下すると、新しいタブでXの投稿画面が開きます<br />
+                ボタンを押下しただけでは、まだ投稿はされませんためご注意ください。
               </p>
             </>
           )}
@@ -169,7 +167,7 @@ export const StickyFooter: React.FC<StickyFooterProps> = ({
               )}
 
               <p className="text-xs text-gray-500 text-center mt-2">
-                ※ ボタンを押下すると、新しいタブでXの検索結果画面が開きます
+                ※ ボタンを押下すると、新しいタブでXの検索結果画面が開きます。
               </p>
             </>
           )}
