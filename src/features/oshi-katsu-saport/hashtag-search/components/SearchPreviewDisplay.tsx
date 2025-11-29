@@ -10,7 +10,22 @@ export const SearchPreviewDisplay: React.FC<SearchPreviewDisplayProps> = ({
   onSearchQueryChange,
 }) => {
   return (
-    <div className="mb-4">
+    <div className="mb-4 animate-slide-up">
+      <style>{`
+        @keyframes slideUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .animate-slide-up {
+          animation: slideUp 0.3s ease-out;
+        }
+      `}</style>
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-sm font-semibold text-gray-700">
           検索プレビュー

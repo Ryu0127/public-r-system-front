@@ -51,10 +51,7 @@ export const StickyFooter: React.FC<StickyFooterProps> = ({
               {showSelectedTags && (
                 <SelectedTagsDisplay
                   selectedTags={selectedTags}
-                  selectedEventHashtags={selectedEventHashtags}
-                  includeEventUrl={includeEventUrl}
                   onClearTags={onClearTags}
-                  onIncludeEventUrlChange={onIncludeEventUrlChange}
                 />
               )}
 

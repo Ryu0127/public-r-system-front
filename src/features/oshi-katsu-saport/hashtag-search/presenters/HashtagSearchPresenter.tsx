@@ -73,8 +73,10 @@ export const HashtagSearchPresenter: React.FC<HashtagSearchPresenterProps> = ({
           eventHashtags={state.data.eventHashtags}
           selectedTags={state.ui.selectedTags}
           mode={state.config.mode}
+          includeEventUrl={state.config.includeEventUrl}
           onEventHashtagToggle={actions.toggleEventHashtag}
           onSearchQueryChange={actions.setSearchQuery}
+          onIncludeEventUrlChange={actions.setIncludeEventUrl}
         />
 
         {/* メイン機能エリア */}

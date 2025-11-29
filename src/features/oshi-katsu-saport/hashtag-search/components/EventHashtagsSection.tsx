@@ -6,30 +6,65 @@ interface EventHashtagsSectionProps {
   eventHashtags: TalentHashtagsApiEventHashtag[];
   selectedTags: string[];
   mode: 'post' | 'search';
+  includeEventUrl: boolean;
   onEventHashtagToggle: (eventHashtag: TalentHashtagsApiEventHashtag) => void;
   onSearchQueryChange: (query: string) => void;
+  onIncludeEventUrlChange: (include: boolean) => void;
 }
 
 export const EventHashtagsSection: React.FC<EventHashtagsSectionProps> = ({
   eventHashtags,
   selectedTags,
   mode,
+  includeEventUrl,
   onEventHashtagToggle,
   onSearchQueryChange,
+  onIncludeEventUrlChange,
 }) => {
   if (eventHashtags.length === 0) {
     return null;
   }
 
+  const hasSelectedEventHashtag = mode === 'post' && eventHashtags.some(event => selectedTags.includes(event.tag));
+
   return (
     <section className="max-w-2xl mx-auto mb-8 animate-fade-in" style={{ animationDelay: '0.25s' }}>
       <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-200 shadow-lg">
-        <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-          <svg className="w-5 h-5 text-[#1DA1F2]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-          </svg>
-          イベントハッシュタグ
-        </h2>
+        <div className="mb-4">
+          <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
+            <svg className="w-5 h-5 text-[#1DA1F2]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+            </svg>
+            イベントハッシュタグ
+          </h2>
+          {hasSelectedEventHashtag && (
+            <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <label className="flex items-center gap-2 cursor-pointer group">
+                <input
+                  type="checkbox"
+                  checked={includeEventUrl}
+                  onChange={(e) => onIncludeEventUrlChange(e.target.checked)}
+                  className="w-4 h-4 text-[#1DA1F2] bg-white border-gray-300 rounded focus:ring-[#1DA1F2] focus:ring-2 cursor-pointer"
+                />
+                <span className="text-sm text-gray-700 font-semibold group-hover:text-[#1DA1F2] transition-colors">
+                  イベントURLを投稿に含める
+                </span>
+              </label>
+              {includeEventUrl && (
+                <div className="mt-2 ml-6">
+                  <p className="text-xs text-gray-600 mb-1 font-semibold">投稿に含まれるURL:</p>
+                  {eventHashtags
+                    .filter(event => selectedTags.includes(event.tag))
+                    .map((event, index) => (
+                      <div key={index} className="text-xs text-blue-600 break-all">
+                        {event.url}
+                      </div>
+                    ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
         <div className="space-y-4">
           {eventHashtags.map((event) => (
             <div
