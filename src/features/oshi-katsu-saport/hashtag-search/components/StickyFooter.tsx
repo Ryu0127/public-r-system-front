@@ -56,11 +56,11 @@ export const StickyFooter: React.FC<StickyFooterProps> = ({
               )}
 
               {/* ボタンエリア */}
-              <div className="flex gap-3">
+              <div className="flex flex-col md:flex-row gap-3">
                 {/* 表示/非表示トグルボタン */}
                 <button
                   onClick={() => onShowSelectedTagsChange(!showSelectedTags)}
-                  className="flex items-center justify-center gap-2 px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl transition-all duration-200 border border-gray-300 whitespace-nowrap"
+                  className="flex items-center justify-center gap-2 px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl transition-all duration-200 border border-gray-300 whitespace-nowrap w-full md:w-auto"
                   title={showSelectedTags ? '選択中のハッシュタグを非表示' : '選択中のハッシュタグを表示'}
                 >
                   {showSelectedTags ? (
@@ -119,11 +119,11 @@ export const StickyFooter: React.FC<StickyFooterProps> = ({
               )}
 
               {/* ボタンエリア */}
-              <div className="flex gap-3">
+              <div className="flex flex-col md:flex-row gap-3">
                 {/* 表示/非表示トグルボタン */}
                 <button
                   onClick={() => onShowSearchPreviewChange(!showSearchPreview)}
-                  className="flex items-center justify-center gap-2 px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl transition-all duration-200 border border-gray-300 whitespace-nowrap"
+                  className="flex items-center justify-center gap-2 px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl transition-all duration-200 border border-gray-300 whitespace-nowrap w-full md:w-auto"
                   title={showSearchPreview ? '検索プレビューを非表示' : '検索プレビューを表示'}
                 >
                   {showSearchPreview ? (
