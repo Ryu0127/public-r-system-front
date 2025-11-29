@@ -9,6 +9,8 @@ export interface HashtagSearchState {
     isDropdownOpen: boolean;
     isHelpModalOpen: boolean;
     includeEventUrl: boolean;
+    showSelectedTags: boolean;
+    showSearchPreview: boolean;
   };
   data: {
     talents: Talent[];
@@ -55,6 +57,8 @@ export interface HashtagSearchActions {
   setIsDropdownOpen: (isOpen: boolean) => void;
   setIsHelpModalOpen: (isOpen: boolean) => void;
   setIncludeEventUrl: (include: boolean) => void;
+  setShowSelectedTags: (show: boolean) => void;
+  setShowSearchPreview: (show: boolean) => void;
 
   // アクション
   handlePostToTwitter: () => void;
@@ -347,6 +351,32 @@ export const useHashtagSearchState = (
         config: {
           ...prev.config,
           includeEventUrl: include,
+        },
+      }));
+    }, []),
+
+    /**
+     * 選択中のハッシュタグ表示/非表示
+     */
+    setShowSelectedTags: useCallback((show: boolean) => {
+      setState(prev => ({
+        ...prev,
+        config: {
+          ...prev.config,
+          showSelectedTags: show,
+        },
+      }));
+    }, []),
+
+    /**
+     * 検索プレビュー表示/非表示
+     */
+    setShowSearchPreview: useCallback((show: boolean) => {
+      setState(prev => ({
+        ...prev,
+        config: {
+          ...prev.config,
+          showSearchPreview: show,
         },
       }));
     }, []),

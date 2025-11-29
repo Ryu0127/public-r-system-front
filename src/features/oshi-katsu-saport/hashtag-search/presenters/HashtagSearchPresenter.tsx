@@ -7,7 +7,7 @@ import { EventHashtagsSection } from '../components/EventHashtagsSection';
 import { HashtagPostMode } from '../components/HashtagPostMode';
 import { HashtagSearchMode } from '../components/HashtagSearchMode';
 import { HelpModal } from '../components/HelpModal';
-import { Footer } from '../components/Footer';
+import { StickyFooter } from '../components/StickyFooter';
 import { Talent } from 'hooks/api/oshi-katsu-saport/useTalentsGetApi';
 
 interface HashtagSearchPresenterProps {
@@ -30,7 +30,7 @@ export const HashtagSearchPresenter: React.FC<HashtagSearchPresenterProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-blue-50 relative">
+    <div className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-blue-50 relative pb-32">
       {/* 背景装飾 */}
       <div className="absolute top-20 right-20 w-32 h-32 border-4 border-blue-200 rounded-full opacity-20 animate-spin-slow" />
       <div
@@ -85,12 +85,7 @@ export const HashtagSearchPresenter: React.FC<HashtagSearchPresenterProps> = ({
               selectedTalent={state.data.selectedTalent}
               hashtags={state.data.hashtags}
               selectedTags={state.ui.selectedTags}
-              selectedEventHashtags={state.ui.selectedEventHashtags}
-              includeEventUrl={state.config.includeEventUrl}
               onToggleTag={actions.toggleTag}
-              onClearTags={actions.clearSelectedTags}
-              onIncludeEventUrlChange={actions.setIncludeEventUrl}
-              onPostToTwitter={actions.handlePostToTwitter}
             />
           )}
 
@@ -102,15 +97,29 @@ export const HashtagSearchPresenter: React.FC<HashtagSearchPresenterProps> = ({
               searchQuery={state.ui.searchQuery}
               onSearchQueryChange={actions.setSearchQuery}
               onQuickSearch={actions.handleQuickSearch}
-              onSearchOnTwitter={actions.handleSearchOnTwitter}
               onKeyPress={handleKeyPress}
             />
           )}
         </div>
-
-        {/* フッター */}
-        <Footer />
       </div>
+
+      {/* 固定フッター */}
+      <StickyFooter
+        mode={state.config.mode}
+        selectedTags={state.ui.selectedTags}
+        selectedEventHashtags={state.ui.selectedEventHashtags}
+        includeEventUrl={state.config.includeEventUrl}
+        showSelectedTags={state.config.showSelectedTags}
+        onPostToTwitter={actions.handlePostToTwitter}
+        onClearTags={actions.clearSelectedTags}
+        onIncludeEventUrlChange={actions.setIncludeEventUrl}
+        onShowSelectedTagsChange={actions.setShowSelectedTags}
+        searchQuery={state.ui.searchQuery}
+        showSearchPreview={state.config.showSearchPreview}
+        onSearchOnTwitter={actions.handleSearchOnTwitter}
+        onSearchQueryChange={actions.setSearchQuery}
+        onShowSearchPreviewChange={actions.setShowSearchPreview}
+      />
 
       {/* 使い方モーダル */}
       <HelpModal

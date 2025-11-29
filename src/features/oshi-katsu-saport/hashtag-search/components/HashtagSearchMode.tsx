@@ -9,7 +9,6 @@ interface HashtagSearchModeProps {
   searchQuery: string;
   onSearchQueryChange: (query: string) => void;
   onQuickSearch: (tag: string) => void;
-  onSearchOnTwitter: () => void;
   onKeyPress: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
@@ -19,7 +18,6 @@ export const HashtagSearchMode: React.FC<HashtagSearchModeProps> = ({
   searchQuery,
   onSearchQueryChange,
   onQuickSearch,
-  onSearchOnTwitter,
   onKeyPress,
 }) => {
   const quickSearchTags = hashtags.slice(0, 6);
@@ -94,56 +92,6 @@ export const HashtagSearchMode: React.FC<HashtagSearchModeProps> = ({
         </div>
         <p className="text-xs text-gray-500 mt-2">
           ※ #記号は自動で追加されます
-        </p>
-      </div>
-
-      {/* プレビュー */}
-      <div className="mb-6">
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-semibold text-gray-700">
-            検索プレビュー
-          </h3>
-          <button
-            onClick={() => onSearchQueryChange('')}
-            disabled={!searchQuery.trim()}
-            className={`px-3 py-1 text-xs font-medium rounded-lg transition-all duration-200 border ${
-              searchQuery.trim()
-                ? 'text-gray-600 hover:text-red-600 bg-gray-100 hover:bg-red-50 border-gray-200 hover:border-red-300 cursor-pointer'
-                : 'text-gray-400 bg-gray-50 border-gray-100 cursor-not-allowed'
-            }`}
-          >
-            クリア
-          </button>
-        </div>
-        <div className="min-h-[80px] p-4 bg-gray-50 rounded-xl border border-gray-200 flex items-center justify-center">
-          {searchQuery.trim() ? (
-            <span className="inline-flex items-center gap-1 px-4 py-2 bg-[#1DA1F2] text-white text-lg rounded-full shadow-md">
-              #{searchQuery.trim()}
-            </span>
-          ) : (
-            <p className="text-gray-400 text-sm text-center">
-              検索するハッシュタグを入力してください
-            </p>
-          )}
-        </div>
-      </div>
-
-      {/* 検索ボタン */}
-      <div>
-        <button
-          onClick={onSearchOnTwitter}
-          disabled={!searchQuery.trim()}
-          className={`w-full py-4 rounded-xl font-semibold text-lg transition-all duration-300 flex items-center justify-center gap-2 ${
-            searchQuery.trim()
-              ? 'bg-gradient-to-r from-[#1DA1F2] to-[#0d8bd9] hover:from-[#0d8bd9] hover:to-[#1DA1F2] text-white shadow-xl shadow-blue-500/40 hover:shadow-2xl hover:shadow-blue-500/50 hover:scale-105'
-              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-          }`}
-        >
-          <SearchIcon />
-          Xで検索する
-        </button>
-        <p className="text-xs text-gray-500 text-center mt-3">
-          ※ ボタンを押下すると、新しいタブでXの検索結果画面が開きます
         </p>
       </div>
     </div>
