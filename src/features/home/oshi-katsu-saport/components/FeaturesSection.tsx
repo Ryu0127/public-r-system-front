@@ -52,7 +52,7 @@ interface FeaturesSectionProps {
 
 const FeaturesSection: React.FC<FeaturesSectionProps> = ({ features }) => {
   return (
-    <section className="space-y-12 animate-fade-in" style={{ animationDelay: '0.15s' }}>
+    <section className="space-y-6 animate-fade-in" style={{ animationDelay: '0.15s', marginTop: '60px' }}>
       {/* セクションタイトル */}
       <div className="text-center space-y-4">
         <h2

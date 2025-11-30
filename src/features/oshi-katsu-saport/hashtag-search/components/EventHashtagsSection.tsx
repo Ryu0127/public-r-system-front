@@ -6,16 +6,20 @@ interface EventHashtagsSectionProps {
   eventHashtags: TalentHashtagsApiEventHashtag[];
   selectedTags: string[];
   mode: 'post' | 'search';
+  includeEventUrl: boolean;
   onEventHashtagToggle: (eventHashtag: TalentHashtagsApiEventHashtag) => void;
   onSearchQueryChange: (query: string) => void;
+  onIncludeEventUrlChange: (include: boolean) => void;
 }
 
 export const EventHashtagsSection: React.FC<EventHashtagsSectionProps> = ({
   eventHashtags,
   selectedTags,
   mode,
+  includeEventUrl,
   onEventHashtagToggle,
   onSearchQueryChange,
+  onIncludeEventUrlChange,
 }) => {
   if (eventHashtags.length === 0) {
     return null;
@@ -71,6 +75,37 @@ export const EventHashtagsSection: React.FC<EventHashtagsSectionProps> = ({
                     </span>
                   </div>
                 </div>
+
+                {/* イベントURL投稿オプション（投稿モードのみ） */}
+                {mode === 'post' && (
+                  <div className="p-3 bg-white/80 rounded-lg border border-blue-200">
+                    <label className="flex items-center gap-2 cursor-pointer group">
+                      <input
+                        type="checkbox"
+                        checked={includeEventUrl && selectedTags.includes(event.tag)}
+                        onChange={(e) => onIncludeEventUrlChange(e.target.checked)}
+                        disabled={!selectedTags.includes(event.tag)}
+                        className="w-4 h-4 text-[#1DA1F2] bg-white border-gray-300 rounded focus:ring-[#1DA1F2] focus:ring-2 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+                      />
+                      <span className={`text-sm font-semibold transition-colors ${
+                        selectedTags.includes(event.tag)
+                          ? 'text-gray-700 group-hover:text-[#1DA1F2]'
+                          : 'text-gray-400'
+                      }`}>
+                        イベントURLを投稿に含める
+                      </span>
+                    </label>
+                    {includeEventUrl && selectedTags.includes(event.tag) && (
+                      <div className="mt-2 ml-6">
+                        <p className="text-xs text-gray-600 mb-1 font-semibold">投稿に含まれるURL:</p>
+                        <div className="text-xs text-blue-600 break-all">
+                          {event.url}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 {/* 外部リンクボタン */}
                 <a
                   href={event.url}
