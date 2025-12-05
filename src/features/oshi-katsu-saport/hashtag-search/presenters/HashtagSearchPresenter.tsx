@@ -30,7 +30,7 @@ export const HashtagSearchPresenter: React.FC<HashtagSearchPresenterProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-blue-50 relative pb-32">
+    <div className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-blue-50 relative pb-24">
       {/* 背景装飾 */}
       <div className="absolute top-20 right-20 w-32 h-32 border-4 border-blue-200 rounded-full opacity-20 animate-spin-slow" />
       <div
