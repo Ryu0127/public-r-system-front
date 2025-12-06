@@ -1,6 +1,6 @@
 import React from 'react';
 import { TalentHashtagsApiEventHashtag } from 'hooks/api/oshi-katsu-saport/useTalentHashtagsGetApi';
-import { ExternalLinkIcon } from './Icons';
+import { ExternalLinkIcon, getHashtagIcon } from './Icons';
 
 interface EventHashtagsSectionProps {
   eventHashtags: TalentHashtagsApiEventHashtag[];
@@ -35,90 +35,101 @@ export const EventHashtagsSection: React.FC<EventHashtagsSectionProps> = ({
           イベントハッシュタグ
         </h2>
         <div className="space-y-4">
-          {eventHashtags.map((event) => (
-            <div
-              key={event.id}
-              className="bg-gradient-to-r from-blue-50 to-sky-50 rounded-xl p-4 border-2 border-blue-200 hover:border-[#1DA1F2] transition-all duration-300 hover:shadow-lg"
-            >
-              <div className="flex flex-col gap-3">
-                {/* イベント名 */}
-                <div>
-                  <h3 className="text-lg font-bold text-gray-800 mb-1">
+          {eventHashtags.map((event) => {
+            const isSelected = selectedTags.includes(event.tag);
+
+            return (
+              <div
+                key={event.id}
+                className="bg-gradient-to-r from-blue-50 to-sky-50 rounded-xl p-4 border-2 border-blue-200 hover:border-[#1DA1F2] transition-all duration-300 hover:shadow-lg"
+              >
+                <div className="space-y-3">
+                  {/* イベント名 */}
+                  <h3 className="text-lg font-bold text-gray-800">
                     {event.eventName}
                   </h3>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    {/* ハッシュタグ（クリック可能） */}
-                    <button
-                      onClick={() => {
-                        if (mode === 'post') {
-                          onEventHashtagToggle(event);
-                        } else {
-                          onSearchQueryChange(event.tag);
-                        }
-                      }}
-                      className={`inline-flex items-center gap-1 px-3 py-1 text-sm font-medium rounded-full shadow-md transition-all duration-200 hover:scale-105 ${
-                        mode === 'post' && selectedTags.includes(event.tag)
-                          ? 'bg-gradient-to-r from-[#1DA1F2] to-[#0d8bd9] text-white ring-2 ring-offset-2 ring-[#1DA1F2]'
-                          : 'bg-[#1DA1F2] text-white hover:bg-[#0d8bd9]'
+
+                  {/* ハッシュタグボタン（通常のハッシュタグと同じスタイル） */}
+                  {mode === 'post' ? (
+                    <label
+                      className={`flex items-center gap-3 px-4 py-3 rounded-xl border-2 cursor-pointer transition-all duration-200 ${
+                        isSelected
+                          ? 'bg-[#1DA1F2] border-[#1DA1F2] text-white shadow-lg shadow-blue-500/30'
+                          : 'bg-white border-gray-200 hover:border-[#1DA1F2] text-gray-700'
                       }`}
                     >
-                      #{event.tag}
-                      {mode === 'post' && selectedTags.includes(event.tag) && (
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                      )}
-                    </button>
-                    {/* 種類 */}
-                    <span className="inline-flex items-center gap-1 px-3 py-1 bg-white text-gray-700 text-xs font-medium rounded-full border border-gray-200">
-                      イベントカテゴリー：{event.type}
-                    </span>
-                  </div>
-                </div>
-
-                {/* イベントURL投稿オプション（投稿モードのみ） */}
-                {mode === 'post' && (
-                  <div className="p-3 bg-white/80 rounded-lg border border-blue-200">
-                    <label className="flex items-center gap-2 cursor-pointer group">
                       <input
                         type="checkbox"
-                        checked={includeEventUrl && selectedTags.includes(event.tag)}
-                        onChange={(e) => onIncludeEventUrlChange(e.target.checked)}
-                        disabled={!selectedTags.includes(event.tag)}
-                        className="w-4 h-4 text-[#1DA1F2] bg-white border-gray-300 rounded focus:ring-[#1DA1F2] focus:ring-2 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+                        checked={isSelected}
+                        onChange={() => onEventHashtagToggle(event)}
+                        className="hidden"
                       />
-                      <span className={`text-sm font-semibold transition-colors ${
-                        selectedTags.includes(event.tag)
-                          ? 'text-gray-700 group-hover:text-[#1DA1F2]'
-                          : 'text-gray-400'
-                      }`}>
-                        イベントURLを投稿に含める
-                      </span>
-                    </label>
-                    {includeEventUrl && selectedTags.includes(event.tag) && (
-                      <div className="mt-2 ml-6">
-                        <p className="text-xs text-gray-600 mb-1 font-semibold">投稿に含まれるURL:</p>
-                        <div className="text-xs text-blue-600 break-all">
-                          {event.url}
-                        </div>
+                      <div className={`flex-shrink-0 ${isSelected ? 'text-white' : 'text-gray-500'}`}>
+                        {getHashtagIcon('イベント')}
                       </div>
-                    )}
-                  </div>
-                )}
+                      <div className="flex flex-col gap-1 flex-1 min-w-0">
+                        <span className="text-sm font-medium truncate">#{event.tag}</span>
+                        <span className={`text-xs ${isSelected ? 'text-blue-100' : 'text-gray-500'}`}>
+                          イベントカテゴリー：{event.type}
+                        </span>
+                      </div>
+                    </label>
+                  ) : (
+                    <button
+                      onClick={() => onSearchQueryChange(event.tag)}
+                      className="w-full flex items-center gap-3 px-4 py-3 bg-white border-2 border-gray-200 hover:border-[#1DA1F2] hover:bg-[#1DA1F2] hover:text-white rounded-xl transition-all duration-200 hover:shadow-lg hover:shadow-blue-500/30 group"
+                    >
+                      <div className="flex-shrink-0 text-gray-500 group-hover:text-white">
+                        {getHashtagIcon('イベント')}
+                      </div>
+                      <div className="flex flex-col gap-1 flex-1 min-w-0 text-left">
+                        <span className="text-sm font-medium text-gray-700 group-hover:text-white truncate">#{event.tag}</span>
+                        <span className="text-xs text-gray-500 group-hover:text-blue-100">
+                          イベントカテゴリー：{event.type}
+                        </span>
+                      </div>
+                    </button>
+                  )}
 
-                {/* 外部リンクボタン */}
-                <a
-                  href={event.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-[#1DA1F2] to-[#0d8bd9] hover:from-[#0d8bd9] hover:to-[#1DA1F2] text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105"
-                >
-                  <ExternalLinkIcon />
-                  イベント詳細を見る
-                </a>
+                  {/* イベントURL投稿オプション（投稿モードのみ） */}
+                  {mode === 'post' && isSelected && (
+                    <div className="p-3 bg-white/80 rounded-lg border border-blue-200">
+                      <label className="flex items-center gap-2 cursor-pointer group">
+                        <input
+                          type="checkbox"
+                          checked={includeEventUrl}
+                          onChange={(e) => onIncludeEventUrlChange(e.target.checked)}
+                          className="w-4 h-4 text-[#1DA1F2] bg-white border-gray-300 rounded focus:ring-[#1DA1F2] focus:ring-2 cursor-pointer"
+                        />
+                        <span className="text-sm font-semibold text-gray-700 group-hover:text-[#1DA1F2] transition-colors">
+                          イベントURLを投稿に含める
+                        </span>
+                      </label>
+                      {includeEventUrl && (
+                        <div className="mt-2 ml-6">
+                          <p className="text-xs text-gray-600 mb-1 font-semibold">投稿に含まれるURL:</p>
+                          <div className="text-xs text-blue-600 break-all">
+                            {event.url}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* イベント詳細を見るボタン */}
+                  <a
+                    href={event.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-[#1DA1F2] to-[#0d8bd9] hover:from-[#0d8bd9] hover:to-[#1DA1F2] text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105"
+                  >
+                    <ExternalLinkIcon />
+                    イベント詳細を見る
+                  </a>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>
