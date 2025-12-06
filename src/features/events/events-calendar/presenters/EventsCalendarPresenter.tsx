@@ -66,21 +66,23 @@ const EventsCalendarPresenter: React.FC<PresenterProps> = ({ state, actions }) =
         </header>
 
         {/* 月移動ヘッダーとモード切り替え */}
-        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-8">
+        <div className="flex md:flex-row md:justify-end justify-center md:items-center gap-4 mb-8">
+          <ViewModeToggle
+            viewMode={state.config.viewMode}
+            onViewModeChange={actions.setViewMode}
+          />
+        </div>
+        <div className="flex md:flex-row justify-center md:items-center gap-4">
           <EventsCalendarHeader
             currentMonth={state.requestParams.currentMonth}
             onPrevMonth={() => actions.changeMonth(-1)}
             onNextMonth={() => actions.changeMonth(1)}
             onToday={actions.goToToday}
           />
-          <ViewModeToggle
-            viewMode={state.config.viewMode}
-            onViewModeChange={actions.setViewMode}
-          />
         </div>
 
         {/* カレンダー / リスト表示 */}
-        <div className="py-8">
+        <div>
           {state.config.viewMode === 'calendar' ? (
             <>
               <EventsCalendarGrid
