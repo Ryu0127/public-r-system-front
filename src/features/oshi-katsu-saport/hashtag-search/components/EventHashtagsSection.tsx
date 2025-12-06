@@ -43,7 +43,7 @@ export const EventHashtagsSection: React.FC<EventHashtagsSectionProps> = ({
                 {/* ハッシュタグボタン（通常のハッシュタグと同じスタイル） */}
                 {mode === 'post' ? (
                   <label
-                    className={`flex items-center justify-between gap-3 px-4 py-3 rounded-xl border-2 cursor-pointer transition-all duration-200 ${
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl border-2 cursor-pointer transition-all duration-200 ${
                       isSelected
                         ? 'bg-[#1DA1F2] border-[#1DA1F2] text-white shadow-lg shadow-blue-500/30'
                         : 'bg-white border-gray-200 hover:border-[#1DA1F2] text-gray-700'
@@ -55,64 +55,47 @@ export const EventHashtagsSection: React.FC<EventHashtagsSectionProps> = ({
                       onChange={() => onEventHashtagToggle(event)}
                       className="hidden"
                     />
-                    <div className="flex items-center gap-2 flex-1 min-w-0">
-                      <div className={`flex-shrink-0 ${isSelected ? 'text-white' : 'text-gray-500'}`}>
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-                        </svg>
-                      </div>
-                      <div className="flex flex-col gap-1 flex-1 min-w-0">
-                        <span className="text-sm font-medium truncate">#{event.tag}</span>
-                        <span className={`text-xs ${isSelected ? 'text-blue-100' : 'text-gray-500'}`}>
-                          {event.eventName} / {event.type}
-                        </span>
-                      </div>
+                    <div className={`flex-shrink-0 ${isSelected ? 'text-white' : 'text-gray-500'}`}>
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                      </svg>
                     </div>
-                    <a
-                      href={event.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={(e) => e.stopPropagation()}
-                      className={`flex-shrink-0 p-2 rounded-lg transition-colors ${
-                        isSelected
-                          ? 'hover:bg-white/20 text-white'
-                          : 'hover:bg-gray-100 text-gray-500'
-                      }`}
-                      title="イベント詳細を見る"
-                    >
-                      <ExternalLinkIcon />
-                    </a>
+                    <div className="flex flex-col gap-1 flex-1 min-w-0">
+                      <span className="text-sm font-medium truncate">#{event.tag}</span>
+                      <span className={`text-xs ${isSelected ? 'text-blue-100' : 'text-gray-500'}`}>
+                        {event.eventName} / {event.type}
+                      </span>
+                    </div>
                   </label>
                 ) : (
                   <button
                     onClick={() => onSearchQueryChange(event.tag)}
-                    className="w-full flex items-center justify-between gap-3 px-4 py-3 bg-white border-2 border-gray-200 hover:border-[#1DA1F2] hover:bg-[#1DA1F2] hover:text-white rounded-xl transition-all duration-200 hover:shadow-lg hover:shadow-blue-500/30 group"
+                    className="w-full flex items-center gap-3 px-4 py-3 bg-white border-2 border-gray-200 hover:border-[#1DA1F2] hover:bg-[#1DA1F2] hover:text-white rounded-xl transition-all duration-200 hover:shadow-lg hover:shadow-blue-500/30 group"
                   >
-                    <div className="flex items-center gap-2 flex-1 min-w-0">
-                      <div className="flex-shrink-0 text-gray-500 group-hover:text-white">
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-                        </svg>
-                      </div>
-                      <div className="flex flex-col gap-1 flex-1 min-w-0 text-left">
-                        <span className="text-sm font-medium text-gray-700 group-hover:text-white truncate">#{event.tag}</span>
-                        <span className="text-xs text-gray-500 group-hover:text-blue-100">
-                          {event.eventName} / {event.type}
-                        </span>
-                      </div>
+                    <div className="flex-shrink-0 text-gray-500 group-hover:text-white">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                      </svg>
                     </div>
-                    <a
-                      href={event.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={(e) => e.stopPropagation()}
-                      className="flex-shrink-0 p-2 rounded-lg hover:bg-white/20 text-gray-500 group-hover:text-white transition-colors"
-                      title="イベント詳細を見る"
-                    >
-                      <ExternalLinkIcon />
-                    </a>
+                    <div className="flex flex-col gap-1 flex-1 min-w-0 text-left">
+                      <span className="text-sm font-medium text-gray-700 group-hover:text-white truncate">#{event.tag}</span>
+                      <span className="text-xs text-gray-500 group-hover:text-blue-100">
+                        {event.eventName} / {event.type}
+                      </span>
+                    </div>
                   </button>
                 )}
+
+                {/* イベント詳細を見るボタン */}
+                <a
+                  href={event.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-[#1DA1F2] to-[#0d8bd9] hover:from-[#0d8bd9] hover:to-[#1DA1F2] text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105"
+                >
+                  <ExternalLinkIcon />
+                  イベント詳細を見る
+                </a>
 
                 {/* イベントURL投稿オプション（投稿モードのみ） */}
                 {mode === 'post' && isSelected && (
