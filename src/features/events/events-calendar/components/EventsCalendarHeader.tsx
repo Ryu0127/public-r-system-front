@@ -5,8 +5,6 @@ interface EventsCalendarHeaderProps {
   onPrevMonth: () => void;
   onNextMonth: () => void;
   onToday: () => void;
-  onYearChange: (year: number) => void;
-  onMonthChange: (month: number) => void;
 }
 
 /**
@@ -17,52 +15,23 @@ const EventsCalendarHeader: React.FC<EventsCalendarHeaderProps> = ({
   onPrevMonth,
   onNextMonth,
   onToday,
-  onYearChange,
-  onMonthChange,
 }) => {
   const year = currentMonth.getFullYear();
   const month = currentMonth.getMonth() + 1;
 
-  // 年の選択肢（現在の年の前後5年）
-  const yearOptions = Array.from({ length: 11 }, (_, i) => year - 5 + i);
-
-  // 月の選択肢（1-12）
-  const monthOptions = Array.from({ length: 12 }, (_, i) => i + 1);
-
   return (
     <div className="mb-8">
       <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-6">
-        {/* 年月表示（セレクトボックス） */}
-        <div className="flex items-baseline gap-1">
-          <select
-            value={year}
-            onChange={(e) => onYearChange(Number(e.target.value))}
-            className="text-3xl font-bold text-gray-700 bg-transparent border-b border-transparent hover:border-gray-300 focus:border-amber-400 focus:outline-none transition-colors cursor-pointer"
-            style={{ fontFamily: "'Playfair Display', serif" }}
-          >
-            {yearOptions.map((y) => (
-              <option key={y} value={y}>
-                {y}
-              </option>
-            ))}
-          </select>
-          <span className="text-sm text-gray-400 font-light ml-0.5">年</span>
-
-          <span className="text-2xl text-gray-300 mx-3">/</span>
-
-          <select
-            value={month}
-            onChange={(e) => onMonthChange(Number(e.target.value))}
-            className="text-3xl font-bold text-gray-700 bg-transparent border-b border-transparent hover:border-gray-300 focus:border-amber-400 focus:outline-none transition-colors cursor-pointer"
-            style={{ fontFamily: "'Playfair Display', serif" }}
-          >
-            {monthOptions.map((m) => (
-              <option key={m} value={m}>
-                {m}
-              </option>
-            ))}
-          </select>
-          <span className="text-sm text-gray-400 font-light ml-0.5">月</span>
+        {/* 年月表示 */}
+        <div className="flex items-baseline gap-2">
+          <h2 className="text-3xl font-semibold text-gray-700">
+            {year}
+          </h2>
+          <span className="text-sm text-gray-400 font-light">年</span>
+          <h3 className="text-3xl font-semibold text-gray-700 ml-3">
+            {month}
+          </h3>
+          <span className="text-sm text-gray-400 font-light">月</span>
         </div>
 
         {/* 月移動ボタン */}

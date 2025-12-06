@@ -69,8 +69,6 @@ const EventsCalendarPresenter: React.FC<PresenterProps> = ({ state, actions }) =
           onPrevMonth={() => actions.changeMonth(-1)}
           onNextMonth={() => actions.changeMonth(1)}
           onToday={actions.goToToday}
-          onYearChange={actions.changeYear}
-          onMonthChange={actions.changeMonthDirect}
         />
 
         {/* カレンダー */}
