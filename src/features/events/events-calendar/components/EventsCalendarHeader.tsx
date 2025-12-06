@@ -24,14 +24,14 @@ const EventsCalendarHeader: React.FC<EventsCalendarHeaderProps> = ({
       <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-6">
         {/* 年月表示 */}
         <div className="flex items-baseline gap-2">
-          <h2 className="text-5xl font-bold text-gray-800" style={{ fontFamily: "'Playfair Display', serif" }}>
+          <h2 className="text-3xl font-bold text-gray-700" style={{ fontFamily: "'Playfair Display', serif" }}>
             {year}
           </h2>
-          <span className="text-2xl text-gray-400 font-light">年</span>
-          <h3 className="text-6xl font-bold text-amber-600 ml-4" style={{ fontFamily: "'Playfair Display', serif" }}>
+          <span className="text-lg text-gray-400 font-light">年</span>
+          <h3 className="text-3xl font-bold text-gray-700 ml-3" style={{ fontFamily: "'Playfair Display', serif" }}>
             {month}
           </h3>
-          <span className="text-2xl text-gray-400 font-light">月</span>
+          <span className="text-lg text-gray-400 font-light">月</span>
         </div>
 
         {/* 月移動ボタン */}
