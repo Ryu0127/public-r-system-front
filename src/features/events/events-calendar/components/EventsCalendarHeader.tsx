@@ -37,7 +37,7 @@ const EventsCalendarHeader: React.FC<EventsCalendarHeaderProps> = ({
           <select
             value={year}
             onChange={(e) => onYearChange(Number(e.target.value))}
-            className="text-3xl font-semibold italic text-gray-600 bg-transparent border-b border-transparent hover:border-gray-300 focus:border-amber-400 focus:outline-none transition-colors cursor-pointer"
+            className="text-3xl font-bold text-gray-700 bg-transparent border-b border-transparent hover:border-gray-300 focus:border-amber-400 focus:outline-none transition-colors cursor-pointer"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
             {yearOptions.map((y) => (
@@ -46,14 +46,14 @@ const EventsCalendarHeader: React.FC<EventsCalendarHeaderProps> = ({
               </option>
             ))}
           </select>
-          <span className="text-sm italic text-gray-400 font-light ml-0.5">anno</span>
+          <span className="text-sm text-gray-400 font-light ml-0.5">年</span>
 
           <span className="text-2xl text-gray-300 mx-3">/</span>
 
           <select
             value={month}
             onChange={(e) => onMonthChange(Number(e.target.value))}
-            className="text-3xl font-semibold italic text-gray-600 bg-transparent border-b border-transparent hover:border-gray-300 focus:border-amber-400 focus:outline-none transition-colors cursor-pointer"
+            className="text-3xl font-bold text-gray-700 bg-transparent border-b border-transparent hover:border-gray-300 focus:border-amber-400 focus:outline-none transition-colors cursor-pointer"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
             {monthOptions.map((m) => (
@@ -62,7 +62,7 @@ const EventsCalendarHeader: React.FC<EventsCalendarHeaderProps> = ({
               </option>
             ))}
           </select>
-          <span className="text-sm italic text-gray-400 font-light ml-0.5">mese</span>
+          <span className="text-sm text-gray-400 font-light ml-0.5">月</span>
         </div>
 
         {/* 月移動ボタン */}
