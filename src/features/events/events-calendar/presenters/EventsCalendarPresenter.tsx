@@ -37,7 +37,41 @@ const EventsCalendarPresenter: React.FC<PresenterProps> = ({ state, actions }) =
 
             {/* メインコンテンツ */}
             <div className="relative z-10">
-              {/* ヘッダー */}
+              {/* タイトルセクション */}
+              <section className="text-center py-12 px-4 animate-fade-in">
+                {/* バッジ */}
+                <div className="flex justify-center mb-6">
+                  <div className="inline-flex items-center gap-3 px-6 py-3 bg-white/80 backdrop-blur-sm rounded-full border border-amber-200 shadow-lg">
+                    <span className="text-amber-600 text-2xl">✦</span>
+                    <span className="text-amber-700 text-sm font-medium uppercase tracking-wider">
+                      HOLOLIVE EVENTS
+                    </span>
+                    <span className="text-sky-600 text-2xl">✦</span>
+                  </div>
+                </div>
+
+                {/* タイトル */}
+                <h1
+                  className="text-4xl md:text-5xl font-bold text-gray-800 mb-4"
+                  style={{ fontFamily: "'Playfair Display', serif" }}
+                >
+                  イベントカレンダー
+                </h1>
+
+                {/* サブタイトル */}
+                <p className="text-base md:text-lg text-gray-600 font-light max-w-2xl mx-auto">
+                  ホロライブのイベント予定をカレンダーで確認できます
+                </p>
+
+                {/* 装飾的な区切り線 */}
+                <div className="flex items-center justify-center gap-3 opacity-40 pt-6">
+                  <div className="w-16 h-px bg-gradient-to-r from-transparent to-amber-400" />
+                  <div className="w-2 h-2 bg-amber-400 rounded-full" />
+                  <div className="w-16 h-px bg-gradient-to-l from-transparent to-amber-400" />
+                </div>
+              </section>
+
+              {/* 月移動ヘッダー */}
               <EventsCalendarHeader
                 currentMonth={state.requestParams.currentMonth}
                 onPrevMonth={() => actions.changeMonth(-1)}
