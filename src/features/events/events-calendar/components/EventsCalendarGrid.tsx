@@ -250,7 +250,7 @@ const EventsCalendarGrid: React.FC<EventsCalendarGridProps> = ({
                   return (
                     <div
                       key={dayIndex}
-                      className={`min-h-[120px] border-b border-r p-2 transition-all ${
+                      className={`min-h-[200px] border-b border-r p-2 transition-all ${
                         !calendarDay.isCurrentMonth
                           ? 'bg-gray-50'
                           : calendarDay.isToday
@@ -260,9 +260,9 @@ const EventsCalendarGrid: React.FC<EventsCalendarGridProps> = ({
                     >
                       {/* 日付表示 */}
                       <div
-                        className={`text-sm md:text-base font-semibold mb-2 ${
+                        className={`text-sm md:text-base font-semibold mb-1 ${
                           calendarDay.isToday
-                            ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-full w-8 h-8 flex items-center justify-center shadow-md'
+                            ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-full w-7 h-7 flex items-center justify-center shadow-md text-xs'
                             : dayOfWeek === 0
                             ? 'text-red-600'
                             : dayOfWeek === 6
@@ -280,7 +280,7 @@ const EventsCalendarGrid: React.FC<EventsCalendarGridProps> = ({
               </div>
 
               {/* イベントバー（絶対配置） */}
-              <div className="absolute top-10 left-0 right-0 pointer-events-none">
+              <div className="absolute top-8 left-0 right-0 pointer-events-none">
                 <div className="grid grid-cols-7">
                   {weekEventBars.map((bar, barIndex) => {
                     const leftOffset = (bar.startCol / 7) * 100;
@@ -291,7 +291,7 @@ const EventsCalendarGrid: React.FC<EventsCalendarGridProps> = ({
                         key={`${bar.event.id}-${barIndex}`}
                         className="col-span-7 relative pointer-events-auto"
                         style={{
-                          marginTop: `${barIndex * 32}px`,
+                          marginTop: `${barIndex * 24}px`,
                         }}
                       >
                         <div
@@ -305,14 +305,16 @@ const EventsCalendarGrid: React.FC<EventsCalendarGridProps> = ({
                           onClick={() => onEventClick?.(bar.event)}
                         >
                           <div
-                            className="text-xs px-2 py-1.5 rounded-lg shadow-sm hover:shadow-md transition-all border border-opacity-20"
+                            className="px-1.5 py-0.5 rounded shadow-sm hover:shadow-md transition-all border border-opacity-20"
                             style={{
                               backgroundColor: bar.event.color + '20',
                               borderColor: bar.event.color,
+                              fontSize: '0.65rem',
+                              lineHeight: '1.2',
                             }}
                           >
-                            <div className="flex items-center gap-1 overflow-hidden">
-                              <span className="flex-shrink-0">
+                            <div className="flex items-center gap-0.5 overflow-hidden">
+                              <span className="flex-shrink-0 text-xs">
                                 {getEventTypeIcon(bar.event.type)}
                               </span>
                               <span
