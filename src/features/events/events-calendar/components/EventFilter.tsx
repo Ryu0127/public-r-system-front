@@ -12,7 +12,7 @@ interface EventFilterProps {
 const EventFilter: React.FC<EventFilterProps> = ({ selectedFilters, onToggleFilter }) => {
   const filterOptions: { value: FilterCategory; label: string }[] = [
     { value: 'streaming', label: '記念配信' },
-    { value: 'event', label: 'イベント' },
+    { value: 'event', label: 'イベント/イベント申込' },
     { value: 'goods', label: 'グッズ/ボイス' },
   ];
 
