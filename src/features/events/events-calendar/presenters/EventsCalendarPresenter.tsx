@@ -4,6 +4,8 @@ import EventsCalendarHeader from '../components/EventsCalendarHeader';
 import EventsCalendarGrid from '../components/EventsCalendarGrid';
 import EventsListView from '../components/EventsListView';
 import ViewModeToggle from '../components/ViewModeToggle';
+import EventFilter from '../components/EventFilter';
+import { filterEventsMap } from '../utils/filterEvents';
 import Loading from 'components/Loading';
 
 export interface PresenterProps {
@@ -22,6 +24,9 @@ const EventsCalendarPresenter: React.FC<PresenterProps> = ({ state, actions }) =
   const handleBackToHome = () => {
     window.location.href = '/';
   };
+
+  // フィルタリングされたイベントマップ
+  const filteredEventsMap = filterEventsMap(state.data.eventsMap, state.config.selectedFilters);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-amber-50 relative">
@@ -65,13 +70,15 @@ const EventsCalendarPresenter: React.FC<PresenterProps> = ({ state, actions }) =
           </p>
         </header>
 
-        {/* 月移動ヘッダーとモード切り替え */}
+        {/* モード切り替え（右上） */}
         <div className="flex md:flex-row md:justify-end justify-center md:items-center gap-4 mb-8">
           <ViewModeToggle
             viewMode={state.config.viewMode}
             onViewModeChange={actions.setViewMode}
           />
         </div>
+
+        {/* 月移動ヘッダー（中央） */}
         <div className="flex md:flex-row justify-center md:items-center gap-4">
           <EventsCalendarHeader
             currentMonth={state.requestParams.currentMonth}
@@ -81,13 +88,21 @@ const EventsCalendarPresenter: React.FC<PresenterProps> = ({ state, actions }) =
           />
         </div>
 
+        {/* フィルター */}
+        <div className="flex justify-center items-center gap-4 mb-8 mt-4">
+          <EventFilter
+            selectedFilters={state.config.selectedFilters}
+            onToggleFilter={actions.toggleFilter}
+          />
+        </div>
+
         {/* カレンダー / リスト表示 */}
         <div>
           {state.config.viewMode === 'calendar' ? (
             <>
               <EventsCalendarGrid
                 currentMonth={state.requestParams.currentMonth}
-                eventsMap={state.data.eventsMap}
+                eventsMap={filteredEventsMap}
                 onEventClick={actions.handleEventClick}
               />
 
@@ -129,7 +144,7 @@ const EventsCalendarPresenter: React.FC<PresenterProps> = ({ state, actions }) =
           ) : (
             <EventsListView
               currentMonth={state.requestParams.currentMonth}
-              eventsMap={state.data.eventsMap}
+              eventsMap={filteredEventsMap}
               onEventClick={actions.handleEventClick}
             />
           )}

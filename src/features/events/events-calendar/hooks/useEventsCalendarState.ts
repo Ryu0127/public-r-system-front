@@ -1,5 +1,5 @@
 import { useCallback, useEffect } from 'react';
-import { HololiveEvent, EventsMap, ViewMode } from '../types';
+import { HololiveEvent, EventsMap, ViewMode, FilterCategory } from '../types';
 import { mockEvents } from '../data/mockEvents';
 
 export interface EventsCalendarState {
@@ -12,6 +12,7 @@ export interface EventsCalendarState {
     isLoading: boolean;
     sidebarVisible: boolean;
     viewMode: ViewMode; // 表示モード
+    selectedFilters: FilterCategory[]; // 選択中のフィルター
   };
   // データ項目
   data: {
@@ -33,6 +34,8 @@ export interface EventsCalendarActions {
   goToToday: () => void;
   // 表示モード変更
   setViewMode: (mode: ViewMode) => void;
+  // フィルター変更
+  toggleFilter: (category: FilterCategory) => void;
   // データ取得
   fetchMonthData: (month: Date) => void;
   // イベントクリック
@@ -188,6 +191,29 @@ export const useEventsCalendarState = (
             viewMode: mode,
           },
         }));
+      },
+      [setState]
+    ),
+
+    /**
+     * フィルター切り替え
+     */
+    toggleFilter: useCallback(
+      (category: FilterCategory) => {
+        setState(prev => {
+          const currentFilters = prev.config.selectedFilters;
+          const newFilters = currentFilters.includes(category)
+            ? currentFilters.filter(f => f !== category)
+            : [...currentFilters, category];
+
+          return {
+            ...prev,
+            config: {
+              ...prev.config,
+              selectedFilters: newFilters,
+            },
+          };
+        });
       },
       [setState]
     ),

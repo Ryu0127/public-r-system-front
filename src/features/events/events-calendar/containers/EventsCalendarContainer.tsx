@@ -20,6 +20,7 @@ const EventsCalendarContainer: React.FC = () => {
       isLoading: true,
       sidebarVisible: false,
       viewMode: 'calendar',
+      selectedFilters: [], // 初期状態ではすべて表示
     },
     data: {
       eventsMap: {},
