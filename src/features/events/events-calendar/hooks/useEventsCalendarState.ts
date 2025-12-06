@@ -27,6 +27,8 @@ export interface EventsCalendarActions {
   };
   // 月変更アクション
   changeMonth: (offset: number) => void; // offset: -1(前月), 0(今月), 1(次月)
+  changeYear: (year: number) => void; // 年を指定して変更
+  changeMonthDirect: (month: number) => void; // 月を指定して変更（1-12）
   goToToday: () => void;
   // データ取得
   fetchMonthData: (month: Date) => void;
@@ -104,6 +106,46 @@ export const useEventsCalendarState = (
         setState(prev => {
           const newMonth = new Date(prev.requestParams.currentMonth);
           newMonth.setMonth(newMonth.getMonth() + offset);
+          newMonth.setDate(1); // 1日に設定
+          return {
+            ...prev,
+            requestParams: {
+              currentMonth: newMonth,
+            },
+          };
+        });
+      },
+      [setState]
+    ),
+
+    /**
+     * 年を指定して変更
+     */
+    changeYear: useCallback(
+      (year: number) => {
+        setState(prev => {
+          const newMonth = new Date(prev.requestParams.currentMonth);
+          newMonth.setFullYear(year);
+          newMonth.setDate(1); // 1日に設定
+          return {
+            ...prev,
+            requestParams: {
+              currentMonth: newMonth,
+            },
+          };
+        });
+      },
+      [setState]
+    ),
+
+    /**
+     * 月を指定して変更（1-12）
+     */
+    changeMonthDirect: useCallback(
+      (month: number) => {
+        setState(prev => {
+          const newMonth = new Date(prev.requestParams.currentMonth);
+          newMonth.setMonth(month - 1); // 0-11に変換
           newMonth.setDate(1); // 1日に設定
           return {
             ...prev,
