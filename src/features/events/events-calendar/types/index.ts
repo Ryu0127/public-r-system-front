@@ -32,7 +32,8 @@ export type ViewMode = 'calendar' | 'list';
 export interface HololiveEvent {
   id: string;
   title: string;
-  date: string; // yyyy-mm-dd形式
+  date: string; // yyyy-mm-dd形式（開始日）
+  endDate?: string; // yyyy-mm-dd形式（終了日、期間のあるイベントの場合）
   startTime?: string; // HH:mm形式
   endTime?: string; // HH:mm形式
   type: EventType;

@@ -14,6 +14,13 @@ interface CalendarDay {
   dateKey: string;
 }
 
+interface EventBar {
+  event: HololiveEvent;
+  startCol: number; // 0-6 (日曜-土曜)
+  span: number; // 横に何列分伸びるか
+  weekRow: number; // カレンダーの何週目か
+}
+
 /**
  * 月のカレンダー日付配列を生成する
  */
@@ -87,9 +94,9 @@ const isToday = (date: Date): boolean => {
 };
 
 /**
- * イベントタイプのバッジカラーを取得
+ * イベントタイプのアイコンを取得
  */
-const getEventTypeBadge = (type: HololiveEvent['type']): string => {
+const getEventTypeIcon = (type: HololiveEvent['type']): string => {
   switch (type) {
     case 'anniversary':
       return '🎉';
@@ -103,9 +110,86 @@ const getEventTypeBadge = (type: HololiveEvent['type']): string => {
       return '👥';
     case 'birthday':
       return '🎂';
+    case 'goods':
+      return '🛍️';
+    case 'voice':
+      return '🎧';
+    case 'application':
+      return '📝';
     default:
       return '📅';
   }
+};
+
+/**
+ * イベントバーを計算（複数日にわたるイベント対応）
+ */
+const calculateEventBars = (
+  calendarDays: CalendarDay[],
+  eventsMap: EventsMap
+): EventBar[] => {
+  const eventBars: EventBar[] = [];
+  const processedEvents = new Set<string>();
+
+  calendarDays.forEach((day, dayIndex) => {
+    const weekRow = Math.floor(dayIndex / 7);
+    const dayOfWeek = dayIndex % 7;
+    const events = eventsMap[day.dateKey] || [];
+
+    events.forEach((event) => {
+      // すでに処理済みのイベントはスキップ
+      if (processedEvents.has(event.id)) {
+        return;
+      }
+
+      const startDate = new Date(event.date);
+      const endDate = event.endDate ? new Date(event.endDate) : startDate;
+
+      // このイベントが表示される全ての週を計算
+      const eventStartIndex = dayIndex;
+      const eventEndIndex = calendarDays.findIndex(
+        (d) => d.dateKey === formatDateKey(endDate)
+      );
+
+      if (eventEndIndex === -1) {
+        // 終了日がカレンダー範囲外の場合、カレンダーの最後まで表示
+        const span = 7 - dayOfWeek;
+        eventBars.push({
+          event,
+          startCol: dayOfWeek,
+          span,
+          weekRow,
+        });
+      } else {
+        // 週をまたぐ場合、複数のバーに分割
+        let currentIndex = eventStartIndex;
+        let currentWeekRow = weekRow;
+
+        while (currentIndex <= eventEndIndex) {
+          const currentDayOfWeek = currentIndex % 7;
+          const weekEndIndex = Math.min(
+            currentIndex + (6 - currentDayOfWeek),
+            eventEndIndex
+          );
+          const span = weekEndIndex - currentIndex + 1;
+
+          eventBars.push({
+            event,
+            startCol: currentDayOfWeek,
+            span,
+            weekRow: currentWeekRow,
+          });
+
+          currentIndex = weekEndIndex + 1;
+          currentWeekRow++;
+        }
+      }
+
+      processedEvents.add(event.id);
+    });
+  });
+
+  return eventBars;
 };
 
 /**
@@ -117,7 +201,18 @@ const EventsCalendarGrid: React.FC<EventsCalendarGridProps> = ({
   onEventClick,
 }) => {
   const calendarDays = generateCalendarDays(currentMonth);
+  const eventBars = calculateEventBars(calendarDays, eventsMap);
   const weekDays = ['日', '月', '火', '水', '木', '金', '土'];
+  const weeks = 6; // 6週分表示
+
+  // 週ごとのイベントバーをグループ化
+  const eventBarsByWeek: { [week: number]: EventBar[] } = {};
+  eventBars.forEach((bar) => {
+    if (!eventBarsByWeek[bar.weekRow]) {
+      eventBarsByWeek[bar.weekRow] = [];
+    }
+    eventBarsByWeek[bar.weekRow].push(bar);
+  });
 
   return (
     <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200">
@@ -140,100 +235,126 @@ const EventsCalendarGrid: React.FC<EventsCalendarGridProps> = ({
       </div>
 
       {/* カレンダーグリッド */}
-      <div className="grid grid-cols-7">
-        {calendarDays.map((calendarDay, index) => {
-          const events = eventsMap[calendarDay.dateKey] || [];
-          const dayOfWeek = calendarDay.date.getDay();
+      <div>
+        {Array.from({ length: weeks }).map((_, weekIndex) => {
+          const weekDays = calendarDays.slice(weekIndex * 7, (weekIndex + 1) * 7);
+          const weekEventBars = eventBarsByWeek[weekIndex] || [];
 
           return (
-            <div
-              key={index}
-              className={`min-h-[140px] border-b border-r p-2 transition-all ${
-                !calendarDay.isCurrentMonth
-                  ? 'bg-gray-50'
-                  : calendarDay.isToday
-                  ? 'bg-gradient-to-br from-amber-50 to-sky-50'
-                  : 'bg-white hover:bg-gradient-to-br hover:from-sky-50 hover:to-purple-50'
-              }`}
-            >
-              {/* 日付表示 */}
-              <div
-                className={`text-sm md:text-base font-semibold mb-2 ${
-                  calendarDay.isToday
-                    ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-full w-8 h-8 flex items-center justify-center shadow-md'
-                    : dayOfWeek === 0
-                    ? 'text-red-600'
-                    : dayOfWeek === 6
-                    ? 'text-blue-600'
-                    : calendarDay.isCurrentMonth
-                    ? 'text-gray-900'
-                    : 'text-gray-400'
-                }`}
-              >
-                {calendarDay.date.getDate()}
+            <div key={weekIndex} className="relative">
+              {/* 日付グリッド */}
+              <div className="grid grid-cols-7">
+                {weekDays.map((calendarDay, dayIndex) => {
+                  const dayOfWeek = calendarDay.date.getDay();
+
+                  return (
+                    <div
+                      key={dayIndex}
+                      className={`min-h-[120px] border-b border-r p-2 transition-all ${
+                        !calendarDay.isCurrentMonth
+                          ? 'bg-gray-50'
+                          : calendarDay.isToday
+                          ? 'bg-gradient-to-br from-amber-50 to-sky-50'
+                          : 'bg-white hover:bg-gradient-to-br hover:from-sky-50 hover:to-purple-50'
+                      }`}
+                    >
+                      {/* 日付表示 */}
+                      <div
+                        className={`text-sm md:text-base font-semibold mb-2 ${
+                          calendarDay.isToday
+                            ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-full w-8 h-8 flex items-center justify-center shadow-md'
+                            : dayOfWeek === 0
+                            ? 'text-red-600'
+                            : dayOfWeek === 6
+                            ? 'text-blue-600'
+                            : calendarDay.isCurrentMonth
+                            ? 'text-gray-900'
+                            : 'text-gray-400'
+                        }`}
+                      >
+                        {calendarDay.date.getDate()}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
 
-              {/* イベントリスト */}
-              <div className="space-y-1.5">
-                {events.slice(0, 3).map((event) => (
-                  <div
-                    key={event.id}
-                    className="group relative cursor-pointer"
-                    onClick={() => onEventClick?.(event)}
-                  >
-                    <div
-                      className="text-xs px-2 py-1.5 rounded-lg truncate shadow-sm hover:shadow-md transition-all border border-opacity-20"
-                      style={{
-                        backgroundColor: event.color + '20',
-                        borderColor: event.color,
-                      }}
-                    >
-                      <div className="flex items-center gap-1">
-                        <span>{getEventTypeBadge(event.type)}</span>
-                        <span
-                          className="font-medium truncate"
-                          style={{ color: event.color }}
-                        >
-                          {event.title}
-                        </span>
-                      </div>
-                      {event.startTime && (
-                        <div className="text-xs text-gray-600 mt-0.5">
-                          {event.startTime}
-                        </div>
-                      )}
-                    </div>
+              {/* イベントバー（絶対配置） */}
+              <div className="absolute top-10 left-0 right-0 pointer-events-none">
+                <div className="grid grid-cols-7">
+                  {weekEventBars.map((bar, barIndex) => {
+                    const leftOffset = (bar.startCol / 7) * 100;
+                    const width = (bar.span / 7) * 100;
 
-                    {/* ホバー時のツールチップ */}
-                    <div className="absolute left-0 top-full mt-1 z-10 hidden group-hover:block">
+                    return (
                       <div
-                        className="bg-gray-900 text-white text-xs rounded-lg p-3 shadow-xl min-w-[200px] max-w-[300px]"
-                        style={{ borderLeft: `4px solid ${event.color}` }}
+                        key={`${bar.event.id}-${barIndex}`}
+                        className="col-span-7 relative pointer-events-auto"
+                        style={{
+                          marginTop: `${barIndex * 32}px`,
+                        }}
                       >
-                        <div className="font-bold mb-1">{event.title}</div>
-                        <div className="text-gray-300 mb-1">{event.talentName}</div>
-                        {event.startTime && (
-                          <div className="text-gray-400">
-                            {event.startTime}
-                            {event.endTime && ` - ${event.endTime}`}
+                        <div
+                          className="absolute cursor-pointer group"
+                          style={{
+                            left: `${leftOffset}%`,
+                            width: `${width}%`,
+                            paddingLeft: '0.25rem',
+                            paddingRight: '0.25rem',
+                          }}
+                          onClick={() => onEventClick?.(bar.event)}
+                        >
+                          <div
+                            className="text-xs px-2 py-1.5 rounded-lg shadow-sm hover:shadow-md transition-all border border-opacity-20"
+                            style={{
+                              backgroundColor: bar.event.color + '20',
+                              borderColor: bar.event.color,
+                            }}
+                          >
+                            <div className="flex items-center gap-1 overflow-hidden">
+                              <span className="flex-shrink-0">
+                                {getEventTypeIcon(bar.event.type)}
+                              </span>
+                              <span
+                                className="font-medium truncate"
+                                style={{ color: bar.event.color }}
+                              >
+                                {bar.event.title}
+                              </span>
+                            </div>
                           </div>
-                        )}
-                        {event.description && (
-                          <div className="text-gray-300 mt-2 pt-2 border-t border-gray-700">
-                            {event.description}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))}
 
-                {/* 追加イベント数表示 */}
-                {events.length > 3 && (
-                  <div className="text-xs text-gray-500 font-semibold px-2 py-1 bg-gray-100 rounded">
-                    +{events.length - 3} 件
-                  </div>
-                )}
+                          {/* ホバー時のツールチップ */}
+                          <div className="absolute left-0 top-full mt-1 z-20 hidden group-hover:block">
+                            <div
+                              className="bg-gray-900 text-white text-xs rounded-lg p-3 shadow-xl min-w-[200px] max-w-[300px]"
+                              style={{ borderLeft: `4px solid ${bar.event.color}` }}
+                            >
+                              <div className="font-bold mb-1">{bar.event.title}</div>
+                              <div className="text-gray-300 mb-1">{bar.event.talentName}</div>
+                              {bar.event.endDate && (
+                                <div className="text-gray-400">
+                                  {bar.event.date} ~ {bar.event.endDate}
+                                </div>
+                              )}
+                              {bar.event.startTime && (
+                                <div className="text-gray-400">
+                                  {bar.event.startTime}
+                                  {bar.event.endTime && ` - ${bar.event.endTime}`}
+                                </div>
+                              )}
+                              {bar.event.description && (
+                                <div className="text-gray-300 mt-2 pt-2 border-t border-gray-700">
+                                  {bar.event.description}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             </div>
           );
