@@ -1,5 +1,5 @@
 import { useCallback, useEffect } from 'react';
-import { HololiveEvent, EventsMap } from '../types';
+import { HololiveEvent, EventsMap, ViewMode } from '../types';
 import { mockEvents } from '../data/mockEvents';
 
 export interface EventsCalendarState {
@@ -11,6 +11,7 @@ export interface EventsCalendarState {
   config: {
     isLoading: boolean;
     sidebarVisible: boolean;
+    viewMode: ViewMode; // 表示モード
   };
   // データ項目
   data: {
@@ -30,6 +31,8 @@ export interface EventsCalendarActions {
   changeYear: (year: number) => void; // 年を指定して変更
   changeMonthDirect: (month: number) => void; // 月を指定して変更（1-12）
   goToToday: () => void;
+  // 表示モード変更
+  setViewMode: (mode: ViewMode) => void;
   // データ取得
   fetchMonthData: (month: Date) => void;
   // イベントクリック
@@ -172,6 +175,22 @@ export const useEventsCalendarState = (
         },
       }));
     }, [setState]),
+
+    /**
+     * 表示モード変更
+     */
+    setViewMode: useCallback(
+      (mode: ViewMode) => {
+        setState(prev => ({
+          ...prev,
+          config: {
+            ...prev.config,
+            viewMode: mode,
+          },
+        }));
+      },
+      [setState]
+    ),
 
     /**
      * 月データ取得（モックデータから）

@@ -11,6 +11,11 @@ export type EventType =
   | 'other';      // その他
 
 /**
+ * 表示モード
+ */
+export type ViewMode = 'calendar' | 'list';
+
+/**
  * ホロライブイベント
  */
 export interface HololiveEvent {

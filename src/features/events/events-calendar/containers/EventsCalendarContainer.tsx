@@ -19,6 +19,7 @@ const EventsCalendarContainer: React.FC = () => {
     config: {
       isLoading: true,
       sidebarVisible: false,
+      viewMode: 'calendar',
     },
     data: {
       eventsMap: {},

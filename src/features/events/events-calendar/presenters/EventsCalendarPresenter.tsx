@@ -2,6 +2,8 @@ import React from 'react';
 import { EventsCalendarState, EventsCalendarActions } from '../hooks/useEventsCalendarState';
 import EventsCalendarHeader from '../components/EventsCalendarHeader';
 import EventsCalendarGrid from '../components/EventsCalendarGrid';
+import EventsListView from '../components/EventsListView';
+import ViewModeToggle from '../components/ViewModeToggle';
 import Loading from 'components/Loading';
 
 export interface PresenterProps {
@@ -63,56 +65,72 @@ const EventsCalendarPresenter: React.FC<PresenterProps> = ({ state, actions }) =
           </p>
         </header>
 
-        {/* 月移動ヘッダー */}
-        <EventsCalendarHeader
-          currentMonth={state.requestParams.currentMonth}
-          onPrevMonth={() => actions.changeMonth(-1)}
-          onNextMonth={() => actions.changeMonth(1)}
-          onToday={actions.goToToday}
-        />
-
-        {/* カレンダー */}
-        <div className="py-8">
-          <EventsCalendarGrid
+        {/* 月移動ヘッダーとモード切り替え */}
+        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-8">
+          <EventsCalendarHeader
             currentMonth={state.requestParams.currentMonth}
-            eventsMap={state.data.eventsMap}
-            onEventClick={actions.handleEventClick}
+            onPrevMonth={() => actions.changeMonth(-1)}
+            onNextMonth={() => actions.changeMonth(1)}
+            onToday={actions.goToToday}
           />
+          <ViewModeToggle
+            viewMode={state.config.viewMode}
+            onViewModeChange={actions.setViewMode}
+          />
+        </div>
 
-          {/* 凡例 */}
-          <div className="mt-8 bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-gray-200">
-            <h3 className="text-lg font-bold text-gray-800 mb-4">イベント種類</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="flex items-center gap-2">
-                <span className="text-2xl">🎂</span>
-                <span className="text-sm text-gray-700">誕生日配信</span>
+        {/* カレンダー / リスト表示 */}
+        <div className="py-8">
+          {state.config.viewMode === 'calendar' ? (
+            <>
+              <EventsCalendarGrid
+                currentMonth={state.requestParams.currentMonth}
+                eventsMap={state.data.eventsMap}
+                onEventClick={actions.handleEventClick}
+              />
+
+              {/* 凡例 */}
+              <div className="mt-8 bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-gray-200">
+                <h3 className="text-lg font-bold text-gray-800 mb-4">イベント種類</h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="flex items-center gap-2">
+                    <span className="text-2xl">🎂</span>
+                    <span className="text-sm text-gray-700">誕生日配信</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-2xl">🎉</span>
+                    <span className="text-sm text-gray-700">記念配信</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-2xl">🎤</span>
+                    <span className="text-sm text-gray-700">ライブ</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-2xl">🎵</span>
+                    <span className="text-sm text-gray-700">コンサート</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-2xl">👥</span>
+                    <span className="text-sm text-gray-700">コラボ配信</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-2xl">🤝</span>
+                    <span className="text-sm text-gray-700">リアルイベント</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-2xl">📅</span>
+                    <span className="text-sm text-gray-700">その他</span>
+                  </div>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-2xl">🎉</span>
-                <span className="text-sm text-gray-700">記念配信</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-2xl">🎤</span>
-                <span className="text-sm text-gray-700">ライブ</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-2xl">🎵</span>
-                <span className="text-sm text-gray-700">コンサート</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-2xl">👥</span>
-                <span className="text-sm text-gray-700">コラボ配信</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-2xl">🤝</span>
-                <span className="text-sm text-gray-700">リアルイベント</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-2xl">📅</span>
-                <span className="text-sm text-gray-700">その他</span>
-              </div>
-            </div>
-          </div>
+            </>
+          ) : (
+            <EventsListView
+              currentMonth={state.requestParams.currentMonth}
+              eventsMap={state.data.eventsMap}
+              onEventClick={actions.handleEventClick}
+            />
+          )}
 
           {/* 装飾的なアイコン列 */}
           <div className="flex justify-center gap-6 text-4xl opacity-20 mt-12">
