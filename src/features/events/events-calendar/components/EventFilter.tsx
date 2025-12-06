@@ -13,7 +13,7 @@ const EventFilter: React.FC<EventFilterProps> = ({ selectedFilters, onToggleFilt
   const filterOptions: { value: FilterCategory; label: string }[] = [
     { value: 'streaming', label: '記念配信' },
     { value: 'event', label: 'イベント' },
-    { value: 'goods', label: 'グッズ/ボイス/申し込み' },
+    { value: 'goods', label: 'グッズ/ボイス' },
   ];
 
   return (

@@ -12,10 +12,10 @@ export const getEventCategory = (eventType: EventType): FilterCategory => {
     case 'live':
     case 'concert':
     case 'meet':
+    case 'application': // イベント申込はイベントカテゴリに含める
       return 'event';
     case 'goods':
     case 'voice':
-    case 'application':
       return 'goods';
     case 'other':
     default:
