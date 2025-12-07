@@ -283,33 +283,69 @@ const EventsCalendarGrid: React.FC<EventsCalendarGridProps> = ({
               <div className="absolute top-10 left-0 right-0 pointer-events-none">
                 <div className="grid grid-cols-7">
                   {(() => {
-                    // 各列（日付）ごとのイベントカウントを追跡
-                    const columnEventCounts: { [col: number]: number } = {};
+                    // 各列（日付）ごとに占有されている行を追跡
+                    const columnOccupiedRows: { [col: number]: Set<number> } = {};
+                    for (let i = 0; i < 7; i++) {
+                      columnOccupiedRows[i] = new Set();
+                    }
 
-                    return weekEventBars
-                      .sort((a, b) => {
-                        // 開始列順、同じ列なら開始日順にソート
-                        if (a.startCol === b.startCol) {
-                          return a.event.date.localeCompare(b.event.date);
+                    // イベントバーと配置する行のマッピング
+                    const barRowMapping: { [barId: string]: number } = {};
+
+                    // イベントバーをソート（開始列順、同じ列なら開始日順）
+                    const sortedBars = weekEventBars.sort((a, b) => {
+                      if (a.startCol === b.startCol) {
+                        return a.event.date.localeCompare(b.event.date);
+                      }
+                      return a.startCol - b.startCol;
+                    });
+
+                    // 各イベントバーに対して配置する行を決定
+                    sortedBars.forEach((bar) => {
+                      const barId = `${bar.event.id}-${bar.weekRow}`;
+
+                      // このイベントがスパンする全ての列で空いている最初の行を見つける
+                      let targetRow = 0;
+                      let foundEmptyRow = false;
+
+                      while (!foundEmptyRow) {
+                        let isRowAvailable = true;
+
+                        // スパンする全ての列をチェック
+                        for (let col = bar.startCol; col < bar.startCol + bar.span; col++) {
+                          if (columnOccupiedRows[col]?.has(targetRow)) {
+                            isRowAvailable = false;
+                            break;
+                          }
                         }
-                        return a.startCol - b.startCol;
-                      })
-                      .map((bar, barIndex) => {
-                        const leftOffset = (bar.startCol / 7) * 100;
-                        const width = (bar.span / 7) * 100;
 
-                        // この列でのイベント順序を取得
-                        const eventIndexInColumn = columnEventCounts[bar.startCol] || 0;
-                        columnEventCounts[bar.startCol] = eventIndexInColumn + 1;
+                        if (isRowAvailable) {
+                          foundEmptyRow = true;
+                          // スパンする全ての列でこの行を占有済みとしてマーク
+                          for (let col = bar.startCol; col < bar.startCol + bar.span; col++) {
+                            columnOccupiedRows[col].add(targetRow);
+                          }
+                          barRowMapping[barId] = targetRow;
+                        } else {
+                          targetRow++;
+                        }
+                      }
+                    });
 
-                        return (
-                          <div
-                            key={`${bar.event.id}-${barIndex}`}
-                            className="col-span-7 relative pointer-events-auto"
-                            style={{
-                              marginTop: `${eventIndexInColumn * 24}px`,
-                            }}
-                          >
+                    return sortedBars.map((bar, barIndex) => {
+                      const leftOffset = (bar.startCol / 7) * 100;
+                      const width = (bar.span / 7) * 100;
+                      const barId = `${bar.event.id}-${bar.weekRow}`;
+                      const rowIndex = barRowMapping[barId];
+
+                      return (
+                        <div
+                          key={`${bar.event.id}-${barIndex}`}
+                          className="col-span-7 relative pointer-events-auto"
+                          style={{
+                            marginTop: `${rowIndex * 24}px`,
+                          }}
+                        >
                         <div
                           className="absolute cursor-pointer group"
                           style={{
