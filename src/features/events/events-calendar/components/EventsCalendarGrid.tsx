@@ -214,53 +214,58 @@ const EventsCalendarGrid: React.FC<EventsCalendarGridProps> = ({
     eventBarsByWeek[bar.weekRow].push(bar);
   });
 
-  // 全週を通してイベントの行割り当てを計算
+  // 全カレンダーセル（42セル = 6週 x 7日）でイベントの行割り当てを計算
   const globalBarRowMapping: { [barId: string]: number } = {};
   const globalEventRowMapping: { [eventId: string]: number } = {};
-  const globalColumnOccupiedRows: { [weekAndCol: string]: Set<number> } = {};
 
-  // 全てのイベントバーを開始日順、同じ日付ならスパンが長い順にソート
-  const allSortedBars = [...eventBars].sort((a, b) => {
-    const dateCompare = a.event.date.localeCompare(b.event.date);
+  // 各セル（絶対位置 0-41）での占有行を追跡
+  const cellOccupiedRows: { [cellIndex: number]: Set<number> } = {};
+  for (let i = 0; i < 42; i++) {
+    cellOccupiedRows[i] = new Set();
+  }
+
+  // イベントIDごとに、そのイベントが占有する全セルを計算
+  const eventCellsMap: { [eventId: string]: number[] } = {};
+  eventBars.forEach((bar) => {
+    const eventId = bar.event.id;
+    if (!eventCellsMap[eventId]) {
+      eventCellsMap[eventId] = [];
+    }
+    // このバーが占有するセルを追加
+    for (let col = bar.startCol; col < bar.startCol + bar.span; col++) {
+      const cellIndex = bar.weekRow * 7 + col;
+      if (!eventCellsMap[eventId].includes(cellIndex)) {
+        eventCellsMap[eventId].push(cellIndex);
+      }
+    }
+  });
+
+  // イベントを開始日順、同じ日付ならスパンが長い順にソート
+  const sortedEventIds = Object.keys(eventCellsMap).sort((idA, idB) => {
+    const eventA = eventBars.find(bar => bar.event.id === idA)!.event;
+    const eventB = eventBars.find(bar => bar.event.id === idB)!.event;
+    const dateCompare = eventA.date.localeCompare(eventB.date);
     if (dateCompare !== 0) {
       return dateCompare;
     }
-    return b.span - a.span;
+    // スパンが長い順（占有セル数が多い順）
+    return eventCellsMap[idB].length - eventCellsMap[idA].length;
   });
 
-  // 各イベントバーに対して行を割り当て
-  allSortedBars.forEach((bar) => {
-    const eventId = bar.event.id;
-    const barId = `${bar.event.id}-${bar.weekRow}`;
+  // 各イベントに行を割り当て
+  sortedEventIds.forEach((eventId) => {
+    const cells = eventCellsMap[eventId];
 
-    // 同じイベントが既に配置されている場合、同じ行を使用
-    if (globalEventRowMapping[eventId] !== undefined) {
-      globalBarRowMapping[barId] = globalEventRowMapping[eventId];
-      // この週のスパンする列でも行を占有
-      for (let col = bar.startCol; col < bar.startCol + bar.span; col++) {
-        const key = `${bar.weekRow}-${col}`;
-        if (!globalColumnOccupiedRows[key]) {
-          globalColumnOccupiedRows[key] = new Set();
-        }
-        globalColumnOccupiedRows[key].add(globalEventRowMapping[eventId]);
-      }
-      return;
-    }
-
-    // このイベントがスパンする全ての列で空いている最初の行を見つける
+    // このイベントが占有する全てのセルで空いている最初の行を見つける
     let targetRow = 0;
     let foundEmptyRow = false;
 
     while (!foundEmptyRow) {
       let isRowAvailable = true;
 
-      // スパンする全ての列をチェック
-      for (let col = bar.startCol; col < bar.startCol + bar.span; col++) {
-        const key = `${bar.weekRow}-${col}`;
-        if (!globalColumnOccupiedRows[key]) {
-          globalColumnOccupiedRows[key] = new Set();
-        }
-        if (globalColumnOccupiedRows[key].has(targetRow)) {
+      // 全てのセルをチェック
+      for (const cellIndex of cells) {
+        if (cellOccupiedRows[cellIndex].has(targetRow)) {
           isRowAvailable = false;
           break;
         }
@@ -268,17 +273,21 @@ const EventsCalendarGrid: React.FC<EventsCalendarGridProps> = ({
 
       if (isRowAvailable) {
         foundEmptyRow = true;
-        // スパンする全ての列でこの行を占有済みとしてマーク
-        for (let col = bar.startCol; col < bar.startCol + bar.span; col++) {
-          const key = `${bar.weekRow}-${col}`;
-          globalColumnOccupiedRows[key].add(targetRow);
+        // 全てのセルでこの行を占有済みとしてマーク
+        for (const cellIndex of cells) {
+          cellOccupiedRows[cellIndex].add(targetRow);
         }
         globalEventRowMapping[eventId] = targetRow;
-        globalBarRowMapping[barId] = targetRow;
       } else {
         targetRow++;
       }
     }
+  });
+
+  // 各バーに行を割り当て
+  eventBars.forEach((bar) => {
+    const barId = `${bar.event.id}-${bar.weekRow}`;
+    globalBarRowMapping[barId] = globalEventRowMapping[bar.event.id];
   });
 
   return (
