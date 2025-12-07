@@ -5,6 +5,7 @@ import Profile from './components/Profile';
 import Settings from './components/Settings';
 import OshiKatsuSaportContainer from 'features/home/oshi-katsu-saport/containers/OshiKatsuSaportContainer';
 import HashtagSearchContainer from 'features/oshi-katsu-saport/hashtag-search/containers/HashtagSearchContainer';
+import { CollabSearchContainer } from 'features/oshi-katsu-saport/collab-search/containers/CollabSearchContainer';
 import LifeScheduleDayContainer from 'features/life/life-schedule-day/containers/LifeScheduleDayContainer';
 import LifeScheduleMonthContainer from 'features/life/life-schedule-month/containers/LifeScheduleMonthContainer';
 import EventsCalendarContainer from 'features/events/events-calendar/containers/EventsCalendarContainer';
@@ -37,6 +38,7 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/talent-hashtag-support" element={<HashtagSearchContainer />} />
+        <Route path="/talent-collab-search" element={<CollabSearchContainer />} />
         {/* 生活管理システム */}
         <Route path="/life/life-schedule-day" element={<LifeScheduleDayContainer />} />
         <Route path="/life/life-schedule-month" element={<LifeScheduleMonthContainer />} />
