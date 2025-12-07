@@ -10,6 +10,21 @@ export interface CollaboratorsApiResponse {
 
 // モックデータ
 const mockCollaboratorsData: Record<string, Collaborator[]> = {
+  // ときのそらのコラボ相手
+  'tokino-sora': [
+    {
+      id: 'roboco',
+      talentName: 'ロボ子さん',
+      talentNameEn: 'Roboco',
+      collaborationCount: 25,
+    },
+    {
+      id: 'azki',
+      talentName: 'AZKi',
+      talentNameEn: 'AZKi',
+      collaborationCount: 18,
+    },
+  ],
   // 星街すいせいのコラボ相手（例）
   '1': [
     {

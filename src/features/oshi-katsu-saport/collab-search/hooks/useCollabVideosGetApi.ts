@@ -10,6 +10,19 @@ export interface CollabVideosApiResponse {
 
 // モックデータ
 const mockCollabVideosData: Record<string, CollabVideo[]> = {
+  // ときのそら × ロボ子さん
+  'tokino-sora-roboco': [
+    {
+      id: 'tokino-sora-roboco-1',
+      videoCode: 'UrxbELTadIU',
+      videoTitle: '【Minecraft】ときのそら×ロボ子さん コラボ配信',
+      videoUrl: 'https://www.youtube.com/watch?v=UrxbELTadIU',
+      videoImgPath: 'https://i.ytimg.com/vi/UrxbELTadIU/mqdefault.jpg',
+      videoTime: '1:30:25',
+      publishedAt: '2024-03-20T20:00:00Z',
+      favoriteFlag: false,
+    },
+  ],
   // 星街すいせい(1) × さくらみこ(2)
   '1-2': [
     {

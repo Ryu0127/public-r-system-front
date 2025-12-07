@@ -253,10 +253,60 @@ export const useCollabSearchState = () => {
     }));
   }, []);
 
-  // 初回マウント時にタレント一覧を取得
+  // 初回マウント時にタレント一覧を取得し、デフォルト選択を実行
   useEffect(() => {
-    fetchTalents();
-  }, []);
+    const initializeDefaultSelection = async () => {
+      // タレント一覧を取得
+      await fetchTalents();
+
+      // デフォルトでときのそらを選択
+      const defaultBaseTalent: Talent = {
+        id: 'tokino-sora',
+        talentName: 'ときのそら',
+        talentNameEn: 'Tokino Sora',
+        talentNameJoin: 'ときのそら（Tokino Sora）',
+      };
+
+      setState((prev) => ({
+        ...prev,
+        data: {
+          ...prev.data,
+          selectedBaseTalent: defaultBaseTalent,
+        },
+      }));
+
+      // コラボレーター一覧を取得
+      const { apiResponse: collaboratorsResponse } = await executeCollaboratorsGet(defaultBaseTalent.id);
+
+      if (collaboratorsResponse?.status && collaboratorsResponse.data.collaborators.length > 0) {
+        const defaultCollaborator = collaboratorsResponse.data.collaborators[0]; // ロボ子さん
+
+        setState((prev) => ({
+          ...prev,
+          data: {
+            ...prev.data,
+            collaborators: collaboratorsResponse.data.collaborators,
+            selectedCollaborator: defaultCollaborator,
+          },
+        }));
+
+        // コラボ動画を取得
+        const { apiResponse: videosResponse } = await executeCollabVideosGet(defaultBaseTalent.id, defaultCollaborator.id);
+
+        if (videosResponse?.status && videosResponse.data.videos) {
+          setState((prev) => ({
+            ...prev,
+            data: {
+              ...prev.data,
+              videos: videosResponse.data.videos,
+            },
+          }));
+        }
+      }
+    };
+
+    initializeDefaultSelection();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const actions: CollabSearchActions = {
     fetchTalents,
