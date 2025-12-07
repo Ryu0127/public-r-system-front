@@ -20,8 +20,6 @@ export const HashtagSearchMode: React.FC<HashtagSearchModeProps> = ({
   onQuickSearch,
   onKeyPress,
 }) => {
-  const quickSearchTags = hashtags.slice(0, 6);
-
   return (
     <div className="bg-white/60 backdrop-blur-sm rounded-3xl p-8 border border-gray-200 shadow-xl hover:shadow-2xl transition-all duration-300 animate-fade-in" style={{ animationDelay: '0.25s' }}>
       {/* カードヘッダー */}
@@ -49,8 +47,8 @@ export const HashtagSearchMode: React.FC<HashtagSearchModeProps> = ({
         <h3 className="text-sm font-semibold text-gray-700 mb-3">
           クイック検索
         </h3>
-        <div className="grid grid-cols-1 gap-3">
-          {quickSearchTags.map((hashtag) => (
+        <div className="grid grid-cols-1 gap-3 max-h-[400px] overflow-y-auto pr-2">
+          {hashtags.map((hashtag) => (
             <button
               key={hashtag.id}
               onClick={() => onQuickSearch(hashtag.tag)}
