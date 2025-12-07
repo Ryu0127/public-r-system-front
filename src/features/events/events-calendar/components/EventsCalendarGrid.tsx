@@ -357,84 +357,76 @@ const EventsCalendarGrid: React.FC<EventsCalendarGridProps> = ({
 
               {/* イベントバー（絶対配置） */}
               <div className="absolute top-10 left-0 right-0 pointer-events-none">
-                <div className="grid grid-cols-7">
-                  {weekEventBars.map((bar, barIndex) => {
-                    const leftOffset = (bar.startCol / 7) * 100;
-                    const width = (bar.span / 7) * 100;
-                    const barId = `${bar.event.id}-${bar.weekRow}`;
-                    const rowIndex = globalBarRowMapping[barId];
+                {weekEventBars.map((bar, barIndex) => {
+                  const leftOffset = (bar.startCol / 7) * 100;
+                  const width = (bar.span / 7) * 100;
+                  const barId = `${bar.event.id}-${bar.weekRow}`;
+                  const rowIndex = globalBarRowMapping[barId];
 
-                    return (
+                  return (
+                    <div
+                      key={`${bar.event.id}-${barIndex}`}
+                      className="absolute cursor-pointer group pointer-events-auto"
+                      style={{
+                        top: `${rowIndex * 24}px`,
+                        left: `${leftOffset}%`,
+                        width: `${width}%`,
+                        paddingLeft: '0.25rem',
+                        paddingRight: '0.25rem',
+                      }}
+                      onClick={() => onEventClick?.(bar.event)}
+                    >
                       <div
-                        key={`${bar.event.id}-${barIndex}`}
-                        className="col-span-7 relative pointer-events-auto"
+                        className="px-1.5 py-0.5 rounded shadow-sm hover:shadow-md transition-all border border-opacity-20"
                         style={{
-                          marginTop: `${rowIndex * 24}px`,
+                          backgroundColor: bar.event.color + '20',
+                          borderColor: bar.event.color,
+                          fontSize: '0.65rem',
+                          lineHeight: '1.2',
                         }}
                       >
-                        <div
-                          className="absolute cursor-pointer group"
-                          style={{
-                            left: `${leftOffset}%`,
-                            width: `${width}%`,
-                            paddingLeft: '0.25rem',
-                            paddingRight: '0.25rem',
-                          }}
-                          onClick={() => onEventClick?.(bar.event)}
-                        >
-                          <div
-                            className="px-1.5 py-0.5 rounded shadow-sm hover:shadow-md transition-all border border-opacity-20"
-                            style={{
-                              backgroundColor: bar.event.color + '20',
-                              borderColor: bar.event.color,
-                              fontSize: '0.65rem',
-                              lineHeight: '1.2',
-                            }}
+                        <div className="flex items-center gap-0.5 overflow-hidden">
+                          <span className="flex-shrink-0 text-xs">
+                            {getEventTypeIcon(bar.event.type)}
+                          </span>
+                          <span
+                            className="font-medium truncate"
+                            style={{ color: bar.event.color }}
                           >
-                            <div className="flex items-center gap-0.5 overflow-hidden">
-                              <span className="flex-shrink-0 text-xs">
-                                {getEventTypeIcon(bar.event.type)}
-                              </span>
-                              <span
-                                className="font-medium truncate"
-                                style={{ color: bar.event.color }}
-                              >
-                                {bar.event.title}
-                              </span>
-                            </div>
-                          </div>
-
-                          {/* ホバー時のツールチップ */}
-                          <div className="absolute left-0 top-full mt-1 z-20 hidden group-hover:block">
-                            <div
-                              className="bg-gray-900 text-white text-xs rounded-lg p-3 shadow-xl min-w-[200px] max-w-[300px]"
-                              style={{ borderLeft: `4px solid ${bar.event.color}` }}
-                            >
-                              <div className="font-bold mb-1">{bar.event.title}</div>
-                              <div className="text-gray-300 mb-1">{bar.event.talentName}</div>
-                              {bar.event.endDate && (
-                                <div className="text-gray-400">
-                                  {bar.event.date} ~ {bar.event.endDate}
-                                </div>
-                              )}
-                              {bar.event.startTime && (
-                                <div className="text-gray-400">
-                                  {bar.event.startTime}
-                                  {bar.event.endTime && ` - ${bar.event.endTime}`}
-                                </div>
-                              )}
-                              {bar.event.description && (
-                                <div className="text-gray-300 mt-2 pt-2 border-t border-gray-700">
-                                  {bar.event.description}
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                          </div>
+                            {bar.event.title}
+                          </span>
                         </div>
-                      );
-                    })}
-                </div>
+                      </div>
+
+                      {/* ホバー時のツールチップ */}
+                      <div className="absolute left-0 top-full mt-1 z-20 hidden group-hover:block">
+                        <div
+                          className="bg-gray-900 text-white text-xs rounded-lg p-3 shadow-xl min-w-[200px] max-w-[300px]"
+                          style={{ borderLeft: `4px solid ${bar.event.color}` }}
+                        >
+                          <div className="font-bold mb-1">{bar.event.title}</div>
+                          <div className="text-gray-300 mb-1">{bar.event.talentName}</div>
+                          {bar.event.endDate && (
+                            <div className="text-gray-400">
+                              {bar.event.date} ~ {bar.event.endDate}
+                            </div>
+                          )}
+                          {bar.event.startTime && (
+                            <div className="text-gray-400">
+                              {bar.event.startTime}
+                              {bar.event.endTime && ` - ${bar.event.endTime}`}
+                            </div>
+                          )}
+                          {bar.event.description && (
+                            <div className="text-gray-300 mt-2 pt-2 border-t border-gray-700">
+                              {bar.event.description}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           );
