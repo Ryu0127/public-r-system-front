@@ -282,26 +282,34 @@ const EventsCalendarGrid: React.FC<EventsCalendarGridProps> = ({
               {/* イベントバー（絶対配置） */}
               <div className="absolute top-10 left-0 right-0 pointer-events-none">
                 <div className="grid grid-cols-7">
-                  {weekEventBars
-                    .sort((a, b) => {
-                      // 同じ列の場合、開始日順にソート
-                      if (a.startCol === b.startCol) {
-                        return a.event.date.localeCompare(b.event.date);
-                      }
-                      return a.startCol - b.startCol;
-                    })
-                    .map((bar, barIndex) => {
-                      const leftOffset = (bar.startCol / 7) * 100;
-                      const width = (bar.span / 7) * 100;
+                  {(() => {
+                    // 各列（日付）ごとのイベントカウントを追跡
+                    const columnEventCounts: { [col: number]: number } = {};
 
-                    return (
-                      <div
-                        key={`${bar.event.id}-${barIndex}`}
-                        className="col-span-7 relative pointer-events-auto"
-                        style={{
-                          marginTop: `${barIndex * 24}px`,
-                        }}
-                      >
+                    return weekEventBars
+                      .sort((a, b) => {
+                        // 開始列順、同じ列なら開始日順にソート
+                        if (a.startCol === b.startCol) {
+                          return a.event.date.localeCompare(b.event.date);
+                        }
+                        return a.startCol - b.startCol;
+                      })
+                      .map((bar, barIndex) => {
+                        const leftOffset = (bar.startCol / 7) * 100;
+                        const width = (bar.span / 7) * 100;
+
+                        // この列でのイベント順序を取得
+                        const eventIndexInColumn = columnEventCounts[bar.startCol] || 0;
+                        columnEventCounts[bar.startCol] = eventIndexInColumn + 1;
+
+                        return (
+                          <div
+                            key={`${bar.event.id}-${barIndex}`}
+                            className="col-span-7 relative pointer-events-auto"
+                            style={{
+                              marginTop: `${eventIndexInColumn * 24}px`,
+                            }}
+                          >
                         <div
                           className="absolute cursor-pointer group"
                           style={{
@@ -360,10 +368,11 @@ const EventsCalendarGrid: React.FC<EventsCalendarGridProps> = ({
                               )}
                             </div>
                           </div>
+                          </div>
                         </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    });
+                  })()}
                 </div>
               </div>
             </div>
