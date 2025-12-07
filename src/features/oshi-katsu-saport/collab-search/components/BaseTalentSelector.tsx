@@ -43,23 +43,22 @@ export const BaseTalentSelector: React.FC<BaseTalentSelectorProps> = ({
 
   return (
     <div className="mb-6">
-      <div className="bg-white/90 backdrop-blur-sm rounded-xl p-5 border border-gray-200 shadow-md overflow-visible">
-        <label htmlFor="base-talent-combobox" className="block text-sm font-semibold text-gray-700 mb-3">
-          メインタレントを選択
-        </label>
-        <div className="relative" ref={comboboxRef}>
-          <input
-            id="base-talent-combobox"
-            type="text"
-            value={isDropdownOpen ? searchQuery : selectedTalent?.talentNameJoin || ''}
-            onChange={(e) => {
-              onSearchQueryChange(e.target.value);
-              onDropdownOpenChange(true);
-            }}
-            onFocus={() => onDropdownOpenChange(true)}
-            placeholder="タレント名を入力して検索..."
-            className="w-full px-4 py-3 pr-10 bg-white border-2 border-gray-200 focus:border-blue-500 focus:outline-none rounded-lg text-gray-800 transition-all duration-200"
-          />
+      <label htmlFor="base-talent-combobox" className="block text-sm font-semibold text-gray-700 mb-3">
+        メインタレントを選択
+      </label>
+      <div className="relative" ref={comboboxRef}>
+        <input
+          id="base-talent-combobox"
+          type="text"
+          value={isDropdownOpen ? searchQuery : selectedTalent?.talentNameJoin || ''}
+          onChange={(e) => {
+            onSearchQueryChange(e.target.value);
+            onDropdownOpenChange(true);
+          }}
+          onFocus={() => onDropdownOpenChange(true)}
+          placeholder="タレント名を入力して検索..."
+          className="w-full px-4 py-3 pr-10 bg-white border-2 border-gray-200 focus:border-[#1DA1F2] focus:outline-none rounded-xl text-gray-800 transition-all duration-200"
+        />
           {/* 検索アイコン */}
           <div className="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none text-gray-400">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -67,38 +66,37 @@ export const BaseTalentSelector: React.FC<BaseTalentSelectorProps> = ({
             </svg>
           </div>
 
-          {/* ドロップダウンリスト */}
-          {isDropdownOpen && filteredTalents.length > 0 && (
-            <div className="absolute z-[9999] w-full mt-2 bg-white border-2 border-gray-200 rounded-lg shadow-xl max-h-60 overflow-y-auto">
-              {filteredTalents.slice(0, 10).map((talent) => (
-                <div
-                  key={talent.id}
-                  onClick={() => onTalentSelect(talent)}
-                  className={`px-4 py-3 cursor-pointer transition-all duration-200 ${
-                    talent.id === selectedTalent?.id
-                      ? 'bg-blue-500 text-white'
-                      : 'hover:bg-blue-50 text-gray-700'
-                  }`}
-                >
-                  {talent.talentNameJoin}
-                </div>
-              ))}
-            </div>
-          )}
+        {/* ドロップダウンリスト */}
+        {isDropdownOpen && filteredTalents.length > 0 && (
+          <div className="absolute z-[9999] w-full mt-2 bg-white border-2 border-gray-200 rounded-xl shadow-xl max-h-60 overflow-y-auto">
+            {filteredTalents.slice(0, 10).map((talent) => (
+              <div
+                key={talent.id}
+                onClick={() => onTalentSelect(talent)}
+                className={`px-4 py-3 cursor-pointer transition-all duration-200 ${
+                  talent.id === selectedTalent?.id
+                    ? 'bg-[#1DA1F2] text-white'
+                    : 'hover:bg-blue-50 text-gray-700'
+                }`}
+              >
+                {talent.talentNameJoin}
+              </div>
+            ))}
+          </div>
+        )}
 
-          {/* 結果が見つからない場合 */}
-          {isDropdownOpen && searchQuery && filteredTalents.length === 0 && (
-            <div className="absolute z-[9999] w-full mt-2 bg-white border-2 border-gray-200 rounded-lg shadow-xl p-4 text-center text-gray-500">
-              該当するタレントが見つかりません
-            </div>
-          )}
-        </div>
-        {selectedTalent && (
-          <p className="text-xs text-gray-500 mt-2">
-            選択中: <span className="font-semibold text-blue-600">{selectedTalent.talentNameJoin}</span>
-          </p>
+        {/* 結果が見つからない場合 */}
+        {isDropdownOpen && searchQuery && filteredTalents.length === 0 && (
+          <div className="absolute z-[9999] w-full mt-2 bg-white border-2 border-gray-200 rounded-xl shadow-xl p-4 text-center text-gray-500">
+            該当するタレントが見つかりません
+          </div>
         )}
       </div>
+      {selectedTalent && (
+        <p className="text-xs text-gray-500 mt-2">
+          選択中: <span className="font-semibold text-[#1DA1F2]">{selectedTalent.talentNameJoin}</span>
+        </p>
+      )}
     </div>
   );
 };

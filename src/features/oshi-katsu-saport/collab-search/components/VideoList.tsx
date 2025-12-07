@@ -42,16 +42,16 @@ export const VideoList: React.FC<VideoListProps> = ({
   if (isLoading) {
     return (
       <div className="flex justify-center items-center py-20">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
       </div>
     );
   }
 
   if (!baseTalentName || !collaboratorName) {
     return (
-      <div className="text-center py-20">
+      <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-12 shadow-lg border border-gray-200 text-center">
         <svg
-          className="mx-auto h-12 w-12 text-gray-400 mb-4"
+          className="mx-auto h-16 w-16 text-blue-300 mb-4"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -63,8 +63,10 @@ export const VideoList: React.FC<VideoListProps> = ({
             d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
           />
         </svg>
-        <p className="text-gray-500 text-lg">メインタレントとコラボタレントを選択してください</p>
-        <p className="text-gray-400 text-sm mt-2">
+        <p className="text-gray-600 text-lg font-medium mb-2">
+          メインタレントとコラボタレントを選択してください
+        </p>
+        <p className="text-gray-500 text-sm">
           選択すると、該当するコラボ配信のアーカイブが表示されます
         </p>
       </div>
@@ -73,9 +75,9 @@ export const VideoList: React.FC<VideoListProps> = ({
 
   if (videos.length === 0) {
     return (
-      <div className="text-center py-20">
+      <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-12 shadow-lg border border-gray-200 text-center">
         <svg
-          className="mx-auto h-12 w-12 text-gray-400 mb-4"
+          className="mx-auto h-16 w-16 text-gray-300 mb-4"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -87,8 +89,10 @@ export const VideoList: React.FC<VideoListProps> = ({
             d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M12 12h.01M12 12h.01M12 12h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
           />
         </svg>
-        <p className="text-gray-500 text-lg">コラボ配信が見つかりませんでした</p>
-        <p className="text-gray-400 text-sm mt-2">
+        <p className="text-gray-600 text-lg font-medium mb-2">
+          コラボ配信が見つかりませんでした
+        </p>
+        <p className="text-gray-500 text-sm">
           {baseTalentName} × {collaboratorName} のコラボ動画はまだ登録されていません
         </p>
       </div>
@@ -96,8 +100,8 @@ export const VideoList: React.FC<VideoListProps> = ({
   }
 
   return (
-    <div className="mb-8">
-      <div className="mb-6">
+    <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-200">
+      <div className="mb-6 text-center">
         <h2 className="text-2xl font-bold text-gray-800 mb-2">
           コラボ配信アーカイブ
         </h2>
