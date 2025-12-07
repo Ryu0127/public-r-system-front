@@ -214,6 +214,73 @@ const EventsCalendarGrid: React.FC<EventsCalendarGridProps> = ({
     eventBarsByWeek[bar.weekRow].push(bar);
   });
 
+  // 全週を通してイベントの行割り当てを計算
+  const globalBarRowMapping: { [barId: string]: number } = {};
+  const globalEventRowMapping: { [eventId: string]: number } = {};
+  const globalColumnOccupiedRows: { [weekAndCol: string]: Set<number> } = {};
+
+  // 全てのイベントバーを開始日順、同じ日付ならスパンが長い順にソート
+  const allSortedBars = [...eventBars].sort((a, b) => {
+    const dateCompare = a.event.date.localeCompare(b.event.date);
+    if (dateCompare !== 0) {
+      return dateCompare;
+    }
+    return b.span - a.span;
+  });
+
+  // 各イベントバーに対して行を割り当て
+  allSortedBars.forEach((bar) => {
+    const eventId = bar.event.id;
+    const barId = `${bar.event.id}-${bar.weekRow}`;
+
+    // 同じイベントが既に配置されている場合、同じ行を使用
+    if (globalEventRowMapping[eventId] !== undefined) {
+      globalBarRowMapping[barId] = globalEventRowMapping[eventId];
+      // この週のスパンする列でも行を占有
+      for (let col = bar.startCol; col < bar.startCol + bar.span; col++) {
+        const key = `${bar.weekRow}-${col}`;
+        if (!globalColumnOccupiedRows[key]) {
+          globalColumnOccupiedRows[key] = new Set();
+        }
+        globalColumnOccupiedRows[key].add(globalEventRowMapping[eventId]);
+      }
+      return;
+    }
+
+    // このイベントがスパンする全ての列で空いている最初の行を見つける
+    let targetRow = 0;
+    let foundEmptyRow = false;
+
+    while (!foundEmptyRow) {
+      let isRowAvailable = true;
+
+      // スパンする全ての列をチェック
+      for (let col = bar.startCol; col < bar.startCol + bar.span; col++) {
+        const key = `${bar.weekRow}-${col}`;
+        if (!globalColumnOccupiedRows[key]) {
+          globalColumnOccupiedRows[key] = new Set();
+        }
+        if (globalColumnOccupiedRows[key].has(targetRow)) {
+          isRowAvailable = false;
+          break;
+        }
+      }
+
+      if (isRowAvailable) {
+        foundEmptyRow = true;
+        // スパンする全ての列でこの行を占有済みとしてマーク
+        for (let col = bar.startCol; col < bar.startCol + bar.span; col++) {
+          const key = `${bar.weekRow}-${col}`;
+          globalColumnOccupiedRows[key].add(targetRow);
+        }
+        globalEventRowMapping[eventId] = targetRow;
+        globalBarRowMapping[barId] = targetRow;
+      } else {
+        targetRow++;
+      }
+    }
+  });
+
   return (
     <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200">
       {/* 曜日ヘッダー */}
@@ -282,70 +349,20 @@ const EventsCalendarGrid: React.FC<EventsCalendarGridProps> = ({
               {/* イベントバー（絶対配置） */}
               <div className="absolute top-10 left-0 right-0 pointer-events-none">
                 <div className="grid grid-cols-7">
-                  {(() => {
-                    // 各列（日付）ごとに占有されている行を追跡
-                    const columnOccupiedRows: { [col: number]: Set<number> } = {};
-                    for (let i = 0; i < 7; i++) {
-                      columnOccupiedRows[i] = new Set();
-                    }
+                  {weekEventBars.map((bar, barIndex) => {
+                    const leftOffset = (bar.startCol / 7) * 100;
+                    const width = (bar.span / 7) * 100;
+                    const barId = `${bar.event.id}-${bar.weekRow}`;
+                    const rowIndex = globalBarRowMapping[barId];
 
-                    // イベントバーと配置する行のマッピング
-                    const barRowMapping: { [barId: string]: number } = {};
-
-                    // イベントバーをソート（開始列順、同じ列なら開始日順）
-                    const sortedBars = weekEventBars.sort((a, b) => {
-                      if (a.startCol === b.startCol) {
-                        return a.event.date.localeCompare(b.event.date);
-                      }
-                      return a.startCol - b.startCol;
-                    });
-
-                    // 各イベントバーに対して配置する行を決定
-                    sortedBars.forEach((bar) => {
-                      const barId = `${bar.event.id}-${bar.weekRow}`;
-
-                      // このイベントがスパンする全ての列で空いている最初の行を見つける
-                      let targetRow = 0;
-                      let foundEmptyRow = false;
-
-                      while (!foundEmptyRow) {
-                        let isRowAvailable = true;
-
-                        // スパンする全ての列をチェック
-                        for (let col = bar.startCol; col < bar.startCol + bar.span; col++) {
-                          if (columnOccupiedRows[col]?.has(targetRow)) {
-                            isRowAvailable = false;
-                            break;
-                          }
-                        }
-
-                        if (isRowAvailable) {
-                          foundEmptyRow = true;
-                          // スパンする全ての列でこの行を占有済みとしてマーク
-                          for (let col = bar.startCol; col < bar.startCol + bar.span; col++) {
-                            columnOccupiedRows[col].add(targetRow);
-                          }
-                          barRowMapping[barId] = targetRow;
-                        } else {
-                          targetRow++;
-                        }
-                      }
-                    });
-
-                    return sortedBars.map((bar, barIndex) => {
-                      const leftOffset = (bar.startCol / 7) * 100;
-                      const width = (bar.span / 7) * 100;
-                      const barId = `${bar.event.id}-${bar.weekRow}`;
-                      const rowIndex = barRowMapping[barId];
-
-                      return (
-                        <div
-                          key={`${bar.event.id}-${barIndex}`}
-                          className="col-span-7 relative pointer-events-auto"
-                          style={{
-                            marginTop: `${rowIndex * 24}px`,
-                          }}
-                        >
+                    return (
+                      <div
+                        key={`${bar.event.id}-${barIndex}`}
+                        className="col-span-7 relative pointer-events-auto"
+                        style={{
+                          marginTop: `${rowIndex * 24}px`,
+                        }}
+                      >
                         <div
                           className="absolute cursor-pointer group"
                           style={{
@@ -407,8 +424,7 @@ const EventsCalendarGrid: React.FC<EventsCalendarGridProps> = ({
                           </div>
                         </div>
                       );
-                    });
-                  })()}
+                    })}
                 </div>
               </div>
             </div>
