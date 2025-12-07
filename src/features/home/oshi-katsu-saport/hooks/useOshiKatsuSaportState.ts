@@ -115,9 +115,20 @@ export const useOshiKatsuSaportState = (
         //   color: 'purple',
         // };
 
+        // タレントコラボ配信検索機能を追加
+        const collabSearchFeature: HomeFeature = {
+          id: 'collab-search',
+          title: 'タレントコラボ配信検索',
+          description: 'タレント同士のコラボ配信アーカイブを検索できます。メインタレントを選択すると、過去にコラボしたタレントと配信を確認できます。',
+          icon: 'Users',
+          link: '/talent-collab-search',
+          color: 'sky',
+        };
+
         const features = [
           ...(featuresResult.data?.features ?? []),
           // eventsCalendarFeature,
+          collabSearchFeature,
         ];
 
         // データ更新
