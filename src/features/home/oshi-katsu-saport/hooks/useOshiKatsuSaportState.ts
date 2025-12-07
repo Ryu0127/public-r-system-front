@@ -106,18 +106,18 @@ export const useOshiKatsuSaportState = (
         ]);
 
         // イベントカレンダー機能を追加
-        const eventsCalendarFeature: HomeFeature = {
-          id: 'events-calendar',
-          title: 'イベントカレンダー',
-          description: 'ホロライブのイベントや配信予定をカレンダー形式で確認できます。記念配信、ライブ、グッズ販売などの情報を一目で把握。',
-          icon: 'Calendar',
-          link: '/events/calendar',
-          color: 'purple',
-        };
+        // const eventsCalendarFeature: HomeFeature = {
+        //   id: 'events-calendar',
+        //   title: 'イベントカレンダー',
+        //   description: 'ホロライブのイベントや配信予定をカレンダー形式で確認できます。記念配信、ライブ、グッズ販売などの情報を一目で把握。',
+        //   icon: 'Calendar',
+        //   link: '/events/calendar',
+        //   color: 'purple',
+        // };
 
         const features = [
           ...(featuresResult.data?.features ?? []),
-          eventsCalendarFeature,
+          // eventsCalendarFeature,
         ];
 
         // データ更新
