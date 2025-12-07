@@ -58,10 +58,10 @@ export const useCollabSearchState = () => {
    * タレント一覧を取得
    */
   const fetchTalents = useCallback(async () => {
-    setState((prev) => ({
-      ...prev,
-      config: { ...prev.config, isLoading: true },
-    }));
+    // setState((prev) => ({
+    //   ...prev,
+    //   config: { ...prev.config, isLoading: true },
+    // }));
 
     const { apiResponse } = await executeTalentsGet();
 
@@ -256,7 +256,7 @@ export const useCollabSearchState = () => {
   // 初回マウント時にタレント一覧を取得
   useEffect(() => {
     fetchTalents();
-  }, [fetchTalents]);
+  }, []);
 
   const actions: CollabSearchActions = {
     fetchTalents,
