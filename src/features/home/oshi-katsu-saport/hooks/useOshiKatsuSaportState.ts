@@ -105,13 +105,28 @@ export const useOshiKatsuSaportState = (
           api.executeHomeLimitedTimeTopicGet(),
         ]);
 
+        // イベントカレンダー機能を追加
+        // const eventsCalendarFeature: HomeFeature = {
+        //   id: 'events-calendar',
+        //   title: 'イベントカレンダー',
+        //   description: 'ホロライブのイベントや配信予定をカレンダー形式で確認できます。記念配信、ライブ、グッズ販売などの情報を一目で把握。',
+        //   icon: 'Calendar',
+        //   link: '/events/calendar',
+        //   color: 'purple',
+        // };
+
+        const features = [
+          ...(featuresResult.data?.features ?? []),
+          // eventsCalendarFeature,
+        ];
+
         // データ更新
         setState(prev => ({
           ...prev,
           ...updateState.toLoading(prev, false),
           ...updateState.toData(
             prev,
-            featuresResult.data?.features ?? [],
+            features,
             changeLogsResult.data?.changeLogs ?? [],
             limitedTimeTopicResult.data?.limitedTimeTopic ?? null
           ),

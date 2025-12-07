@@ -20,11 +20,18 @@ const BarChart3Icon = () => (
   </svg>
 );
 
+const CalendarIcon = () => (
+  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+  </svg>
+);
+
 // アイコンマッピング
 const iconComponents: { [key: string]: React.FC } = {
   Hash: HashIcon,
   TrendingUp: TrendingUpIcon,
   BarChart3: BarChart3Icon,
+  Calendar: CalendarIcon,
 };
 
 // カラーマッピング
@@ -43,6 +50,11 @@ const colorClasses: { [key: string]: { gradient: string; shadow: string; hover: 
     gradient: 'from-emerald-400 to-emerald-600',
     shadow: 'shadow-emerald-500/30',
     hover: 'hover:border-emerald-300',
+  },
+  purple: {
+    gradient: 'from-purple-400 to-purple-600',
+    shadow: 'shadow-purple-500/30',
+    hover: 'hover:border-purple-300',
   },
 };
 

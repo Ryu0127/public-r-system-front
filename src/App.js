@@ -7,6 +7,7 @@ import OshiKatsuSaportContainer from 'features/home/oshi-katsu-saport/containers
 import HashtagSearchContainer from 'features/oshi-katsu-saport/hashtag-search/containers/HashtagSearchContainer';
 import LifeScheduleDayContainer from 'features/life/life-schedule-day/containers/LifeScheduleDayContainer';
 import LifeScheduleMonthContainer from 'features/life/life-schedule-month/containers/LifeScheduleMonthContainer';
+import EventsCalendarContainer from 'features/events/events-calendar/containers/EventsCalendarContainer';
 import LoginContainer from 'features/auth/login/containers/LoginContainer';
 import './App.css';
 
@@ -39,6 +40,8 @@ function App() {
         {/* 生活管理システム */}
         <Route path="/life/life-schedule-day" element={<LifeScheduleDayContainer />} />
         <Route path="/life/life-schedule-month" element={<LifeScheduleMonthContainer />} />
+        {/* イベントカレンダー */}
+        <Route path="/events/calendar" element={<EventsCalendarContainer />} />
       </Routes>
     </Router>
   );
