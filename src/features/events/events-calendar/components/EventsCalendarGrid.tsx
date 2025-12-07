@@ -280,11 +280,19 @@ const EventsCalendarGrid: React.FC<EventsCalendarGridProps> = ({
               </div>
 
               {/* イベントバー（絶対配置） */}
-              <div className="absolute top-8 left-0 right-0 pointer-events-none">
+              <div className="absolute top-10 left-0 right-0 pointer-events-none">
                 <div className="grid grid-cols-7">
-                  {weekEventBars.map((bar, barIndex) => {
-                    const leftOffset = (bar.startCol / 7) * 100;
-                    const width = (bar.span / 7) * 100;
+                  {weekEventBars
+                    .sort((a, b) => {
+                      // 同じ列の場合、開始日順にソート
+                      if (a.startCol === b.startCol) {
+                        return a.event.date.localeCompare(b.event.date);
+                      }
+                      return a.startCol - b.startCol;
+                    })
+                    .map((bar, barIndex) => {
+                      const leftOffset = (bar.startCol / 7) * 100;
+                      const width = (bar.span / 7) * 100;
 
                     return (
                       <div
