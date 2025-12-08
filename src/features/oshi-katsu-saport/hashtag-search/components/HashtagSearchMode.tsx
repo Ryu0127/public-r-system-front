@@ -1,10 +1,14 @@
 import React from 'react';
 import { TalentHashtagsApiHashtag } from 'hooks/api/oshi-katsu-saport/useTalentHashtagsGetApi';
-import { Talent } from '../hooks/useHashtagSearchState';
+import { HashtagSearchState, HashtagSearchActions } from '../hooks/useHashtagSearchState';
 import { SearchIcon, getHashtagIcon } from './Icons';
+import AdvancedSearchFilters from './AdvancedSearchFilters';
+import TalentAccountFilters from './TalentAccountFilters';
 
 interface HashtagSearchModeProps {
-  selectedTalent: Talent | null;
+  state: HashtagSearchState;
+  actions: HashtagSearchActions;
+  selectedTalent: any;
   hashtags: TalentHashtagsApiHashtag[];
   searchQuery: string;
   onSearchQueryChange: (query: string) => void;
@@ -13,6 +17,8 @@ interface HashtagSearchModeProps {
 }
 
 export const HashtagSearchMode: React.FC<HashtagSearchModeProps> = ({
+  state,
+  actions,
   selectedTalent,
   hashtags,
   searchQuery,
@@ -28,7 +34,7 @@ export const HashtagSearchMode: React.FC<HashtagSearchModeProps> = ({
           <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#1DA1F2] to-[#0d8bd9] text-white flex items-center justify-center shadow-lg shadow-blue-500/30">
             <SearchIcon />
           </div>
-          <div>
+          <div className="flex-1">
             <h2 className="text-2xl font-bold text-gray-800" style={{ fontFamily: "'Playfair Display', serif" }}>
               タグ検索
             </h2>
@@ -36,6 +42,16 @@ export const HashtagSearchMode: React.FC<HashtagSearchModeProps> = ({
               {selectedTalent?.talentNameJoin || '未選択'}
             </p>
           </div>
+          <button
+            onClick={() => actions.setShowAdvancedFilters(!state.config.showAdvancedFilters)}
+            className={`px-4 py-2 text-sm rounded-lg transition-colors ${
+              state.config.showAdvancedFilters
+                ? 'bg-blue-500 text-white'
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+            }`}
+          >
+            {state.config.showAdvancedFilters ? '詳細フィルタを閉じる' : '詳細フィルタ'}
+          </button>
         </div>
         <p className="text-sm text-gray-600">
           ハッシュタグを入力してXで検索できます
@@ -92,6 +108,14 @@ export const HashtagSearchMode: React.FC<HashtagSearchModeProps> = ({
           ※ #記号は自動で追加されます
         </p>
       </div>
+
+      {/* 高度検索フィルタ */}
+      {state.config.showAdvancedFilters && (
+        <div className="space-y-4">
+          <TalentAccountFilters state={state} actions={actions} />
+          <AdvancedSearchFilters state={state} actions={actions} />
+        </div>
+      )}
     </div>
   );
 };

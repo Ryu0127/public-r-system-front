@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { HashtagSearchState, useHashtagSearchState } from '../hooks/useHashtagSearchState';
 import HashtagSearchPresenter from '../presenters/HashtagSearchPresenter';
+import { defaultAdvancedSearchFilters } from '../types/advancedSearchFilters';
+import { loadExcludeWords } from '../utils/excludeWordsStorage';
 
 const initialState: HashtagSearchState = {
   config: {
@@ -12,12 +14,14 @@ const initialState: HashtagSearchState = {
     includeEventUrl: false,
     showSelectedTags: false,
     showSearchPreview: false,
+    showAdvancedFilters: false,
   },
   data: {
     talents: [],
     selectedTalent: null,
     hashtags: [],
     eventHashtags: [],
+    excludeWords: loadExcludeWords(),
   },
   ui: {
     selectedTags: [],
@@ -25,6 +29,7 @@ const initialState: HashtagSearchState = {
     searchQuery: '',
     talentSearchQuery: '',
   },
+  advancedFilters: defaultAdvancedSearchFilters,
 };
 
 /**

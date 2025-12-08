@@ -94,6 +94,8 @@ export const HashtagSearchPresenter: React.FC<HashtagSearchPresenterProps> = ({
           {/* タグ検索機能 */}
           {state.config.mode === 'search' && (
             <HashtagSearchMode
+              state={state}
+              actions={actions}
               selectedTalent={state.data.selectedTalent}
               hashtags={state.data.hashtags}
               searchQuery={state.ui.searchQuery}

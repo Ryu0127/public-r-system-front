@@ -1,6 +1,17 @@
 import { useCallback, useEffect, Dispatch, SetStateAction } from 'react';
 import { useHashtagSearchApi } from './useHashtagSearchApi';
 import { TalentHashtagsApiHashtag, TalentHashtagsApiEventHashtag } from 'hooks/api/oshi-katsu-saport/useTalentHashtagsGetApi';
+import {
+  AdvancedSearchFilters,
+  defaultAdvancedSearchFilters,
+  TalentAccount,
+  ExcludeWord,
+  DateRangePreset,
+  MediaFilter,
+  SearchPreset,
+} from '../types/advancedSearchFilters';
+import { buildTwitterSearchUrl, buildSearchQueryPreview } from '../utils/buildTwitterSearchUrl';
+import { loadExcludeWords, saveExcludeWords } from '../utils/excludeWordsStorage';
 
 export interface HashtagSearchState {
   config: {
@@ -11,12 +22,14 @@ export interface HashtagSearchState {
     includeEventUrl: boolean;
     showSelectedTags: boolean;
     showSearchPreview: boolean;
+    showAdvancedFilters: boolean;
   };
   data: {
     talents: Talent[];
     selectedTalent: Talent | null;
     hashtags: TalentHashtagsApiHashtag[];
     eventHashtags: TalentHashtagsApiEventHashtag[];
+    excludeWords: ExcludeWord[];
   };
   ui: {
     selectedTags: string[];
@@ -24,6 +37,7 @@ export interface HashtagSearchState {
     searchQuery: string;
     talentSearchQuery: string;
   };
+  advancedFilters: AdvancedSearchFilters;
 }
 
 export interface Talent {
@@ -59,6 +73,22 @@ export interface HashtagSearchActions {
   setIncludeEventUrl: (include: boolean) => void;
   setShowSelectedTags: (show: boolean) => void;
   setShowSearchPreview: (show: boolean) => void;
+  setShowAdvancedFilters: (show: boolean) => void;
+
+  // 高度検索フィルタ
+  setDateRangePreset: (preset: DateRangePreset) => void;
+  setCustomDateRange: (startDate?: string, endDate?: string) => void;
+  setMediaFilter: (filter: MediaFilter) => void;
+  toggleTalentAccount: (account: TalentAccount) => void;
+  setTalentAccountSearchType: (searchType: 'from' | 'to' | 'mentions') => void;
+  setTalentAccountsEnabled: (enabled: boolean) => void;
+  toggleExcludeWord: (word: ExcludeWord) => void;
+  addExcludeWord: (word: string, category?: string) => void;
+  removeExcludeWord: (id: string) => void;
+  setExcludeWordsEnabled: (enabled: boolean) => void;
+  setIncludeIllustTag: (include: boolean) => void;
+  applySearchPreset: (preset: SearchPreset) => void;
+  resetAdvancedFilters: () => void;
 
   // アクション
   handlePostToTwitter: () => void;
@@ -382,6 +412,247 @@ export const useHashtagSearchState = (
     }, []),
 
     /**
+     * 高度検索フィルタ表示/非表示
+     */
+    setShowAdvancedFilters: useCallback((show: boolean) => {
+      setState(prev => ({
+        ...prev,
+        config: {
+          ...prev.config,
+          showAdvancedFilters: show,
+        },
+      }));
+    }, []),
+
+    /**
+     * 日付範囲プリセット設定
+     */
+    setDateRangePreset: useCallback((preset: DateRangePreset) => {
+      setState(prev => ({
+        ...prev,
+        advancedFilters: {
+          ...prev.advancedFilters,
+          dateRange: {
+            ...prev.advancedFilters.dateRange,
+            preset,
+          },
+        },
+      }));
+    }, []),
+
+    /**
+     * カスタム日付範囲設定
+     */
+    setCustomDateRange: useCallback((startDate?: string, endDate?: string) => {
+      setState(prev => ({
+        ...prev,
+        advancedFilters: {
+          ...prev.advancedFilters,
+          dateRange: {
+            preset: 'custom',
+            customStartDate: startDate,
+            customEndDate: endDate,
+          },
+        },
+      }));
+    }, []),
+
+    /**
+     * メディアフィルタ設定
+     */
+    setMediaFilter: useCallback((filter: MediaFilter) => {
+      setState(prev => ({
+        ...prev,
+        advancedFilters: {
+          ...prev.advancedFilters,
+          mediaFilter: filter,
+        },
+      }));
+    }, []),
+
+    /**
+     * タレントアカウント選択/解除
+     */
+    toggleTalentAccount: useCallback((account: TalentAccount) => {
+      setState(prev => {
+        const isSelected = prev.advancedFilters.talentAccounts.selectedAccounts.some(
+          a => a.talentId === account.talentId
+        );
+        return {
+          ...prev,
+          advancedFilters: {
+            ...prev.advancedFilters,
+            talentAccounts: {
+              ...prev.advancedFilters.talentAccounts,
+              selectedAccounts: isSelected
+                ? prev.advancedFilters.talentAccounts.selectedAccounts.filter(
+                    a => a.talentId !== account.talentId
+                  )
+                : [...prev.advancedFilters.talentAccounts.selectedAccounts, account],
+            },
+          },
+        };
+      });
+    }, []),
+
+    /**
+     * タレントアカウント検索タイプ設定
+     */
+    setTalentAccountSearchType: useCallback((searchType: 'from' | 'to' | 'mentions') => {
+      setState(prev => ({
+        ...prev,
+        advancedFilters: {
+          ...prev.advancedFilters,
+          talentAccounts: {
+            ...prev.advancedFilters.talentAccounts,
+            searchType,
+          },
+        },
+      }));
+    }, []),
+
+    /**
+     * タレントアカウントフィルタ有効/無効
+     */
+    setTalentAccountsEnabled: useCallback((enabled: boolean) => {
+      setState(prev => ({
+        ...prev,
+        advancedFilters: {
+          ...prev.advancedFilters,
+          talentAccounts: {
+            ...prev.advancedFilters.talentAccounts,
+            enabled,
+          },
+        },
+      }));
+    }, []),
+
+    /**
+     * 除外ワード選択/解除
+     */
+    toggleExcludeWord: useCallback((word: ExcludeWord) => {
+      setState(prev => {
+        const isSelected = prev.advancedFilters.excludeWords.selectedWords.some(
+          w => w.id === word.id
+        );
+        return {
+          ...prev,
+          advancedFilters: {
+            ...prev.advancedFilters,
+            excludeWords: {
+              ...prev.advancedFilters.excludeWords,
+              selectedWords: isSelected
+                ? prev.advancedFilters.excludeWords.selectedWords.filter(w => w.id !== word.id)
+                : [...prev.advancedFilters.excludeWords.selectedWords, word],
+            },
+          },
+        };
+      });
+    }, []),
+
+    /**
+     * 除外ワード追加
+     */
+    addExcludeWord: useCallback((word: string, category?: string) => {
+      const newWord: ExcludeWord = {
+        id: Date.now().toString(),
+        word,
+        category,
+      };
+      setState(prev => ({
+        ...prev,
+        data: {
+          ...prev.data,
+          excludeWords: [...prev.data.excludeWords, newWord],
+        },
+      }));
+      // ローカルストレージにも保存
+      const allWords = [...state.data.excludeWords, newWord];
+      saveExcludeWords(allWords);
+    }, [state.data.excludeWords]),
+
+    /**
+     * 除外ワード削除
+     */
+    removeExcludeWord: useCallback((id: string) => {
+      setState(prev => ({
+        ...prev,
+        data: {
+          ...prev.data,
+          excludeWords: prev.data.excludeWords.filter(w => w.id !== id),
+        },
+        advancedFilters: {
+          ...prev.advancedFilters,
+          excludeWords: {
+            ...prev.advancedFilters.excludeWords,
+            selectedWords: prev.advancedFilters.excludeWords.selectedWords.filter(
+              w => w.id !== id
+            ),
+          },
+        },
+      }));
+      // ローカルストレージからも削除
+      const allWords = state.data.excludeWords.filter(w => w.id !== id);
+      saveExcludeWords(allWords);
+    }, [state.data.excludeWords]),
+
+    /**
+     * 除外ワードフィルタ有効/無効
+     */
+    setExcludeWordsEnabled: useCallback((enabled: boolean) => {
+      setState(prev => ({
+        ...prev,
+        advancedFilters: {
+          ...prev.advancedFilters,
+          excludeWords: {
+            ...prev.advancedFilters.excludeWords,
+            enabled,
+          },
+        },
+      }));
+    }, []),
+
+    /**
+     * イラストタグ含める/含めない
+     */
+    setIncludeIllustTag: useCallback((include: boolean) => {
+      setState(prev => ({
+        ...prev,
+        advancedFilters: {
+          ...prev.advancedFilters,
+          includeIllustTag: include,
+        },
+      }));
+    }, []),
+
+    /**
+     * プリセット検索適用
+     */
+    applySearchPreset: useCallback((preset: SearchPreset) => {
+      setState(prev => ({
+        ...prev,
+        advancedFilters: {
+          ...prev.advancedFilters,
+          dateRange: preset.dateRange
+            ? { preset: preset.dateRange }
+            : prev.advancedFilters.dateRange,
+          mediaFilter: preset.mediaFilter || 'all',
+          includeIllustTag: preset.includeIllustTag || false,
+        },
+      }));
+    }, []),
+
+    /**
+     * 高度検索フィルタリセット
+     */
+    resetAdvancedFilters: useCallback(() => {
+      setState(prev => ({
+        ...prev,
+        advancedFilters: defaultAdvancedSearchFilters,
+      }));
+    }, []),
+
+    /**
      * Xに投稿
      */
     handlePostToTwitter: useCallback(() => {
@@ -412,7 +683,10 @@ export const useHashtagSearchState = (
         return;
       }
 
-      const searchUrl = `https://twitter.com/search?q=${encodeURIComponent('#' + state.ui.searchQuery.trim())}`;
+      const searchUrl = buildTwitterSearchUrl(
+        state.ui.searchQuery.trim(),
+        state.advancedFilters
+      );
       window.open(searchUrl, '_blank');
     }, [state]),
 
