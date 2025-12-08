@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { HololiveEvent } from '../types';
 
 interface EventDetailModalProps {
@@ -78,26 +78,40 @@ const formatDate = (dateString: string): string => {
  * イベント詳細モーダルコンポーネント
  */
 const EventDetailModal: React.FC<EventDetailModalProps> = ({ event, isOpen, onClose }) => {
-  if (!isOpen || !event) return null;
-
-  // 背景クリックでモーダルを閉じる
-  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === e.currentTarget) {
-      onClose();
+  // モーダル表示中のbodyスクロールを無効化
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
     }
-  };
+
+    // クリーンアップ
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
+
+  if (!isOpen || !event) return null;
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm p-4"
-      onClick={handleBackdropClick}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fade-in"
+      onClick={onClose}
     >
-      <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div
+        className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto [&::-webkit-scrollbar]:hidden"
+        style={{
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* モーダルヘッダー */}
         <div className="relative">
           {/* サムネイル画像 */}
           {event.thumbnailUrl ? (
-            <div className="w-full h-64 bg-gradient-to-br from-gray-200 to-gray-300 rounded-t-2xl overflow-hidden">
+            <div className="w-full h-64 bg-gradient-to-br from-gray-200 to-gray-300 rounded-t-3xl overflow-hidden">
               <img
                 src={event.thumbnailUrl}
                 alt={event.title}
@@ -106,7 +120,7 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ event, isOpen, onCl
             </div>
           ) : (
             <div
-              className="w-full h-64 rounded-t-2xl flex items-center justify-center"
+              className="w-full h-64 rounded-t-3xl flex items-center justify-center"
               style={{
                 background: `linear-gradient(135deg, ${event.color}40, ${event.color}80)`,
               }}
@@ -292,14 +306,14 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ event, isOpen, onCl
           )}
 
           {/* アクションボタン */}
-          <div className="flex gap-3">
-            {/* イベントサイトへのリンクボタン */}
-            {(event.url || event.applicationDetails?.eventSiteUrl) && (
+          {(event.url || event.applicationDetails?.eventSiteUrl) && (
+            <div className="flex">
+              {/* イベントサイトへのリンクボタン */}
               <a
                 href={event.applicationDetails?.eventSiteUrl || event.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold text-white transition-all shadow-md hover:shadow-lg"
+                className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold text-white transition-all shadow-md hover:shadow-lg"
                 style={{
                   backgroundColor: event.color,
                 }}
@@ -316,16 +330,8 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ event, isOpen, onCl
                   />
                 </svg>
               </a>
-            )}
-
-            {/* 閉じるボタン */}
-            <button
-              onClick={onClose}
-              className="px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg font-semibold transition-all"
-            >
-              閉じる
-            </button>
-          </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
