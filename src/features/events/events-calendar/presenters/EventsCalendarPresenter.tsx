@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { EventsCalendarState, EventsCalendarActions } from '../hooks/useEventsCalendarState';
 import EventsCalendarHeader from '../components/EventsCalendarHeader';
 import EventsCalendarGrid from '../components/EventsCalendarGrid';
 import EventsListView from '../components/EventsListView';
 import ViewModeToggle from '../components/ViewModeToggle';
 import EventFilter from '../components/EventFilter';
+import EventDetailModal from '../components/EventDetailModal';
 import { filterEventsMap } from '../utils/filterEvents';
+import { HololiveEvent } from '../types';
 import Loading from 'components/Loading';
 
 export interface PresenterProps {
@@ -17,12 +19,28 @@ export interface PresenterProps {
  * イベントカレンダーPresenter
  */
 const EventsCalendarPresenter: React.FC<PresenterProps> = ({ state, actions }) => {
+  // モーダル状態管理
+  const [selectedEvent, setSelectedEvent] = useState<HololiveEvent | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   if (state.config.isLoading) {
     return <Loading />;
   }
 
   const handleBackToHome = () => {
     window.location.href = '/';
+  };
+
+  // イベントクリック時の処理
+  const handleEventClick = (event: HololiveEvent) => {
+    setSelectedEvent(event);
+    setIsModalOpen(true);
+  };
+
+  // モーダルを閉じる
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedEvent(null);
   };
 
   // フィルタリングされたイベントマップ
@@ -60,7 +78,7 @@ const EventsCalendarPresenter: React.FC<PresenterProps> = ({ state, actions }) =
               className="text-3xl md:text-4xl font-bold text-gray-800"
               style={{ fontFamily: "'Playfair Display', serif" }}
             >
-              ホロライブ イベントカレンダー
+              イベントカレンダー
             </h1>
           </div>
 
@@ -103,7 +121,7 @@ const EventsCalendarPresenter: React.FC<PresenterProps> = ({ state, actions }) =
               <EventsCalendarGrid
                 currentMonth={state.requestParams.currentMonth}
                 eventsMap={filteredEventsMap}
-                onEventClick={actions.handleEventClick}
+                onEventClick={handleEventClick}
               />
 
               {/* 凡例 */}
@@ -145,7 +163,7 @@ const EventsCalendarPresenter: React.FC<PresenterProps> = ({ state, actions }) =
             <EventsListView
               currentMonth={state.requestParams.currentMonth}
               eventsMap={filteredEventsMap}
-              onEventClick={actions.handleEventClick}
+              onEventClick={handleEventClick}
             />
           )}
 
@@ -159,6 +177,13 @@ const EventsCalendarPresenter: React.FC<PresenterProps> = ({ state, actions }) =
           </div>
         </div>
       </div>
+
+      {/* イベント詳細モーダル */}
+      <EventDetailModal
+        event={selectedEvent}
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+      />
     </div>
   );
 };

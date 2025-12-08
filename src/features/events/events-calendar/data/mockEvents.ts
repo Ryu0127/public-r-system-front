@@ -194,6 +194,15 @@ export const mockEvents: HololiveEvent[] = [
     talentName: 'ホロライブ',
     description: 'ホロライブ6周年フェスのチケット申込受付期間',
     color: '#FFD700',
+    thumbnailUrl: 'https://placehold.co/800x400/FFD700/FFFFFF?text=hololive+6th+fes',
+    applicationDetails: {
+      eventDate: '2025年12月20日(土)・21日(日) 17:00〜20:00',
+      eventSiteUrl: 'https://hololive.hololivepro.com/events',
+      applicationStart: '2025年12月1日(月) 12:00',
+      applicationEnd: '2025年12月15日(月) 23:59',
+      firstLottery: '2025年12月18日(木) 12:00 当選発表',
+      secondLottery: '2025年12月19日(金) 18:00 当選発表',
+    },
   },
   {
     id: '19',
@@ -214,6 +223,14 @@ export const mockEvents: HololiveEvent[] = [
     talentName: 'ホロライブEN',
     description: 'オンラインファンミーティング参加申込',
     color: '#FF1493',
+    thumbnailUrl: 'https://placehold.co/800x400/FF1493/FFFFFF?text=hololive+EN+Fan+Meeting',
+    applicationDetails: {
+      eventDate: '2026年1月15日(金) 9:00〜12:00',
+      eventSiteUrl: 'https://hololive.hololivepro.com/events/en',
+      applicationStart: '2025年12月28日(月) 10:00',
+      applicationEnd: '2026年1月10日(日) 23:59',
+      firstLottery: '2026年1月12日(火) 12:00 当選発表',
+    },
   },
   {
     id: '21',
