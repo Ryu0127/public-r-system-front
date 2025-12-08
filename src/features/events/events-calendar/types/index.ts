@@ -55,6 +55,7 @@ export interface HololiveEvent {
   color: string; // イメージカラー（16進数）
   url?: string; // 配信URLやイベント詳細URL
   thumbnailUrl?: string; // サムネイル画像URL
+  location?: string; // 開催場所
   applicationDetails?: ApplicationDetails; // イベント申込詳細情報
 }
 
