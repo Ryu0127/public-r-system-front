@@ -258,6 +258,23 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ event, isOpen, onCl
             </div>
           )}
 
+          {/* 注意事項 */}
+          {event.type === 'application' && event.applicationDetails?.notes && event.applicationDetails.notes.length > 0 && (
+            <div className="mb-4 p-4 bg-red-50 rounded-lg border-l-4 border-red-500">
+              <h3 className="font-bold text-red-800 mb-2 flex items-center gap-2">
+                <span className="text-xl">⚠️</span>
+                <span>重要なお知らせ</span>
+              </h3>
+              <div className="space-y-1">
+                {event.applicationDetails.notes.map((note, index) => (
+                  <p key={index} className="text-red-700 text-sm leading-relaxed">
+                    {note}
+                  </p>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* イベント申込詳細情報 */}
           {event.type === 'application' && event.applicationDetails && (
             <div className="mb-4 p-4 bg-amber-50 rounded-lg border-l-4 border-amber-500">

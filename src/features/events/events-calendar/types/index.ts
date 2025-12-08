@@ -36,6 +36,7 @@ export interface ApplicationDetails {
   secondLottery?: string; // 2次抽選日時
   applicationStart?: string; // 申込開始日時
   applicationEnd?: string; // 申込終了日時
+  notes?: string[]; // 注意事項（複数行対応）
 }
 
 /**
