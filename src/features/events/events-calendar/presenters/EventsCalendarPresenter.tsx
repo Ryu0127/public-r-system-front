@@ -117,48 +117,11 @@ const EventsCalendarPresenter: React.FC<PresenterProps> = ({ state, actions }) =
         {/* カレンダー / リスト表示 */}
         <div>
           {state.config.viewMode === 'calendar' ? (
-            <>
-              <EventsCalendarGrid
-                currentMonth={state.requestParams.currentMonth}
-                eventsMap={filteredEventsMap}
-                onEventClick={handleEventClick}
-              />
-
-              {/* 凡例 */}
-              <div className="mt-8 bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-gray-200">
-                <h3 className="text-lg font-bold text-gray-800 mb-4">イベント種類</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="flex items-center gap-2">
-                    <span className="text-2xl">🎂</span>
-                    <span className="text-sm text-gray-700">誕生日配信</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-2xl">🎉</span>
-                    <span className="text-sm text-gray-700">記念配信</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-2xl">🎤</span>
-                    <span className="text-sm text-gray-700">ライブ</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-2xl">🎵</span>
-                    <span className="text-sm text-gray-700">コンサート</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-2xl">👥</span>
-                    <span className="text-sm text-gray-700">コラボ配信</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-2xl">🤝</span>
-                    <span className="text-sm text-gray-700">リアルイベント</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-2xl">📅</span>
-                    <span className="text-sm text-gray-700">その他</span>
-                  </div>
-                </div>
-              </div>
-            </>
+            <EventsCalendarGrid
+              currentMonth={state.requestParams.currentMonth}
+              eventsMap={filteredEventsMap}
+              onEventClick={handleEventClick}
+            />
           ) : (
             <EventsListView
               currentMonth={state.requestParams.currentMonth}
