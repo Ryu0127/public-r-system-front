@@ -366,7 +366,7 @@ const EventsCalendarGrid: React.FC<EventsCalendarGridProps> = ({
                   return (
                     <div
                       key={`${bar.event.id}-${barIndex}`}
-                      className="absolute cursor-pointer group pointer-events-auto"
+                      className="absolute cursor-pointer pointer-events-auto"
                       style={{
                         top: `${rowIndex * 24}px`,
                         left: `${leftOffset}%`,
@@ -377,7 +377,7 @@ const EventsCalendarGrid: React.FC<EventsCalendarGridProps> = ({
                       onClick={() => onEventClick?.(bar.event)}
                     >
                       <div
-                        className="px-1.5 py-0.5 rounded shadow-sm hover:shadow-md transition-all border border-opacity-20"
+                        className="px-1.5 py-0.5 rounded shadow-sm hover:shadow-md transition-all border border-opacity-20 hover:brightness-75"
                         style={{
                           backgroundColor: bar.event.color + '20',
                           borderColor: bar.event.color,
@@ -395,33 +395,6 @@ const EventsCalendarGrid: React.FC<EventsCalendarGridProps> = ({
                           >
                             {bar.event.title}
                           </span>
-                        </div>
-                      </div>
-
-                      {/* ホバー時のツールチップ */}
-                      <div className="absolute left-0 top-full mt-1 z-20 hidden group-hover:block">
-                        <div
-                          className="bg-gray-900 text-white text-xs rounded-lg p-3 shadow-xl min-w-[200px] max-w-[300px]"
-                          style={{ borderLeft: `4px solid ${bar.event.color}` }}
-                        >
-                          <div className="font-bold mb-1">{bar.event.title}</div>
-                          <div className="text-gray-300 mb-1">{bar.event.talentName}</div>
-                          {bar.event.endDate && (
-                            <div className="text-gray-400">
-                              {bar.event.date} ~ {bar.event.endDate}
-                            </div>
-                          )}
-                          {bar.event.startTime && (
-                            <div className="text-gray-400">
-                              {bar.event.startTime}
-                              {bar.event.endTime && ` - ${bar.event.endTime}`}
-                            </div>
-                          )}
-                          {bar.event.description && (
-                            <div className="text-gray-300 mt-2 pt-2 border-t border-gray-700">
-                              {bar.event.description}
-                            </div>
-                          )}
                         </div>
                       </div>
                     </div>
