@@ -60,7 +60,7 @@ const EventsCalendarPresenter: React.FC<PresenterProps> = ({ state, actions }) =
         {/* ヘッダー */}
         <header className="text-center mb-12 animate-fade-in">
           {/* ホームに戻るボタン */}
-          <div className="flex justify-start items-center mb-6">
+          <div className="flex justify-between items-center mb-6">
             <button
               onClick={handleBackToHome}
               className="inline-flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full border border-gray-200 hover:border-amber-400 shadow-md hover:shadow-lg transition-all duration-300 text-gray-700 hover:text-amber-600"
@@ -70,6 +70,14 @@ const EventsCalendarPresenter: React.FC<PresenterProps> = ({ state, actions }) =
               </svg>
               <span className="text-sm font-medium">ホームに戻る</span>
             </button>
+
+            {/* モード切り替え（右上） */}
+            <div className="flex md:flex-row md:justify-end justify-center md:items-center gap-4 mt-1">
+              <ViewModeToggle
+                viewMode={state.config.viewMode}
+                onViewModeChange={actions.setViewMode}
+              />
+            </div>
           </div>
 
           {/* タイトル */}
@@ -87,14 +95,6 @@ const EventsCalendarPresenter: React.FC<PresenterProps> = ({ state, actions }) =
             ホロライブのイベント予定をカレンダーで確認できます
           </p>
         </header>
-
-        {/* モード切り替え（右上） */}
-        <div className="flex md:flex-row md:justify-end justify-center md:items-center gap-4 mb-8">
-          <ViewModeToggle
-            viewMode={state.config.viewMode}
-            onViewModeChange={actions.setViewMode}
-          />
-        </div>
 
         {/* 月移動ヘッダー（中央） */}
         <div className="flex md:flex-row justify-center md:items-center gap-4">
