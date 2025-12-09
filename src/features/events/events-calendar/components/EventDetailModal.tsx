@@ -100,15 +100,11 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ event, isOpen, onCl
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto [&::-webkit-scrollbar]:hidden"
-        style={{
-          scrollbarWidth: 'none',
-          msOverflowStyle: 'none',
-        }}
+        className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* モーダルヘッダー */}
-        <div className="relative">
+        {/* モーダルヘッダー（固定） */}
+        <div className="relative flex-shrink-0">
           {/* サムネイル画像 */}
           {event.thumbnailUrl ? (
             <div className="w-full h-64 bg-gradient-to-br from-gray-200 to-gray-300 rounded-t-3xl overflow-hidden">
@@ -129,10 +125,10 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ event, isOpen, onCl
             </div>
           )}
 
-          {/* 閉じるボタン */}
+          {/* 閉じるボタン（スクロールしても常に表示） */}
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 w-10 h-10 bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full flex items-center justify-center shadow-lg transition-all"
+            className="sticky top-4 float-right -mt-14 mr-4 w-10 h-10 bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full flex items-center justify-center shadow-lg transition-all z-10"
           >
             <svg
               className="w-6 h-6 text-gray-600"
@@ -150,8 +146,14 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ event, isOpen, onCl
           </button>
         </div>
 
-        {/* モーダルボディ */}
-        <div className="p-6">
+        {/* モーダルボディ（スクロール可能エリア） */}
+        <div
+          className="flex-1 overflow-y-auto p-6 [&::-webkit-scrollbar]:hidden"
+          style={{
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none',
+          }}
+        >
           {/* イベントタイプバッジ */}
           <div className="flex items-center gap-2 mb-4">
             <span
@@ -267,13 +269,6 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ event, isOpen, onCl
             )}
           </div>
 
-          {/* 説明文 */}
-          {event.description && (
-            <div className="mb-4 p-4 bg-gray-50 rounded-lg">
-              <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{event.description}</p>
-            </div>
-          )}
-
           {/* 注意事項（全イベント共通） */}
           {event.notes && event.notes.length > 0 && (
             <div className="mb-4 p-4 bg-red-50 rounded-lg border-l-4 border-red-500">
@@ -355,32 +350,42 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ event, isOpen, onCl
             </div>
           )}
 
-          {/* アクションボタン */}
-          {(event.url || event.applicationDetails?.eventSiteUrl) && (
-            <div className="flex">
-              {/* イベントサイトへのリンクボタン */}
-              <a
-                href={event.applicationDetails?.eventSiteUrl || event.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold text-white transition-all shadow-md hover:shadow-lg"
-                style={{
-                  backgroundColor: event.color,
-                }}
-              >
-                <span>公式サイト</span>
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                  />
-                </svg>
-              </a>
+          {/* 説明文（概要） */}
+          {event.description && (
+            <div className="mb-4 p-4 bg-gray-50 rounded-lg">
+              <h3 className="font-bold text-gray-800 mb-2 flex items-center gap-2">
+                <span className="text-xl">📄</span>
+                <span>概要</span>
+              </h3>
+              <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{event.description}</p>
             </div>
           )}
         </div>
+
+        {/* モーダルフッター（固定） */}
+        {(event.url || event.applicationDetails?.eventSiteUrl) && (
+          <div className="flex-shrink-0 p-6 pt-0">
+            <a
+              href={event.applicationDetails?.eventSiteUrl || event.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold text-white transition-all shadow-md hover:shadow-lg"
+              style={{
+                backgroundColor: event.color,
+              }}
+            >
+              <span>公式サイトを開く</span>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                />
+              </svg>
+            </a>
+          </div>
+        )}
       </div>
     </div>
   );
