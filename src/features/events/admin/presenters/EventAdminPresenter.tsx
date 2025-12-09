@@ -1,40 +1,33 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { HololiveEvent, EventStatus } from '../../events-calendar/types';
 import EventListTable from '../components/EventListTable';
-import EventForm from '../components/EventForm';
 import EventPreview from '../components/EventPreview';
 
 interface EventAdminPresenterProps {
   events: HololiveEvent[];
   loading: boolean;
   error: string | null;
-  onCreateEvent: (eventData: Partial<HololiveEvent>) => Promise<boolean>;
-  onUpdateEvent: (id: string, eventData: Partial<HololiveEvent>) => Promise<boolean>;
   onDeleteEvent: (id: string) => Promise<boolean>;
   onStatusChange: (id: string, status: EventStatus) => Promise<boolean>;
   getEventById: (id: string) => HololiveEvent | undefined;
 }
 
-type ViewMode = 'list' | 'create' | 'edit' | 'preview';
-
 const EventAdminPresenter: React.FC<EventAdminPresenterProps> = ({
   events,
   loading,
   error,
-  onCreateEvent,
-  onUpdateEvent,
   onDeleteEvent,
   onStatusChange,
   getEventById,
 }) => {
-  const [viewMode, setViewMode] = useState<ViewMode>('list');
-  const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
+  const navigate = useNavigate();
   const [filterStatus, setFilterStatus] = useState<EventStatus | 'all'>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [previewEventId, setPreviewEventId] = useState<string | null>(null);
 
   const handleEdit = (id: string) => {
-    setSelectedEventId(id);
-    setViewMode('edit');
+    navigate(`/admin/events/${id}/edit`);
   };
 
   const handleDelete = async (id: string) => {
@@ -45,36 +38,11 @@ const EventAdminPresenter: React.FC<EventAdminPresenterProps> = ({
   };
 
   const handlePreview = (id: string) => {
-    setSelectedEventId(id);
-    setViewMode('preview');
-  };
-
-  const handleSave = async (eventData: Partial<HololiveEvent>) => {
-    let success = false;
-    if (viewMode === 'create') {
-      success = await onCreateEvent(eventData);
-      if (success) {
-        alert('イベントを作成しました');
-        setViewMode('list');
-      }
-    } else if (viewMode === 'edit' && selectedEventId) {
-      success = await onUpdateEvent(selectedEventId, eventData);
-      if (success) {
-        alert('イベントを更新しました');
-        setViewMode('list');
-        setSelectedEventId(null);
-      }
-    }
-  };
-
-  const handleCancel = () => {
-    setViewMode('list');
-    setSelectedEventId(null);
+    setPreviewEventId(id);
   };
 
   const handleClosePreview = () => {
-    setViewMode('list');
-    setSelectedEventId(null);
+    setPreviewEventId(null);
   };
 
   // フィルタリングと検索
@@ -87,22 +55,20 @@ const EventAdminPresenter: React.FC<EventAdminPresenterProps> = ({
     return matchesStatus && matchesSearch;
   });
 
-  // リストビュー
-  if (viewMode === 'list') {
-    return (
-      <div className="min-h-screen bg-gray-50 p-6">
-        <div className="max-w-7xl mx-auto">
-          {/* ヘッダー */}
-          <div className="bg-white rounded-lg shadow p-6 mb-6">
-            <div className="flex justify-between items-center mb-4">
-              <h1 className="text-3xl font-bold">イベント管理</h1>
-              <button
-                onClick={() => setViewMode('create')}
-                className="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-              >
-                + 新規作成
-              </button>
-            </div>
+  return (
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-7xl mx-auto">
+        {/* ヘッダー */}
+        <div className="bg-white rounded-lg shadow p-6 mb-6">
+          <div className="flex justify-between items-center mb-4">
+            <h1 className="text-3xl font-bold">イベント管理</h1>
+            <button
+              onClick={() => navigate('/admin/events/new')}
+              className="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            >
+              + 新規作成
+            </button>
+          </div>
 
             {/* 検索とフィルター */}
             <div className="flex gap-4">
@@ -125,71 +91,58 @@ const EventAdminPresenter: React.FC<EventAdminPresenterProps> = ({
               </select>
             </div>
 
-            {/* 統計情報 */}
-            <div className="mt-4 flex gap-4 text-sm">
-              <div className="text-gray-600">
-                全イベント: <span className="font-bold">{events.length}</span>
-              </div>
-              <div className="text-gray-600">
-                公開: <span className="font-bold">{events.filter((e) => e.status === 'published').length}</span>
-              </div>
-              <div className="text-gray-600">
-                下書き: <span className="font-bold">{events.filter((e) => e.status === 'draft').length}</span>
-              </div>
+          {/* 統計情報 */}
+          <div className="mt-4 flex gap-4 text-sm">
+            <div className="text-gray-600">
+              全イベント: <span className="font-bold">{events.length}</span>
+            </div>
+            <div className="text-gray-600">
+              公開: <span className="font-bold">{events.filter((e) => e.status === 'published').length}</span>
+            </div>
+            <div className="text-gray-600">
+              下書き: <span className="font-bold">{events.filter((e) => e.status === 'draft').length}</span>
             </div>
           </div>
-
-          {/* エラー表示 */}
-          {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-              {error}
-            </div>
-          )}
-
-          {/* ローディング */}
-          {loading && (
-            <div className="text-center py-8">
-              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-              <p className="mt-2 text-gray-600">読み込み中...</p>
-            </div>
-          )}
-
-          {/* イベント一覧テーブル */}
-          {!loading && (
-            <div className="bg-white rounded-lg shadow">
-              <EventListTable
-                events={filteredEvents}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-                onStatusChange={onStatusChange}
-                onPreview={handlePreview}
-              />
-            </div>
-          )}
         </div>
+
+        {/* エラー表示 */}
+        {error && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+            {error}
+          </div>
+        )}
+
+        {/* ローディング */}
+        {loading && (
+          <div className="text-center py-8">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+            <p className="mt-2 text-gray-600">読み込み中...</p>
+          </div>
+        )}
+
+        {/* イベント一覧テーブル */}
+        {!loading && (
+          <div className="bg-white rounded-lg shadow">
+            <EventListTable
+              events={filteredEvents}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              onStatusChange={onStatusChange}
+              onPreview={handlePreview}
+            />
+          </div>
+        )}
+
+        {/* プレビューモーダル */}
+        {previewEventId && (() => {
+          const previewEvent = getEventById(previewEventId);
+          return previewEvent ? (
+            <EventPreview event={previewEvent} onClose={handleClosePreview} />
+          ) : null;
+        })()}
       </div>
-    );
-  }
-
-  // フォームビュー（新規作成・編集）
-  if (viewMode === 'create' || viewMode === 'edit') {
-    const editingEvent = selectedEventId ? getEventById(selectedEventId) : undefined;
-    return (
-      <div className="min-h-screen bg-gray-50 p-6">
-        <EventForm event={editingEvent} onSave={handleSave} onCancel={handleCancel} />
-      </div>
-    );
-  }
-
-  // プレビュービュー
-  if (viewMode === 'preview' && selectedEventId) {
-    const previewEvent = getEventById(selectedEventId);
-    if (previewEvent) {
-      return <EventPreview event={previewEvent} onClose={handleClosePreview} />;
-    }
-  }
-
-  return null;
+    </div>
+  );
 };
 
 export default EventAdminPresenter;

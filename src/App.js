@@ -9,6 +9,7 @@ import LifeScheduleDayContainer from 'features/life/life-schedule-day/containers
 import LifeScheduleMonthContainer from 'features/life/life-schedule-month/containers/LifeScheduleMonthContainer';
 import EventsCalendarContainer from 'features/events/events-calendar/containers/EventsCalendarContainer';
 import EventAdminContainer from 'features/events/admin/containers/EventAdminContainer';
+import EventFormContainer from 'features/events/admin/containers/EventFormContainer';
 import LoginContainer from 'features/auth/login/containers/LoginContainer';
 import './App.css';
 
@@ -45,6 +46,8 @@ function App() {
         <Route path="/events/calendar" element={<EventsCalendarContainer />} />
         {/* イベント管理画面 */}
         <Route path="/admin/events" element={<EventAdminContainer />} />
+        <Route path="/admin/events/new" element={<EventFormContainer />} />
+        <Route path="/admin/events/:id/edit" element={<EventFormContainer />} />
       </Routes>
     </Router>
   );
