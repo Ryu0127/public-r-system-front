@@ -5,7 +5,6 @@ interface EventListTableProps {
   events: HololiveEvent[];
   onEdit: (id: string) => void;
   onDelete: (id: string) => void;
-  onStatusChange: (id: string, status: 'draft' | 'published' | 'archived') => void;
   onPreview: (id: string) => void;
 }
 
@@ -13,7 +12,6 @@ const EventListTable: React.FC<EventListTableProps> = ({
   events,
   onEdit,
   onDelete,
-  onStatusChange,
   onPreview,
 }) => {
   const getStatusBadgeColor = (status?: string) => {
@@ -26,6 +24,19 @@ const EventListTable: React.FC<EventListTableProps> = ({
         return 'bg-gray-100 text-gray-800';
       default:
         return 'bg-blue-100 text-blue-800';
+    }
+  };
+
+  const getStatusLabel = (status?: string) => {
+    switch (status) {
+      case 'published':
+        return '公開';
+      case 'draft':
+        return '下書き';
+      case 'archived':
+        return 'アーカイブ';
+      default:
+        return '公開';
     }
   };
 
@@ -78,17 +89,13 @@ const EventListTable: React.FC<EventListTableProps> = ({
                   {event.startTime && ` ${event.startTime}`}
                 </td>
                 <td className="px-4 py-2 border-b">
-                  <select
-                    value={event.status || 'published'}
-                    onChange={(e) => onStatusChange(event.id, e.target.value as any)}
+                  <span
                     className={`px-2 py-1 rounded text-xs font-medium ${getStatusBadgeColor(
                       event.status
                     )}`}
                   >
-                    <option value="draft">下書き</option>
-                    <option value="published">公開</option>
-                    <option value="archived">アーカイブ</option>
-                  </select>
+                    {getStatusLabel(event.status)}
+                  </span>
                 </td>
                 <td className="px-4 py-2 border-b text-sm">
                   <div className="flex gap-2">

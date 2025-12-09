@@ -5,9 +5,10 @@ interface EventFormProps {
   event?: HololiveEvent;
   onSave: (event: Partial<HololiveEvent>) => void;
   onCancel: () => void;
+  onPreview: (event: Partial<HololiveEvent>) => void;
 }
 
-const EventForm: React.FC<EventFormProps> = ({ event, onSave, onCancel }) => {
+const EventForm: React.FC<EventFormProps> = ({ event, onSave, onCancel, onPreview }) => {
   const [formData, setFormData] = useState<Partial<HololiveEvent>>({
     title: '',
     talentName: '',
@@ -95,6 +96,30 @@ const EventForm: React.FC<EventFormProps> = ({ event, onSave, onCancel }) => {
     eventData.updatedAt = new Date().toISOString();
 
     onSave(eventData);
+  };
+
+  const handlePreview = () => {
+    const eventData: Partial<HololiveEvent> = {
+      ...formData,
+      notes: notes.split('\n').filter((n) => n.trim()),
+    };
+
+    // イベント申込の場合は詳細情報を含める
+    if (formData.type === 'application') {
+      eventData.applicationDetails = {
+        eventDate: applicationDetails.eventDate || undefined,
+        eventSiteUrl: applicationDetails.eventSiteUrl || undefined,
+        firstLottery: applicationDetails.firstLottery || undefined,
+        secondLottery: applicationDetails.secondLottery || undefined,
+        applicationStart: applicationDetails.applicationStart || undefined,
+        applicationEnd: applicationDetails.applicationEnd || undefined,
+        notes: applicationDetails.notes
+          ? applicationDetails.notes.split('\n').filter((n) => n.trim())
+          : undefined,
+      };
+    }
+
+    onPreview(eventData);
   };
 
   return (
@@ -392,6 +417,13 @@ const EventForm: React.FC<EventFormProps> = ({ event, onSave, onCancel }) => {
 
         {/* アクションボタン */}
         <div className="flex gap-3 pt-4 border-t">
+          <button
+            type="button"
+            onClick={handlePreview}
+            className="px-6 py-2 bg-purple-500 text-white rounded hover:bg-purple-600"
+          >
+            プレビュー
+          </button>
           <button
             type="button"
             onClick={() => handleSubmit('draft')}

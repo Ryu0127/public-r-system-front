@@ -9,7 +9,6 @@ interface EventAdminPresenterProps {
   loading: boolean;
   error: string | null;
   onDeleteEvent: (id: string) => Promise<boolean>;
-  onStatusChange: (id: string, status: EventStatus) => Promise<boolean>;
   getEventById: (id: string) => HololiveEvent | undefined;
 }
 
@@ -18,7 +17,6 @@ const EventAdminPresenter: React.FC<EventAdminPresenterProps> = ({
   loading,
   error,
   onDeleteEvent,
-  onStatusChange,
   getEventById,
 }) => {
   const navigate = useNavigate();
@@ -127,7 +125,6 @@ const EventAdminPresenter: React.FC<EventAdminPresenterProps> = ({
               events={filteredEvents}
               onEdit={handleEdit}
               onDelete={handleDelete}
-              onStatusChange={onStatusChange}
               onPreview={handlePreview}
             />
           </div>

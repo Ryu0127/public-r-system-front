@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { HololiveEvent } from '../../events-calendar/types';
 import EventForm from '../components/EventForm';
+import EventPreview from '../components/EventPreview';
 
 interface EventFormPresenterProps {
   event?: HololiveEvent;
@@ -17,6 +18,7 @@ const EventFormPresenter: React.FC<EventFormPresenterProps> = ({
   onSave,
 }) => {
   const navigate = useNavigate();
+  const [previewEvent, setPreviewEvent] = useState<HololiveEvent | null>(null);
 
   const handleSave = async (eventData: Partial<HololiveEvent>) => {
     const success = await onSave(eventData);
@@ -28,6 +30,24 @@ const EventFormPresenter: React.FC<EventFormPresenterProps> = ({
 
   const handleCancel = () => {
     navigate('/admin/events');
+  };
+
+  const handlePreview = (eventData: Partial<HololiveEvent>) => {
+    // プレビュー用のイベントデータを作成
+    const previewData: HololiveEvent = {
+      id: event?.id || 'preview',
+      title: eventData.title || '',
+      date: eventData.date || '',
+      type: eventData.type || 'other',
+      talentName: eventData.talentName || '',
+      color: eventData.color || '#000000',
+      ...eventData,
+    } as HololiveEvent;
+    setPreviewEvent(previewData);
+  };
+
+  const handleClosePreview = () => {
+    setPreviewEvent(null);
   };
 
   return (
@@ -46,7 +66,17 @@ const EventFormPresenter: React.FC<EventFormPresenterProps> = ({
           <p className="mt-2 text-gray-600">読み込み中...</p>
         </div>
       ) : (
-        <EventForm event={event} onSave={handleSave} onCancel={handleCancel} />
+        <EventForm
+          event={event}
+          onSave={handleSave}
+          onCancel={handleCancel}
+          onPreview={handlePreview}
+        />
+      )}
+
+      {/* プレビューモーダル */}
+      {previewEvent && (
+        <EventPreview event={previewEvent} onClose={handleClosePreview} />
       )}
     </div>
   );

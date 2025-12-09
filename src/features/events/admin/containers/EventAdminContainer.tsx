@@ -8,7 +8,6 @@ const EventAdminContainer: React.FC = () => {
     loading,
     error,
     deleteEvent,
-    changeEventStatus,
     getEventById,
   } = useEventAdmin();
 
@@ -18,7 +17,6 @@ const EventAdminContainer: React.FC = () => {
       loading={loading}
       error={error}
       onDeleteEvent={deleteEvent}
-      onStatusChange={changeEventStatus}
       getEventById={getEventById}
     />
   );
