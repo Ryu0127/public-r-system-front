@@ -27,6 +27,19 @@ export type FilterCategory =
 export type ViewMode = 'calendar' | 'list';
 
 /**
+ * イベント申込詳細情報
+ */
+export interface ApplicationDetails {
+  eventDate?: string; // イベント開催日時（表示用）
+  eventSiteUrl?: string; // イベントサイトURL
+  firstLottery?: string; // 1次抽選日時
+  secondLottery?: string; // 2次抽選日時
+  applicationStart?: string; // 申込開始日時
+  applicationEnd?: string; // 申込終了日時
+  notes?: string[]; // 注意事項（複数行対応）
+}
+
+/**
  * ホロライブイベント
  */
 export interface HololiveEvent {
@@ -41,6 +54,10 @@ export interface HololiveEvent {
   description?: string;
   color: string; // イメージカラー（16進数）
   url?: string; // 配信URLやイベント詳細URL
+  thumbnailUrl?: string; // サムネイル画像URL
+  location?: string; // 開催場所
+  notes?: string[]; // 注意事項（複数行対応）
+  applicationDetails?: ApplicationDetails; // イベント申込詳細情報
 }
 
 /**
