@@ -8,6 +8,7 @@ import HashtagSearchContainer from 'features/oshi-katsu-saport/hashtag-search/co
 import LifeScheduleDayContainer from 'features/life/life-schedule-day/containers/LifeScheduleDayContainer';
 import LifeScheduleMonthContainer from 'features/life/life-schedule-month/containers/LifeScheduleMonthContainer';
 import EventsCalendarContainer from 'features/events/events-calendar/containers/EventsCalendarContainer';
+import EventAdminContainer from 'features/events/admin/containers/EventAdminContainer';
 import LoginContainer from 'features/auth/login/containers/LoginContainer';
 import './App.css';
 
@@ -42,6 +43,8 @@ function App() {
         <Route path="/life/life-schedule-month" element={<LifeScheduleMonthContainer />} />
         {/* イベントカレンダー */}
         <Route path="/events/calendar" element={<EventsCalendarContainer />} />
+        {/* イベント管理画面 */}
+        <Route path="/admin/events" element={<EventAdminContainer />} />
       </Routes>
     </Router>
   );

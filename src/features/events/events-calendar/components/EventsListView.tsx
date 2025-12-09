@@ -77,7 +77,6 @@ const EventsListView: React.FC<EventsListViewProps> = ({
     <div className="space-y-4">
       {currentMonthEvents.map(({ date, events }) => {
         const { month, day, weekday } = formatDate(date);
-        const isWeekend = weekday === '土' || weekday === '日';
 
         return (
           <div key={date} className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-200">

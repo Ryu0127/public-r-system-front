@@ -27,6 +27,14 @@ export type FilterCategory =
 export type ViewMode = 'calendar' | 'list';
 
 /**
+ * イベントの公開状態
+ */
+export type EventStatus =
+  | 'draft'     // 下書き
+  | 'published' // 公開
+  | 'archived'; // アーカイブ（非公開）
+
+/**
  * イベント申込詳細情報
  */
 export interface ApplicationDetails {
@@ -58,6 +66,9 @@ export interface HololiveEvent {
   location?: string; // 開催場所
   notes?: string[]; // 注意事項（複数行対応）
   applicationDetails?: ApplicationDetails; // イベント申込詳細情報
+  status?: EventStatus; // 公開状態（デフォルトは published）
+  createdAt?: string; // 作成日時（ISO8601形式）
+  updatedAt?: string; // 更新日時（ISO8601形式）
 }
 
 /**
