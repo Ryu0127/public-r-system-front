@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { EventsCalendarState, EventsCalendarActions } from '../hooks/useEventsCalendarState';
 import EventsCalendarHeader from '../components/EventsCalendarHeader';
 import EventsCalendarGrid from '../components/EventsCalendarGrid';
 import EventsListView from '../components/EventsListView';
 import ViewModeToggle from '../components/ViewModeToggle';
 import EventFilter from '../components/EventFilter';
+import EventDetailModal from '../components/EventDetailModal';
 import { filterEventsMap } from '../utils/filterEvents';
+import { HololiveEvent } from '../types';
 import Loading from 'components/Loading';
 
 export interface PresenterProps {
@@ -17,12 +19,28 @@ export interface PresenterProps {
  * イベントカレンダーPresenter
  */
 const EventsCalendarPresenter: React.FC<PresenterProps> = ({ state, actions }) => {
+  // モーダル状態管理
+  const [selectedEvent, setSelectedEvent] = useState<HololiveEvent | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   if (state.config.isLoading) {
     return <Loading />;
   }
 
   const handleBackToHome = () => {
     window.location.href = '/';
+  };
+
+  // イベントクリック時の処理
+  const handleEventClick = (event: HololiveEvent) => {
+    setSelectedEvent(event);
+    setIsModalOpen(true);
+  };
+
+  // モーダルを閉じる
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedEvent(null);
   };
 
   // フィルタリングされたイベントマップ
@@ -42,7 +60,7 @@ const EventsCalendarPresenter: React.FC<PresenterProps> = ({ state, actions }) =
         {/* ヘッダー */}
         <header className="text-center mb-12 animate-fade-in">
           {/* ホームに戻るボタン */}
-          <div className="flex justify-start items-center mb-6">
+          <div className="flex justify-between items-center mb-6">
             <button
               onClick={handleBackToHome}
               className="inline-flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full border border-gray-200 hover:border-amber-400 shadow-md hover:shadow-lg transition-all duration-300 text-gray-700 hover:text-amber-600"
@@ -52,6 +70,14 @@ const EventsCalendarPresenter: React.FC<PresenterProps> = ({ state, actions }) =
               </svg>
               <span className="text-sm font-medium">ホームに戻る</span>
             </button>
+
+            {/* モード切り替え（右上） */}
+            <div className="flex md:flex-row md:justify-end justify-center md:items-center gap-4 mt-1">
+              <ViewModeToggle
+                viewMode={state.config.viewMode}
+                onViewModeChange={actions.setViewMode}
+              />
+            </div>
           </div>
 
           {/* タイトル */}
@@ -60,7 +86,7 @@ const EventsCalendarPresenter: React.FC<PresenterProps> = ({ state, actions }) =
               className="text-3xl md:text-4xl font-bold text-gray-800"
               style={{ fontFamily: "'Playfair Display', serif" }}
             >
-              ホロライブ イベントカレンダー
+              イベントカレンダー
             </h1>
           </div>
 
@@ -69,14 +95,6 @@ const EventsCalendarPresenter: React.FC<PresenterProps> = ({ state, actions }) =
             ホロライブのイベント予定をカレンダーで確認できます
           </p>
         </header>
-
-        {/* モード切り替え（右上） */}
-        <div className="flex md:flex-row md:justify-end justify-center md:items-center gap-4 mb-8">
-          <ViewModeToggle
-            viewMode={state.config.viewMode}
-            onViewModeChange={actions.setViewMode}
-          />
-        </div>
 
         {/* 月移動ヘッダー（中央） */}
         <div className="flex md:flex-row justify-center md:items-center gap-4">
@@ -99,53 +117,16 @@ const EventsCalendarPresenter: React.FC<PresenterProps> = ({ state, actions }) =
         {/* カレンダー / リスト表示 */}
         <div>
           {state.config.viewMode === 'calendar' ? (
-            <>
-              <EventsCalendarGrid
-                currentMonth={state.requestParams.currentMonth}
-                eventsMap={filteredEventsMap}
-                onEventClick={actions.handleEventClick}
-              />
-
-              {/* 凡例 */}
-              <div className="mt-8 bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-gray-200">
-                <h3 className="text-lg font-bold text-gray-800 mb-4">イベント種類</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="flex items-center gap-2">
-                    <span className="text-2xl">🎂</span>
-                    <span className="text-sm text-gray-700">誕生日配信</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-2xl">🎉</span>
-                    <span className="text-sm text-gray-700">記念配信</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-2xl">🎤</span>
-                    <span className="text-sm text-gray-700">ライブ</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-2xl">🎵</span>
-                    <span className="text-sm text-gray-700">コンサート</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-2xl">👥</span>
-                    <span className="text-sm text-gray-700">コラボ配信</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-2xl">🤝</span>
-                    <span className="text-sm text-gray-700">リアルイベント</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-2xl">📅</span>
-                    <span className="text-sm text-gray-700">その他</span>
-                  </div>
-                </div>
-              </div>
-            </>
+            <EventsCalendarGrid
+              currentMonth={state.requestParams.currentMonth}
+              eventsMap={filteredEventsMap}
+              onEventClick={handleEventClick}
+            />
           ) : (
             <EventsListView
               currentMonth={state.requestParams.currentMonth}
               eventsMap={filteredEventsMap}
-              onEventClick={actions.handleEventClick}
+              onEventClick={handleEventClick}
             />
           )}
 
@@ -159,6 +140,13 @@ const EventsCalendarPresenter: React.FC<PresenterProps> = ({ state, actions }) =
           </div>
         </div>
       </div>
+
+      {/* イベント詳細モーダル */}
+      <EventDetailModal
+        event={selectedEvent}
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+      />
     </div>
   );
 };
