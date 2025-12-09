@@ -100,11 +100,37 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ event, isOpen, onCl
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col"
+        className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col relative"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* モーダルヘッダー（固定） */}
-        <div className="relative flex-shrink-0">
+        {/* 閉じるボタン（スクロールしても常に右上に表示） */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 w-10 h-10 bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full flex items-center justify-center shadow-lg transition-all z-20"
+        >
+          <svg
+            className="w-6 h-6 text-gray-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+
+        {/* モーダルボディ（スクロール可能エリア） */}
+        <div
+          className="flex-1 overflow-y-auto [&::-webkit-scrollbar]:hidden"
+          style={{
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none',
+          }}
+        >
           {/* サムネイル画像 */}
           {event.thumbnailUrl ? (
             <div className="w-full h-64 bg-gradient-to-br from-gray-200 to-gray-300 rounded-t-3xl overflow-hidden">
@@ -125,35 +151,7 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ event, isOpen, onCl
             </div>
           )}
 
-          {/* 閉じるボタン（スクロールしても常に表示） */}
-          <button
-            onClick={onClose}
-            className="sticky top-4 float-right -mt-14 mr-4 w-10 h-10 bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full flex items-center justify-center shadow-lg transition-all z-10"
-          >
-            <svg
-              className="w-6 h-6 text-gray-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
-        </div>
-
-        {/* モーダルボディ（スクロール可能エリア） */}
-        <div
-          className="flex-1 overflow-y-auto p-6 [&::-webkit-scrollbar]:hidden"
-          style={{
-            scrollbarWidth: 'none',
-            msOverflowStyle: 'none',
-          }}
-        >
+          <div className="p-6">
           {/* イベントタイプバッジ */}
           <div className="flex items-center gap-2 mb-4">
             <span
@@ -360,6 +358,7 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ event, isOpen, onCl
               <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{event.description}</p>
             </div>
           )}
+          </div>
         </div>
 
         {/* モーダルフッター（固定） */}
