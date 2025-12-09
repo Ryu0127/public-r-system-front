@@ -4,14 +4,12 @@ import { HololiveEvent } from '../../events-calendar/types';
 interface EventListTableProps {
   events: HololiveEvent[];
   onEdit: (id: string) => void;
-  onDelete: (id: string) => void;
   onPreview: (id: string) => void;
 }
 
 const EventListTable: React.FC<EventListTableProps> = ({
   events,
   onEdit,
-  onDelete,
   onPreview,
 }) => {
   const getStatusBadgeColor = (status?: string) => {
@@ -110,16 +108,6 @@ const EventListTable: React.FC<EventListTableProps> = ({
                       className="px-2 py-1 bg-green-500 text-white rounded hover:bg-green-600 text-xs"
                     >
                       編集
-                    </button>
-                    <button
-                      onClick={() => {
-                        if (window.confirm('本当に削除しますか？')) {
-                          onDelete(event.id);
-                        }
-                      }}
-                      className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-xs"
-                    >
-                      削除
                     </button>
                   </div>
                 </td>

@@ -6,9 +6,10 @@ interface EventFormProps {
   onSave: (event: Partial<HololiveEvent>) => void;
   onCancel: () => void;
   onPreview: (event: Partial<HololiveEvent>) => void;
+  onDelete?: () => void;
 }
 
-const EventForm: React.FC<EventFormProps> = ({ event, onSave, onCancel, onPreview }) => {
+const EventForm: React.FC<EventFormProps> = ({ event, onSave, onCancel, onPreview, onDelete }) => {
   const [formData, setFormData] = useState<Partial<HololiveEvent>>({
     title: '',
     talentName: '',
@@ -416,35 +417,50 @@ const EventForm: React.FC<EventFormProps> = ({ event, onSave, onCancel, onPrevie
         )}
 
         {/* アクションボタン */}
-        <div className="flex gap-3 pt-4 border-t">
-          <button
-            type="button"
-            onClick={handlePreview}
-            className="px-6 py-2 bg-purple-500 text-white rounded hover:bg-purple-600"
-          >
-            プレビュー
-          </button>
-          <button
-            type="button"
-            onClick={() => handleSubmit('draft')}
-            className="px-6 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-          >
-            下書き保存
-          </button>
-          <button
-            type="button"
-            onClick={() => handleSubmit('published')}
-            className="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-          >
-            公開
-          </button>
-          <button
-            type="button"
-            onClick={onCancel}
-            className="px-6 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
-          >
-            キャンセル
-          </button>
+        <div className="flex justify-between pt-4 border-t">
+          <div className="flex gap-3">
+            <button
+              type="button"
+              onClick={handlePreview}
+              className="px-6 py-2 bg-purple-500 text-white rounded hover:bg-purple-600"
+            >
+              プレビュー
+            </button>
+            <button
+              type="button"
+              onClick={() => handleSubmit('draft')}
+              className="px-6 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+            >
+              下書き保存
+            </button>
+            <button
+              type="button"
+              onClick={() => handleSubmit('published')}
+              className="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            >
+              公開
+            </button>
+            <button
+              type="button"
+              onClick={onCancel}
+              className="px-6 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
+            >
+              キャンセル
+            </button>
+          </div>
+          {event && onDelete && (
+            <button
+              type="button"
+              onClick={() => {
+                if (window.confirm('本当に削除しますか？この操作は取り消せません。')) {
+                  onDelete();
+                }
+              }}
+              className="px-6 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+            >
+              削除
+            </button>
+          )}
         </div>
       </div>
     </div>

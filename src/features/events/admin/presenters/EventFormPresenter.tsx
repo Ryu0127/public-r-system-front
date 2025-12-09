@@ -9,6 +9,7 @@ interface EventFormPresenterProps {
   loading: boolean;
   error: string | null;
   onSave: (eventData: Partial<HololiveEvent>) => Promise<boolean>;
+  onDelete?: () => Promise<boolean>;
 }
 
 const EventFormPresenter: React.FC<EventFormPresenterProps> = ({
@@ -16,6 +17,7 @@ const EventFormPresenter: React.FC<EventFormPresenterProps> = ({
   loading,
   error,
   onSave,
+  onDelete,
 }) => {
   const navigate = useNavigate();
   const [previewEvent, setPreviewEvent] = useState<HololiveEvent | null>(null);
@@ -50,6 +52,16 @@ const EventFormPresenter: React.FC<EventFormPresenterProps> = ({
     setPreviewEvent(null);
   };
 
+  const handleDelete = async () => {
+    if (onDelete) {
+      const success = await onDelete();
+      if (success) {
+        alert('イベントを削除しました');
+        navigate('/admin/events');
+      }
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       {error && (
@@ -71,6 +83,7 @@ const EventFormPresenter: React.FC<EventFormPresenterProps> = ({
           onSave={handleSave}
           onCancel={handleCancel}
           onPreview={handlePreview}
+          onDelete={event ? handleDelete : undefined}
         />
       )}
 

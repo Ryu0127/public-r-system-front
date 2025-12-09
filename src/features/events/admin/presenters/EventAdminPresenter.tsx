@@ -8,7 +8,6 @@ interface EventAdminPresenterProps {
   events: HololiveEvent[];
   loading: boolean;
   error: string | null;
-  onDeleteEvent: (id: string) => Promise<boolean>;
   getEventById: (id: string) => HololiveEvent | undefined;
 }
 
@@ -16,7 +15,6 @@ const EventAdminPresenter: React.FC<EventAdminPresenterProps> = ({
   events,
   loading,
   error,
-  onDeleteEvent,
   getEventById,
 }) => {
   const navigate = useNavigate();
@@ -26,13 +24,6 @@ const EventAdminPresenter: React.FC<EventAdminPresenterProps> = ({
 
   const handleEdit = (id: string) => {
     navigate(`/admin/events/${id}/edit`);
-  };
-
-  const handleDelete = async (id: string) => {
-    const success = await onDeleteEvent(id);
-    if (success) {
-      alert('イベントを削除しました');
-    }
   };
 
   const handlePreview = (id: string) => {
@@ -124,7 +115,6 @@ const EventAdminPresenter: React.FC<EventAdminPresenterProps> = ({
             <EventListTable
               events={filteredEvents}
               onEdit={handleEdit}
-              onDelete={handleDelete}
               onPreview={handlePreview}
             />
           </div>

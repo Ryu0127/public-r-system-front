@@ -11,6 +11,7 @@ const EventFormContainer: React.FC = () => {
     error,
     createEvent,
     updateEvent,
+    deleteEvent,
     getEventById,
   } = useEventAdmin();
 
@@ -39,6 +40,13 @@ const EventFormContainer: React.FC = () => {
     }
   };
 
+  const handleDelete = async () => {
+    if (id) {
+      return await deleteEvent(id);
+    }
+    return false;
+  };
+
   if (notFound) {
     return (
       <div className="min-h-screen bg-gray-50 p-6">
@@ -57,6 +65,7 @@ const EventFormContainer: React.FC = () => {
       loading={loading}
       error={error}
       onSave={handleSave}
+      onDelete={id ? handleDelete : undefined}
     />
   );
 };
