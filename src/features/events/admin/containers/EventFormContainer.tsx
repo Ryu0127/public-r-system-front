@@ -7,6 +7,7 @@ import { HololiveEvent } from '../../events-calendar/types';
 const EventFormContainer: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const {
+    events,
     loading,
     error,
     createEvent,
@@ -19,16 +20,17 @@ const EventFormContainer: React.FC = () => {
   const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
-    if (id) {
-      // 編集モード: IDからイベントを取得
+    if (id && !loading) {
+      // 編集モード: IDからイベントを取得（loading完了後）
       const foundEvent = getEventById(id);
       if (foundEvent) {
         setEvent(foundEvent);
+        setNotFound(false);
       } else {
         setNotFound(true);
       }
     }
-  }, [id, getEventById]);
+  }, [id, loading, getEventById, events]);
 
   const handleSave = async (eventData: Partial<HololiveEvent>) => {
     if (id) {
