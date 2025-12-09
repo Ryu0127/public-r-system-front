@@ -40,7 +40,7 @@ const EventAdminPresenter: React.FC<EventAdminPresenterProps> = ({
     const matchesSearch =
       searchQuery === '' ||
       event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      event.talentName.toLowerCase().includes(searchQuery.toLowerCase());
+      event.talentNames?.some(name => name.toLowerCase().includes(searchQuery.toLowerCase()));
     return matchesStatus && matchesSearch;
   });
 

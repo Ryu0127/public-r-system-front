@@ -1,5 +1,6 @@
 import React from 'react';
 import { HololiveEvent } from '../../events-calendar/types';
+import { EVENT_TYPE_LABELS } from '../../events-calendar/types/eventColors';
 
 interface EventPreviewProps {
   event: HololiveEvent;
@@ -8,19 +9,7 @@ interface EventPreviewProps {
 
 const EventPreview: React.FC<EventPreviewProps> = ({ event, onClose }) => {
   const getTypeLabel = (type: string) => {
-    const typeLabels: { [key: string]: string } = {
-      anniversary: '記念配信',
-      live: 'ライブ',
-      concert: 'コンサート',
-      meet: 'リアルイベント・ミート',
-      collab: 'コラボ配信',
-      birthday: '誕生日配信',
-      goods: 'グッズ',
-      voice: 'ボイス',
-      application: 'イベント申込',
-      other: 'その他',
-    };
-    return typeLabels[type] || type;
+    return EVENT_TYPE_LABELS[type as keyof typeof EVENT_TYPE_LABELS] || type;
   };
 
   return (
@@ -61,7 +50,7 @@ const EventPreview: React.FC<EventPreviewProps> = ({ event, onClose }) => {
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
               <span className="font-medium text-gray-600">タレント:</span>{' '}
-              <span>{event.talentName}</span>
+              <span>{event.talentNames?.join(', ') || '-'}</span>
             </div>
             <div>
               <span className="font-medium text-gray-600">種別:</span>{' '}

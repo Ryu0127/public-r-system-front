@@ -41,7 +41,7 @@ const EventFormPresenter: React.FC<EventFormPresenterProps> = ({
       title: eventData.title || '',
       date: eventData.date || '',
       type: eventData.type || 'other',
-      talentName: eventData.talentName || '',
+      talentNames: eventData.talentNames || [],
       color: eventData.color || '#000000',
       ...eventData,
     } as HololiveEvent;

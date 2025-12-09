@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { HololiveEvent, EventType, EventStatus } from '../../events-calendar/types';
+import { getEventTypeColor, EVENT_TYPE_LABELS } from '../../events-calendar/types/eventColors';
+import TalentSelectorModal from './TalentSelectorModal';
 
 interface EventFormProps {
   event?: HololiveEvent;
@@ -12,13 +14,13 @@ interface EventFormProps {
 const EventForm: React.FC<EventFormProps> = ({ event, onSave, onCancel, onPreview, onDelete }) => {
   const [formData, setFormData] = useState<Partial<HololiveEvent>>({
     title: '',
-    talentName: '',
+    talentNames: [],
     date: '',
     startTime: '',
     endTime: '',
     endDate: '',
     type: 'other',
-    color: '#000000',
+    color: getEventTypeColor('other'),
     description: '',
     url: '',
     thumbnailUrl: '',
@@ -41,24 +43,27 @@ const EventForm: React.FC<EventFormProps> = ({ event, onSave, onCancel, onPrevie
     notes: event?.applicationDetails?.notes?.join('\n') || '',
   });
 
-  const eventTypes: { value: EventType; label: string }[] = [
-    { value: 'anniversary', label: '記念配信' },
-    { value: 'live', label: 'ライブ' },
-    { value: 'concert', label: 'コンサート' },
-    { value: 'meet', label: 'リアルイベント・ミート' },
-    { value: 'collab', label: 'コラボ配信' },
-    { value: 'birthday', label: '誕生日配信' },
-    { value: 'goods', label: 'グッズ' },
-    { value: 'voice', label: 'ボイス' },
-    { value: 'application', label: 'イベント申込' },
-    { value: 'other', label: 'その他' },
-  ];
+  const [showTalentModal, setShowTalentModal] = useState(false);
+
+  const eventTypes: { value: EventType; label: string }[] = Object.entries(EVENT_TYPE_LABELS).map(
+    ([value, label]) => ({ value: value as EventType, label })
+  );
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    // イベント種別が変更された場合、カラーも自動更新
+    if (name === 'type') {
+      setFormData((prev) => ({
+        ...prev,
+        type: value as EventType,
+        color: getEventTypeColor(value as EventType),
+      }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleApplicationDetailsChange = (
@@ -66,6 +71,11 @@ const EventForm: React.FC<EventFormProps> = ({ event, onSave, onCancel, onPrevie
   ) => {
     const { name, value } = e.target;
     setApplicationDetails((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleTalentsSave = (talents: string[]) => {
+    setFormData((prev) => ({ ...prev, talentNames: talents }));
+    setShowTalentModal(false);
   };
 
   const handleSubmit = (status: EventStatus) => {
@@ -123,11 +133,44 @@ const EventForm: React.FC<EventFormProps> = ({ event, onSave, onCancel, onPrevie
     onPreview(eventData);
   };
 
+  const getStatusBadgeColor = (status?: string) => {
+    switch (status) {
+      case 'published':
+        return 'bg-green-100 text-green-800';
+      case 'draft':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'archived':
+        return 'bg-gray-100 text-gray-800';
+      default:
+        return 'bg-blue-100 text-blue-800';
+    }
+  };
+
+  const getStatusLabel = (status?: string) => {
+    switch (status) {
+      case 'published':
+        return '公開';
+      case 'draft':
+        return '下書き';
+      case 'archived':
+        return 'アーカイブ';
+      default:
+        return '公開';
+    }
+  };
+
   return (
     <div className="max-w-4xl mx-auto bg-white p-6 rounded shadow">
-      <h2 className="text-2xl font-bold mb-6">
-        {event ? 'イベント編集' : 'イベント新規登録'}
-      </h2>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold">
+          {event ? 'イベント編集' : 'イベント新規登録'}
+        </h2>
+        {event && (
+          <span className={`px-3 py-1 rounded text-sm font-medium ${getStatusBadgeColor(event.status)}`}>
+            現在のステータス: {getStatusLabel(event.status)}
+          </span>
+        )}
+      </div>
 
       <div className="space-y-4">
         {/* 基本情報 */}
@@ -148,16 +191,24 @@ const EventForm: React.FC<EventFormProps> = ({ event, onSave, onCancel, onPrevie
 
           <div>
             <label className="block text-sm font-medium mb-1">
-              タレント名<span className="text-red-500">*</span>
+              対象タレント<span className="text-red-500">*</span>
             </label>
-            <input
-              type="text"
-              name="talentName"
-              value={formData.talentName}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border rounded"
-              required
-            />
+            <div className="flex gap-2">
+              <div className="flex-1 px-3 py-2 border rounded bg-gray-50 overflow-x-auto whitespace-nowrap">
+                {formData.talentNames && formData.talentNames.length > 0 ? (
+                  formData.talentNames.join(', ')
+                ) : (
+                  <span className="text-gray-400">タレントを選択してください</span>
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowTalentModal(true)}
+                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              >
+                選択
+              </button>
+            </div>
           </div>
         </div>
 
@@ -182,24 +233,14 @@ const EventForm: React.FC<EventFormProps> = ({ event, onSave, onCancel, onPrevie
 
           <div>
             <label className="block text-sm font-medium mb-1">
-              イメージカラー<span className="text-red-500">*</span>
+              イメージカラー（自動設定）
             </label>
-            <div className="flex gap-2">
-              <input
-                type="color"
-                name="color"
-                value={formData.color}
-                onChange={handleChange}
+            <div className="flex gap-2 items-center">
+              <div
                 className="h-10 w-20 border rounded"
+                style={{ backgroundColor: formData.color }}
               />
-              <input
-                type="text"
-                name="color"
-                value={formData.color}
-                onChange={handleChange}
-                className="flex-1 px-3 py-2 border rounded"
-                placeholder="#000000"
-              />
+              <span className="text-sm text-gray-600">{formData.color}</span>
             </div>
           </div>
         </div>
@@ -463,6 +504,15 @@ const EventForm: React.FC<EventFormProps> = ({ event, onSave, onCancel, onPrevie
           )}
         </div>
       </div>
+
+      {/* タレント選択モーダル */}
+      {showTalentModal && (
+        <TalentSelectorModal
+          talents={formData.talentNames || []}
+          onSave={handleTalentsSave}
+          onClose={() => setShowTalentModal(false)}
+        />
+      )}
     </div>
   );
 };

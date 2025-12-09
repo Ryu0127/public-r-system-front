@@ -58,9 +58,9 @@ export interface HololiveEvent {
   startTime?: string; // HH:mm形式
   endTime?: string; // HH:mm形式
   type: EventType;
-  talentName: string;
+  talentNames: string[]; // タレント名の配列（複数タレント対応）
   description?: string;
-  color: string; // イメージカラー（16進数）
+  color: string; // イメージカラー（16進数）- イベント種類で自動設定
   url?: string; // 配信URLやイベント詳細URL
   thumbnailUrl?: string; // サムネイル画像URL
   location?: string; // 開催場所

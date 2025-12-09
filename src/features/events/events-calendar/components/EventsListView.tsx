@@ -120,7 +120,7 @@ const EventsListView: React.FC<EventsListViewProps> = ({
                       </h3>
 
                       {/* タレント名 */}
-                      <p className="text-sm text-gray-600 mb-1">{event.talentName}</p>
+                      <p className="text-sm text-gray-600 mb-1">{event.talentNames?.join(', ') || '-'}</p>
 
                       {/* 時刻 */}
                       {event.startTime && (
