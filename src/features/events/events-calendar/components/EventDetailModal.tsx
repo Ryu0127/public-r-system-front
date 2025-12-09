@@ -274,7 +274,24 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ event, isOpen, onCl
             </div>
           )}
 
-          {/* 注意事項 */}
+          {/* 注意事項（全イベント共通） */}
+          {event.notes && event.notes.length > 0 && (
+            <div className="mb-4 p-4 bg-red-50 rounded-lg border-l-4 border-red-500">
+              <h3 className="font-bold text-red-800 mb-2 flex items-center gap-2">
+                <span className="text-xl">⚠️</span>
+                <span>注意事項</span>
+              </h3>
+              <div className="space-y-1">
+                {event.notes.map((note, index) => (
+                  <p key={index} className="text-red-700 text-sm leading-relaxed">
+                    {note}
+                  </p>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* 申込イベント用の注意事項 */}
           {event.type === 'application' && event.applicationDetails?.notes && event.applicationDetails.notes.length > 0 && (
             <div className="mb-4 p-4 bg-red-50 rounded-lg border-l-4 border-red-500">
               <h3 className="font-bold text-red-800 mb-2 flex items-center gap-2">
@@ -351,9 +368,7 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ event, isOpen, onCl
                   backgroundColor: event.color,
                 }}
               >
-                <span>
-                  {event.type === 'application' ? 'イベントサイトへ' : '詳細を見る'}
-                </span>
+                <span>公式サイト</span>
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"

@@ -56,6 +56,7 @@ export interface HololiveEvent {
   url?: string; // 配信URLやイベント詳細URL
   thumbnailUrl?: string; // サムネイル画像URL
   location?: string; // 開催場所
+  notes?: string[]; // 注意事項（複数行対応）
   applicationDetails?: ApplicationDetails; // イベント申込詳細情報
 }
 

@@ -50,6 +50,10 @@ export const mockEvents: HololiveEvent[] = [
     url: 'https://hololive.hololivepro.com/events/popup-2601/',
     thumbnailUrl: 'https://placehold.co/800x400/00A7E1/FFFFFF?text=POP+UP+SHOP',
     location: '東京駅一番街内「いちばんプラザ」',
+    notes: [
+      '※1月22日は18:00までの営業となります。',
+      '※一部日時は事前抽選による予約制となります。',
+    ],
   },
   // 2026年3月のイベント
   {
