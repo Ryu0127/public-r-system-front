@@ -1,9 +1,9 @@
-import { HololiveEvent } from '../types';
+import { HololiveEvent, EventListResponse } from '../types';
 
 /**
- * モックイベントデータ
+ * モックイベントデータ（実際のデータ）
  */
-export const mockEvents: HololiveEvent[] = [
+const mockEventsData: HololiveEvent[] = [
   {
     id: '1',
     title: 'hololive production OFFICIAL POP UP SHOP',
@@ -55,3 +55,17 @@ export const mockEvents: HololiveEvent[] = [
     ],
   },
 ];
+
+/**
+ * モックAPIレスポンス: イベント一覧取得
+ */
+export const mockEventListResponse: EventListResponse = {
+  success: true,
+  data: mockEventsData,
+  message: 'イベント一覧を取得しました',
+};
+
+/**
+ * 後方互換性のため: 直接データ配列を取得する関数
+ */
+export const mockEvents = mockEventsData;

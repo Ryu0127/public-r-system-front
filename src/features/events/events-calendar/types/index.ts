@@ -77,3 +77,33 @@ export interface HololiveEvent {
 export type EventsMap = {
   [dateKey: string]: HololiveEvent[];
 };
+
+/**
+ * API共通レスポンス
+ */
+export interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+  message?: string;
+  error?: string;
+}
+
+/**
+ * イベント一覧取得APIレスポンス
+ */
+export type EventListResponse = ApiResponse<HololiveEvent[]>;
+
+/**
+ * イベント詳細取得APIレスポンス
+ */
+export type EventDetailResponse = ApiResponse<HololiveEvent>;
+
+/**
+ * イベント作成/更新APIレスポンス
+ */
+export type EventMutationResponse = ApiResponse<HololiveEvent>;
+
+/**
+ * イベント削除APIレスポンス
+ */
+export type EventDeleteResponse = ApiResponse<{ id: string }>;

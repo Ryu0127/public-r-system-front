@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { HololiveEvent, EventStatus } from '../../../events/events-calendar/types';
+import { HololiveEvent, EventStatus, EventListResponse } from '../../../events/events-calendar/types';
 
 // モックデータのインポート（後でAPI呼び出しに置き換え）
-import { mockEvents } from '../../../events/events-calendar/data/mockEvents';
+import { mockEventListResponse } from '../../../events/events-calendar/data/mockEvents';
 
 export const useEventList = () => {
   const [events, setEvents] = useState<HololiveEvent[]>([]);
@@ -16,10 +16,17 @@ export const useEventList = () => {
     try {
       // TODO: 実際のAPI呼び出しに置き換える
       // const response = await fetch('/api/admin/events');
-      // const data = await response.json();
+      // const apiResponse: EventListResponse = await response.json();
 
-      // モックデータを使用（statusを追加）
-      const eventsWithStatus = mockEvents.map((event, index) => ({
+      // モックAPIレスポンスを使用
+      const apiResponse: EventListResponse = mockEventListResponse;
+
+      if (!apiResponse.success) {
+        throw new Error(apiResponse.error || 'イベントの取得に失敗しました');
+      }
+
+      // レスポンスからデータを取得し、statusを追加
+      const eventsWithStatus = apiResponse.data.map((event, index) => ({
         ...event,
         status: (index % 3 === 0 ? 'draft' : index % 3 === 1 ? 'published' : 'archived') as EventStatus,
         createdAt: new Date(Date.now() - Math.random() * 10000000000).toISOString(),
@@ -28,7 +35,8 @@ export const useEventList = () => {
 
       setEvents(eventsWithStatus);
     } catch (err) {
-      setError('イベントの取得に失敗しました');
+      const errorMessage = err instanceof Error ? err.message : 'イベントの取得に失敗しました';
+      setError(errorMessage);
       console.error(err);
     } finally {
       setLoading(false);
