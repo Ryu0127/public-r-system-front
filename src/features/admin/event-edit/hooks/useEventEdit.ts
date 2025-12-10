@@ -1,8 +1,19 @@
 import { useState, useEffect } from 'react';
-import { HololiveEvent, EventStatus, EventListResponse } from '../../../events/events-calendar/types';
+import {
+  HololiveEvent,
+  EventStatus,
+  EventListResponse,
+  EventMutationResponse,
+  EventDeleteResponse,
+} from '../../../events/events-calendar/types';
 
 // モックデータのインポート（後でAPI呼び出しに置き換え）
-import { mockEventListResponse } from '../../../events/events-calendar/data/mockEvents';
+import {
+  mockEventListResponse,
+  createMockEventResponse,
+  updateMockEventResponse,
+  deleteMockEventResponse,
+} from '../../../events/events-calendar/data/mockEvents';
 
 export const useEventEdit = () => {
   const [events, setEvents] = useState<HololiveEvent[]>([]);
@@ -25,15 +36,8 @@ export const useEventEdit = () => {
         throw new Error(apiResponse.error || 'イベントの取得に失敗しました');
       }
 
-      // レスポンスからデータを取得し、statusを追加
-      const eventsWithStatus = apiResponse.data.map((event, index) => ({
-        ...event,
-        status: (index % 3 === 0 ? 'draft' : index % 3 === 1 ? 'published' : 'archived') as EventStatus,
-        createdAt: new Date(Date.now() - Math.random() * 10000000000).toISOString(),
-        updatedAt: new Date(Date.now() - Math.random() * 1000000000).toISOString(),
-      }));
-
-      setEvents(eventsWithStatus);
+      // レスポンスからデータを取得（statusは既にモックデータに設定済み）
+      setEvents(apiResponse.data);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'イベントの取得に失敗しました';
       setError(errorMessage);
@@ -54,23 +58,21 @@ export const useEventEdit = () => {
       //   headers: { 'Content-Type': 'application/json' },
       //   body: JSON.stringify(eventData),
       // });
-      // const newEvent = await response.json();
+      // const apiResponse: EventMutationResponse = await response.json();
 
-      // モックの実装：新しいIDを生成して追加
-      const newEvent: HololiveEvent = {
-        id: `event-${Date.now()}`,
-        title: eventData.title || '',
-        date: eventData.date || '',
-        type: eventData.type || 'other',
-        talentNames: eventData.talentNames || [],
-        color: eventData.color || '#000000',
-        ...eventData,
-      } as HololiveEvent;
+      // モックAPIレスポンスを使用
+      const apiResponse: EventMutationResponse = createMockEventResponse(eventData);
 
-      setEvents((prev) => [newEvent, ...prev]);
+      if (!apiResponse.success) {
+        throw new Error(apiResponse.error || 'イベントの作成に失敗しました');
+      }
+
+      // レスポンスからデータを取得して state に追加
+      setEvents((prev) => [apiResponse.data, ...prev]);
       return true;
     } catch (err) {
-      setError('イベントの作成に失敗しました');
+      const errorMessage = err instanceof Error ? err.message : 'イベントの作成に失敗しました';
+      setError(errorMessage);
       console.error(err);
       return false;
     } finally {
@@ -92,18 +94,23 @@ export const useEventEdit = () => {
       //   headers: { 'Content-Type': 'application/json' },
       //   body: JSON.stringify(eventData),
       // });
-      // const updatedEvent = await response.json();
+      // const apiResponse: EventMutationResponse = await response.json();
 
+      // モックAPIレスポンスを使用
+      const apiResponse: EventMutationResponse = updateMockEventResponse(id, eventData);
+
+      if (!apiResponse.success) {
+        throw new Error(apiResponse.error || 'イベントの更新に失敗しました');
+      }
+
+      // レスポンスからデータを取得して state を更新
       setEvents((prev) =>
-        prev.map((event) =>
-          event.id === id
-            ? { ...event, ...eventData, updatedAt: new Date().toISOString() }
-            : event
-        )
+        prev.map((event) => (event.id === id ? apiResponse.data : event))
       );
       return true;
     } catch (err) {
-      setError('イベントの更新に失敗しました');
+      const errorMessage = err instanceof Error ? err.message : 'イベントの更新に失敗しました';
+      setError(errorMessage);
       console.error(err);
       return false;
     } finally {
@@ -117,14 +124,24 @@ export const useEventEdit = () => {
     setError(null);
     try {
       // TODO: 実際のAPI呼び出しに置き換える
-      // await fetch(`/api/admin/events/${id}`, {
+      // const response = await fetch(`/api/admin/events/${id}`, {
       //   method: 'DELETE',
       // });
+      // const apiResponse: EventDeleteResponse = await response.json();
 
-      setEvents((prev) => prev.filter((event) => event.id !== id));
+      // モックAPIレスポンスを使用
+      const apiResponse: EventDeleteResponse = deleteMockEventResponse(id);
+
+      if (!apiResponse.success) {
+        throw new Error(apiResponse.error || 'イベントの削除に失敗しました');
+      }
+
+      // レスポンスから削除されたIDを確認して state を更新
+      setEvents((prev) => prev.filter((event) => event.id !== apiResponse.data.id));
       return true;
     } catch (err) {
-      setError('イベントの削除に失敗しました');
+      const errorMessage = err instanceof Error ? err.message : 'イベントの削除に失敗しました';
+      setError(errorMessage);
       console.error(err);
       return false;
     } finally {
