@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import { HololiveEvent, EventStatus } from '../../events-calendar/types';
+import { HololiveEvent, EventStatus } from '../../../events/events-calendar/types';
 
 // モックデータのインポート（後でAPI呼び出しに置き換え）
-import { mockEvents } from '../../events-calendar/data/mockEvents';
+import { mockEvents } from '../../../events/events-calendar/data/mockEvents';
 
-export const useEventAdmin = () => {
+export const useEventEdit = () => {
   const [events, setEvents] = useState<HololiveEvent[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

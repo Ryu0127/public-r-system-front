@@ -1,6 +1,6 @@
 import React from 'react';
-import { HololiveEvent } from '../../../events-calendar/types';
-import { EVENT_TYPE_LABELS } from '../../../events-calendar/types/eventColors';
+import { HololiveEvent } from '../../../events/events-calendar/types';
+import { EVENT_TYPE_LABELS } from '../../../events/events-calendar/types/eventColors';
 
 interface EventPreviewProps {
   event: HololiveEvent;

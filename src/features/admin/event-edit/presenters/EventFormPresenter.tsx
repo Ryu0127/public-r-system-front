@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { HololiveEvent } from '../../../events-calendar/types';
+import { HololiveEvent } from '../../../events/events-calendar/types';
 import EventForm from '../components/EventForm';
 import EventPreview from '../components/EventPreview';
 

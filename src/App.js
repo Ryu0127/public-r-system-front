@@ -8,8 +8,8 @@ import HashtagSearchContainer from 'features/oshi-katsu-saport/hashtag-search/co
 import LifeScheduleDayContainer from 'features/life/life-schedule-day/containers/LifeScheduleDayContainer';
 import LifeScheduleMonthContainer from 'features/life/life-schedule-month/containers/LifeScheduleMonthContainer';
 import EventsCalendarContainer from 'features/events/events-calendar/containers/EventsCalendarContainer';
-import EventAdminContainer from 'features/events/admin/list/containers/EventAdminContainer';
-import EventFormContainer from 'features/events/admin/form/containers/EventFormContainer';
+import EventAdminContainer from 'features/admin/events/containers/EventAdminContainer';
+import EventFormContainer from 'features/admin/event-edit/containers/EventFormContainer';
 import LoginContainer from 'features/auth/login/containers/LoginContainer';
 import './App.css';
 
