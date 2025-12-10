@@ -1,6 +1,6 @@
 import React from 'react';
 import EventAdminPresenter from '../presenters/EventAdminPresenter';
-import { useEventAdmin } from '../hooks/useEventAdmin';
+import { useEventAdmin } from '../../hooks/useEventAdmin';
 
 const EventAdminContainer: React.FC = () => {
   const {

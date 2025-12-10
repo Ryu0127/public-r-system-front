@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { HololiveEvent, EventType, EventStatus } from '../../events-calendar/types';
-import { getEventTypeColor, EVENT_TYPE_LABELS } from '../../events-calendar/types/eventColors';
+import { HololiveEvent, EventType, EventStatus } from '../../../events-calendar/types';
+import { getEventTypeColor, EVENT_TYPE_LABELS } from '../../../events-calendar/types/eventColors';
 import TalentSelectorModal from './TalentSelectorModal';
 
 interface EventFormProps {

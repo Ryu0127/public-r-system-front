@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { HololiveEvent, EventStatus } from '../../events-calendar/types';
+import { HololiveEvent, EventStatus } from '../../../events-calendar/types';
 import EventListTable from '../components/EventListTable';
-import EventPreview from '../components/EventPreview';
+import EventPreview from '../../form/components/EventPreview';
 
 interface EventAdminPresenterProps {
   events: HololiveEvent[];

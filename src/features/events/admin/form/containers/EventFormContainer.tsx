@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import EventFormPresenter from '../presenters/EventFormPresenter';
-import { useEventAdmin } from '../hooks/useEventAdmin';
-import { HololiveEvent } from '../../events-calendar/types';
+import { useEventAdmin } from '../../hooks/useEventAdmin';
+import { HololiveEvent } from '../../../events-calendar/types';
 
 const EventFormContainer: React.FC = () => {
   const { id } = useParams<{ id: string }>();

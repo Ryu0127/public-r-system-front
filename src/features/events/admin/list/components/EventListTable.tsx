@@ -1,5 +1,5 @@
 import React from 'react';
-import { HololiveEvent } from '../../events-calendar/types';
+import { HololiveEvent } from '../../../events-calendar/types';
 
 interface EventListTableProps {
   events: HololiveEvent[];
