@@ -6,14 +6,7 @@ import {
   EventMutationResponse,
   EventDeleteResponse,
 } from '../../../events/events-calendar/types';
-
-// モックデータのインポート（後でAPI呼び出しに置き換え）
-import {
-  mockEventListResponse,
-  createMockEventResponse,
-  updateMockEventResponse,
-  deleteMockEventResponse,
-} from '../../../events/events-calendar/data/mockEvents';
+import { API_ENDPOINTS, getApiHeaders } from '../../../../config/api';
 
 export const useEventEdit = () => {
   const [events, setEvents] = useState<HololiveEvent[]>([]);
@@ -25,18 +18,22 @@ export const useEventEdit = () => {
     setLoading(true);
     setError(null);
     try {
-      // TODO: 実際のAPI呼び出しに置き換える
-      // const response = await fetch('/api/admin/events');
-      // const apiResponse: EventListResponse = await response.json();
+      const response = await fetch(API_ENDPOINTS.events.list, {
+        method: 'GET',
+        headers: getApiHeaders(),
+      });
 
-      // モックAPIレスポンスを使用
-      const apiResponse: EventListResponse = mockEventListResponse;
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const apiResponse: EventListResponse = await response.json();
 
       if (!apiResponse.success) {
         throw new Error(apiResponse.error || 'イベントの取得に失敗しました');
       }
 
-      // レスポンスからデータを取得（statusは既にモックデータに設定済み）
+      // レスポンスからデータを取得
       setEvents(apiResponse.data);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'イベントの取得に失敗しました';
@@ -52,16 +49,17 @@ export const useEventEdit = () => {
     setLoading(true);
     setError(null);
     try {
-      // TODO: 実際のAPI呼び出しに置き換える
-      // const response = await fetch('/api/admin/events', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(eventData),
-      // });
-      // const apiResponse: EventMutationResponse = await response.json();
+      const response = await fetch(API_ENDPOINTS.events.create, {
+        method: 'POST',
+        headers: getApiHeaders(),
+        body: JSON.stringify(eventData),
+      });
 
-      // モックAPIレスポンスを使用
-      const apiResponse: EventMutationResponse = createMockEventResponse(eventData);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const apiResponse: EventMutationResponse = await response.json();
 
       if (!apiResponse.success) {
         throw new Error(apiResponse.error || 'イベントの作成に失敗しました');
@@ -88,16 +86,17 @@ export const useEventEdit = () => {
     setLoading(true);
     setError(null);
     try {
-      // TODO: 実際のAPI呼び出しに置き換える
-      // const response = await fetch(`/api/admin/events/${id}`, {
-      //   method: 'PUT',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(eventData),
-      // });
-      // const apiResponse: EventMutationResponse = await response.json();
+      const response = await fetch(API_ENDPOINTS.events.update(id), {
+        method: 'PUT',
+        headers: getApiHeaders(),
+        body: JSON.stringify(eventData),
+      });
 
-      // モックAPIレスポンスを使用
-      const apiResponse: EventMutationResponse = updateMockEventResponse(id, eventData);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const apiResponse: EventMutationResponse = await response.json();
 
       if (!apiResponse.success) {
         throw new Error(apiResponse.error || 'イベントの更新に失敗しました');
@@ -123,14 +122,16 @@ export const useEventEdit = () => {
     setLoading(true);
     setError(null);
     try {
-      // TODO: 実際のAPI呼び出しに置き換える
-      // const response = await fetch(`/api/admin/events/${id}`, {
-      //   method: 'DELETE',
-      // });
-      // const apiResponse: EventDeleteResponse = await response.json();
+      const response = await fetch(API_ENDPOINTS.events.delete(id), {
+        method: 'DELETE',
+        headers: getApiHeaders(),
+      });
 
-      // モックAPIレスポンスを使用
-      const apiResponse: EventDeleteResponse = deleteMockEventResponse(id);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const apiResponse: EventDeleteResponse = await response.json();
 
       if (!apiResponse.success) {
         throw new Error(apiResponse.error || 'イベントの削除に失敗しました');

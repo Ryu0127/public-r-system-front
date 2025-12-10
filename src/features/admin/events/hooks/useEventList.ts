@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react';
 import { HololiveEvent, EventListResponse } from '../../../events/events-calendar/types';
-
-// モックデータのインポート（後でAPI呼び出しに置き換え）
-import { mockEventListResponse } from '../../../events/events-calendar/data/mockEvents';
+import { API_ENDPOINTS, getApiHeaders } from '../../../../config/api';
 
 export const useEventList = () => {
   const [events, setEvents] = useState<HololiveEvent[]>([]);
@@ -14,18 +12,22 @@ export const useEventList = () => {
     setLoading(true);
     setError(null);
     try {
-      // TODO: 実際のAPI呼び出しに置き換える
-      // const response = await fetch('/api/admin/events');
-      // const apiResponse: EventListResponse = await response.json();
+      const response = await fetch(API_ENDPOINTS.events.list, {
+        method: 'GET',
+        headers: getApiHeaders(),
+      });
 
-      // モックAPIレスポンスを使用
-      const apiResponse: EventListResponse = mockEventListResponse;
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const apiResponse: EventListResponse = await response.json();
 
       if (!apiResponse.success) {
         throw new Error(apiResponse.error || 'イベントの取得に失敗しました');
       }
 
-      // レスポンスからデータを取得（statusは既にモックデータに設定済み）
+      // レスポンスからデータを取得
       setEvents(apiResponse.data);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'イベントの取得に失敗しました';
