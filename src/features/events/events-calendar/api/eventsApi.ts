@@ -40,10 +40,18 @@ export const fetchPublicEvents = async (): Promise<EventListResponse> => {
 
     console.log('🔍 抽出したイベントデータ:', eventsData);
 
+    // イベントデータを正規化（IDを文字列に変換）
+    const normalizedEvents: HololiveEvent[] = eventsData.map((event: any) => ({
+      ...event,
+      id: String(event.id), // IDを文字列に変換
+    }));
+
+    console.log('🔍 正規化したイベントデータ:', normalizedEvents);
+
     // EventListResponse形式に変換して返す
     const result: EventListResponse = {
       success: true,
-      data: eventsData,
+      data: normalizedEvents,
       message: rawData.message || 'イベント一覧を取得しました',
     };
 
