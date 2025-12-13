@@ -77,7 +77,6 @@ const EventsListView: React.FC<EventsListViewProps> = ({
     <div className="space-y-4">
       {currentMonthEvents.map(({ date, events }) => {
         const { month, day, weekday } = formatDate(date);
-        const isWeekend = weekday === '土' || weekday === '日';
 
         return (
           <div key={date} className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-200">
@@ -121,7 +120,7 @@ const EventsListView: React.FC<EventsListViewProps> = ({
                       </h3>
 
                       {/* タレント名 */}
-                      <p className="text-sm text-gray-600 mb-1">{event.talentName}</p>
+                      <p className="text-sm text-gray-600 mb-1">{event.talentNames?.join(', ') || '-'}</p>
 
                       {/* 時刻 */}
                       {event.startTime && (

@@ -44,11 +44,17 @@ export interface EventsCalendarActions {
 
 /**
  * モックイベントデータを日付ごとのマップに変換
+ * 公開されているイベントのみを含める（statusがpublishedまたは未設定）
  */
 const transformEventsToMap = (events: HololiveEvent[]): EventsMap => {
   const eventsMap: EventsMap = {};
 
-  events.forEach((event) => {
+  // 公開されているイベントのみをフィルタリング
+  const publishedEvents = events.filter(
+    (event) => !event.status || event.status === 'published'
+  );
+
+  publishedEvents.forEach((event) => {
     const dateKey = event.date;
     if (!eventsMap[dateKey]) {
       eventsMap[dateKey] = [];
