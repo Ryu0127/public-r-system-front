@@ -60,23 +60,10 @@ const transformEventsToMap = (events: HololiveEvent[]): EventsMap => {
   }, {} as Record<string, number>);
   console.log('🔍 transformEventsToMap - ステータス別カウント:', statusCounts);
 
-  // 公開されているイベントのみをフィルタリング
-  // 注：APIから返されるイベントがすべて表示されるように、フィルタリングを緩和
-  const publishedEvents = events.filter(
-    (event) => {
-      // statusが未定義、または'published'の場合に表示
-      const isPublished = !event.status || event.status === 'published';
-      if (!isPublished) {
-        console.log('🔍 非公開イベントをフィルタリング:', event.title, 'status:', event.status);
-      }
-      return isPublished;
-    }
-  );
+  // statusに関係なくすべてのイベントを表示
+  console.log('🔍 transformEventsToMap - すべてのイベントを表示（statusフィルタリング無効）');
 
-  console.log('🔍 transformEventsToMap - 公開イベント数:', publishedEvents.length);
-  console.log('🔍 transformEventsToMap - 公開イベント:', publishedEvents);
-
-  publishedEvents.forEach((event) => {
+  events.forEach((event) => {
     const dateKey = event.date;
     if (!eventsMap[dateKey]) {
       eventsMap[dateKey] = [];
