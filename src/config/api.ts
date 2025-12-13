@@ -17,7 +17,7 @@ export const API_ENDPOINTS = {
   },
   // パブリックイベント（一般ユーザー用）
   publicEvents: {
-    list: `${API_BASE_URL}/api/events`,
+    list: `${API_BASE_URL}/api/admin/events`,
     detail: (id: string) => `${API_BASE_URL}/api/events/${id}`,
   },
 };
