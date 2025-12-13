@@ -78,7 +78,7 @@ const EventListTable: React.FC<EventListTableProps> = ({
           ) : (
             events.map((event) => (
               <tr key={event.id} className="hover:bg-gray-50">
-                <td className="px-4 py-2 border-b text-sm">{event.id.slice(0, 8)}</td>
+                <td className="px-4 py-2 border-b text-sm">{event.id}</td>
                 <td className="px-4 py-2 border-b text-sm font-medium">{event.title}</td>
                 <td className="px-4 py-2 border-b text-sm">{event.talentNames?.join(', ') || '-'}</td>
                 <td className="px-4 py-2 border-b text-sm">{getTypeLabel(event.type)}</td>

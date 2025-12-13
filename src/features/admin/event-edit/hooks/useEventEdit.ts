@@ -157,7 +157,7 @@ export const useEventEdit = () => {
 
   // IDでイベントを取得
   const getEventById = (id: string): HololiveEvent | undefined => {
-    return events.find((event) => event.id === id);
+    return events.find((event) => event.id.toString() === id);
   };
 
   // 初期データの取得

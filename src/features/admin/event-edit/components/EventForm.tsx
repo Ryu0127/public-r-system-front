@@ -174,7 +174,7 @@ const EventForm: React.FC<EventFormProps> = ({ event, onSave, onCancel, onPrevie
 
       <div className="space-y-4">
         {/* 基本情報 */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4">
           <div>
             <label className="block text-sm font-medium mb-1">
               タイトル<span className="text-red-500">*</span>
@@ -188,7 +188,9 @@ const EventForm: React.FC<EventFormProps> = ({ event, onSave, onCancel, onPrevie
               required
             />
           </div>
+        </div>
 
+        <div className="grid grid-cols-1 gap-4">
           <div>
             <label className="block text-sm font-medium mb-1">
               対象タレント<span className="text-red-500">*</span>
@@ -305,7 +307,7 @@ const EventForm: React.FC<EventFormProps> = ({ event, onSave, onCancel, onPrevie
             value={formData.description}
             onChange={handleChange}
             className="w-full px-3 py-2 border rounded"
-            rows={3}
+            rows={10}
           />
         </div>
 
@@ -321,7 +323,9 @@ const EventForm: React.FC<EventFormProps> = ({ event, onSave, onCancel, onPrevie
               placeholder="https://..."
             />
           </div>
+        </div>
 
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium mb-1">サムネイルURL</label>
             <input
@@ -352,7 +356,7 @@ const EventForm: React.FC<EventFormProps> = ({ event, onSave, onCancel, onPrevie
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             className="w-full px-3 py-2 border rounded"
-            rows={3}
+            rows={10}
             placeholder="注意事項を1行ずつ入力してください"
           />
         </div>
