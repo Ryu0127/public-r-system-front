@@ -131,12 +131,17 @@ const calculateEventBars = (
   const eventBars: EventBar[] = [];
   const processedEvents = new Set<string>();
 
+  console.log('🔍 calculateEventBars - eventsMap:', eventsMap);
+
   calendarDays.forEach((day, dayIndex) => {
     const weekRow = Math.floor(dayIndex / 7);
     const dayOfWeek = dayIndex % 7;
     const events = eventsMap[day.dateKey] || [];
 
     events.forEach((event) => {
+      console.log('🔍 calculateEventBars - 処理中のイベント:', event);
+      console.log('🔍 calculateEventBars - イベントID:', event.id, '型:', typeof event.id);
+
       // すでに処理済みのイベントはスキップ
       if (processedEvents.has(event.id)) {
         return;
@@ -242,8 +247,23 @@ const EventsCalendarGrid: React.FC<EventsCalendarGridProps> = ({
 
   // イベントを開始日順、同じ日付ならスパンが長い順にソート
   const sortedEventIds = Object.keys(eventCellsMap).sort((idA, idB) => {
-    const eventA = eventBars.find(bar => bar.event.id === idA)!.event;
-    const eventB = eventBars.find(bar => bar.event.id === idB)!.event;
+    const barA = eventBars.find(bar => bar.event.id === idA);
+    const barB = eventBars.find(bar => bar.event.id === idB);
+
+    if (!barA || !barB) {
+      console.error('🔍 EventsCalendarGrid - イベントバーが見つかりません');
+      console.error('🔍 探しているID:', { idA, idB });
+      console.error('🔍 eventBars:', eventBars);
+      console.error('🔍 eventCellsMap:', eventCellsMap);
+
+      // エラーを防ぐためのフォールバック
+      if (!barA && !barB) return 0;
+      if (!barA) return 1;
+      if (!barB) return -1;
+    }
+
+    const eventA = barA.event;
+    const eventB = barB.event;
     const dateCompare = eventA.date.localeCompare(eventB.date);
     if (dateCompare !== 0) {
       return dateCompare;

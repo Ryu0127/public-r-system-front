@@ -1,6 +1,6 @@
 import { useCallback, useEffect } from 'react';
 import { HololiveEvent, EventsMap, ViewMode, FilterCategory } from '../types';
-import { mockEvents } from '../data/mockEvents';
+import { fetchPublicEvents } from '../api/eventsApi';
 
 export interface EventsCalendarState {
   // リクエストパラメータ
@@ -49,18 +49,29 @@ export interface EventsCalendarActions {
 const transformEventsToMap = (events: HololiveEvent[]): EventsMap => {
   const eventsMap: EventsMap = {};
 
-  // 公開されているイベントのみをフィルタリング
-  const publishedEvents = events.filter(
-    (event) => !event.status || event.status === 'published'
-  );
+  console.log('🔍 transformEventsToMap - 受信イベント数:', events.length);
+  console.log('🔍 transformEventsToMap - 受信イベント:', events);
 
-  publishedEvents.forEach((event) => {
+  // イベントのstatusをチェック
+  const statusCounts = events.reduce((acc, event) => {
+    const status = event.status || 'undefined';
+    acc[status] = (acc[status] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+  console.log('🔍 transformEventsToMap - ステータス別カウント:', statusCounts);
+
+  // statusに関係なくすべてのイベントを表示
+  console.log('🔍 transformEventsToMap - すべてのイベントを表示（statusフィルタリング無効）');
+
+  events.forEach((event) => {
     const dateKey = event.date;
     if (!eventsMap[dateKey]) {
       eventsMap[dateKey] = [];
     }
     eventsMap[dateKey].push(event);
   });
+
+  console.log('🔍 transformEventsToMap - 生成されたイベントマップ:', eventsMap);
 
   // 各日付のイベントを時刻順にソート
   Object.keys(eventsMap).forEach((dateKey) => {
@@ -225,23 +236,47 @@ export const useEventsCalendarState = (
     ),
 
     /**
-     * 月データ取得（モックデータから）
+     * 月データ取得（APIから）
      */
     fetchMonthData: useCallback(async (month: Date) => {
       try {
-        // モックデータをそのまま使用（実際のAPIではここで月のデータをフィルタリング）
-        const eventsMap = transformEventsToMap(mockEvents);
-
+        // ローディング状態を設定
         setState(prev => ({
           ...prev,
           config: {
             ...prev.config,
-            isLoading: false,
-          },
-          data: {
-            eventsMap,
+            isLoading: true,
           },
         }));
+
+        console.log('🔍 fetchMonthData - APIリクエスト開始');
+
+        // APIからイベントデータを取得
+        const response = await fetchPublicEvents();
+
+        console.log('🔍 fetchMonthData - APIレスポンス:', response);
+
+        if (response.success && response.data) {
+          console.log('🔍 fetchMonthData - 取得したイベント数:', response.data.length);
+
+          const eventsMap = transformEventsToMap(response.data);
+
+          console.log('🔍 fetchMonthData - 最終的なイベントマップ:', eventsMap);
+
+          setState(prev => ({
+            ...prev,
+            config: {
+              ...prev.config,
+              isLoading: false,
+            },
+            data: {
+              eventsMap,
+            },
+          }));
+        } else {
+          console.error('🔍 fetchMonthData - APIエラー:', response.error);
+          throw new Error(response.error || 'Failed to fetch events');
+        }
       } catch (error) {
         console.error('Failed to fetch month data:', error);
         setState(prev => ({
@@ -249,6 +284,9 @@ export const useEventsCalendarState = (
           config: {
             ...prev.config,
             isLoading: false,
+          },
+          data: {
+            eventsMap: {},
           },
         }));
       }
