@@ -49,10 +49,32 @@ export interface EventsCalendarActions {
 const transformEventsToMap = (events: HololiveEvent[]): EventsMap => {
   const eventsMap: EventsMap = {};
 
+  console.log('🔍 transformEventsToMap - 受信イベント数:', events.length);
+  console.log('🔍 transformEventsToMap - 受信イベント:', events);
+
+  // イベントのstatusをチェック
+  const statusCounts = events.reduce((acc, event) => {
+    const status = event.status || 'undefined';
+    acc[status] = (acc[status] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+  console.log('🔍 transformEventsToMap - ステータス別カウント:', statusCounts);
+
   // 公開されているイベントのみをフィルタリング
+  // 注：APIから返されるイベントがすべて表示されるように、フィルタリングを緩和
   const publishedEvents = events.filter(
-    (event) => !event.status || event.status === 'published'
+    (event) => {
+      // statusが未定義、または'published'の場合に表示
+      const isPublished = !event.status || event.status === 'published';
+      if (!isPublished) {
+        console.log('🔍 非公開イベントをフィルタリング:', event.title, 'status:', event.status);
+      }
+      return isPublished;
+    }
   );
+
+  console.log('🔍 transformEventsToMap - 公開イベント数:', publishedEvents.length);
+  console.log('🔍 transformEventsToMap - 公開イベント:', publishedEvents);
 
   publishedEvents.forEach((event) => {
     const dateKey = event.date;
@@ -61,6 +83,8 @@ const transformEventsToMap = (events: HololiveEvent[]): EventsMap => {
     }
     eventsMap[dateKey].push(event);
   });
+
+  console.log('🔍 transformEventsToMap - 生成されたイベントマップ:', eventsMap);
 
   // 各日付のイベントを時刻順にソート
   Object.keys(eventsMap).forEach((dateKey) => {
@@ -238,11 +262,19 @@ export const useEventsCalendarState = (
           },
         }));
 
+        console.log('🔍 fetchMonthData - APIリクエスト開始');
+
         // APIからイベントデータを取得
         const response = await fetchPublicEvents();
 
+        console.log('🔍 fetchMonthData - APIレスポンス:', response);
+
         if (response.success && response.data) {
+          console.log('🔍 fetchMonthData - 取得したイベント数:', response.data.length);
+
           const eventsMap = transformEventsToMap(response.data);
+
+          console.log('🔍 fetchMonthData - 最終的なイベントマップ:', eventsMap);
 
           setState(prev => ({
             ...prev,
@@ -255,6 +287,7 @@ export const useEventsCalendarState = (
             },
           }));
         } else {
+          console.error('🔍 fetchMonthData - APIエラー:', response.error);
           throw new Error(response.error || 'Failed to fetch events');
         }
       } catch (error) {
