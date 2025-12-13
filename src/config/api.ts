@@ -3,7 +3,7 @@
  */
 
 // APIベースURL（環境変数から取得、デフォルトはlocalhost）
-export const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000';
+export const API_BASE_URL = process.env.REACT_APP_API_DOMAIN || 'http://localhost:8000';
 
 // APIエンドポイント
 export const API_ENDPOINTS = {
