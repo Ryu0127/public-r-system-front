@@ -1,6 +1,6 @@
 import { useCallback, useEffect } from 'react';
 import { HololiveEvent, EventsMap, ViewMode, FilterCategory } from '../types';
-import { mockEvents } from '../data/mockEvents';
+import { fetchPublicEvents } from '../api/eventsApi';
 
 export interface EventsCalendarState {
   // リクエストパラメータ
@@ -225,23 +225,38 @@ export const useEventsCalendarState = (
     ),
 
     /**
-     * 月データ取得（モックデータから）
+     * 月データ取得（APIから）
      */
     fetchMonthData: useCallback(async (month: Date) => {
       try {
-        // モックデータをそのまま使用（実際のAPIではここで月のデータをフィルタリング）
-        const eventsMap = transformEventsToMap(mockEvents);
-
+        // ローディング状態を設定
         setState(prev => ({
           ...prev,
           config: {
             ...prev.config,
-            isLoading: false,
-          },
-          data: {
-            eventsMap,
+            isLoading: true,
           },
         }));
+
+        // APIからイベントデータを取得
+        const response = await fetchPublicEvents();
+
+        if (response.success && response.data) {
+          const eventsMap = transformEventsToMap(response.data);
+
+          setState(prev => ({
+            ...prev,
+            config: {
+              ...prev.config,
+              isLoading: false,
+            },
+            data: {
+              eventsMap,
+            },
+          }));
+        } else {
+          throw new Error(response.error || 'Failed to fetch events');
+        }
       } catch (error) {
         console.error('Failed to fetch month data:', error);
         setState(prev => ({
@@ -249,6 +264,9 @@ export const useEventsCalendarState = (
           config: {
             ...prev.config,
             isLoading: false,
+          },
+          data: {
+            eventsMap: {},
           },
         }));
       }

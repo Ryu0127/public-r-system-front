@@ -7,13 +7,18 @@ export const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localh
 
 // APIエンドポイント
 export const API_ENDPOINTS = {
-  // イベント管理
+  // イベント管理（管理者用）
   events: {
     list: `${API_BASE_URL}/api/admin/events`,
     detail: (id: string) => `${API_BASE_URL}/api/admin/events/${id}`,
     create: `${API_BASE_URL}/api/admin/events`,
     update: (id: string) => `${API_BASE_URL}/api/admin/events/${id}`,
     delete: (id: string) => `${API_BASE_URL}/api/admin/events/${id}`,
+  },
+  // パブリックイベント（一般ユーザー用）
+  publicEvents: {
+    list: `${API_BASE_URL}/api/events`,
+    detail: (id: string) => `${API_BASE_URL}/api/events/${id}`,
   },
 };
 
