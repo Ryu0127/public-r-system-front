@@ -70,9 +70,21 @@ const getMediaFilterOperator = (mediaFilter: MediaFilter): string => {
 export const buildTwitterSearchUrl = (filters: EgoSearchFilters): string => {
   const searchParts: string[] = [];
 
-  // 検索キーワード（必須）
-  if (filters.searchKeyword.trim()) {
-    searchParts.push(filters.searchKeyword.trim());
+  // 検索キーワード（完全一致・OR検索）
+  const validKeywords = filters.searchKeywords
+    .map(k => k.trim())
+    .filter(k => k !== '');
+
+  if (validKeywords.length > 0) {
+    // 各キーワードをダブルクォーテーションで囲んで完全一致にする
+    const quotedKeywords = validKeywords.map(k => `"${k}"`);
+
+    // 複数キーワードの場合はOR検索（括弧で囲む）
+    if (quotedKeywords.length === 1) {
+      searchParts.push(quotedKeywords[0]);
+    } else {
+      searchParts.push(`(${quotedKeywords.join(' OR ')})`);
+    }
   }
 
   // 日付範囲フィルタ
@@ -156,8 +168,17 @@ export const buildTwitterSearchUrl = (filters: EgoSearchFilters): string => {
 export const buildSearchQueryPreview = (filters: EgoSearchFilters): string => {
   const searchParts: string[] = [];
 
-  if (filters.searchKeyword.trim()) {
-    searchParts.push(filters.searchKeyword.trim());
+  const validKeywords = filters.searchKeywords
+    .map(k => k.trim())
+    .filter(k => k !== '');
+
+  if (validKeywords.length > 0) {
+    const quotedKeywords = validKeywords.map(k => `"${k}"`);
+    if (quotedKeywords.length === 1) {
+      searchParts.push(quotedKeywords[0]);
+    } else {
+      searchParts.push(`(${quotedKeywords.join(' OR ')})`);
+    }
   }
 
   const { since } = filters.dateRange.preset === 'custom'

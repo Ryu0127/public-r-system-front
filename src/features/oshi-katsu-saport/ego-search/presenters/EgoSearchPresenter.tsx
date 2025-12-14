@@ -40,8 +40,8 @@ export const EgoSearchPresenter: React.FC<EgoSearchPresenterProps> = ({
 
         {/* 検索キーワード入力 */}
         <SearchKeywordInput
-          value={state.filters.searchKeyword}
-          onChange={actions.setSearchKeyword}
+          values={state.filters.searchKeywords}
+          onChange={actions.setSearchKeywords}
           onSearch={actions.handleSearchOnTwitter}
         />
 
@@ -68,7 +68,7 @@ export const EgoSearchPresenter: React.FC<EgoSearchPresenterProps> = ({
         filters={state.filters}
         showSearchPreview={state.config.showSearchPreview}
         onSearchOnTwitter={actions.handleSearchOnTwitter}
-        onClearKeyword={() => actions.setSearchKeyword('')}
+        onClearKeyword={() => actions.setSearchKeywords([''])}
         onShowSearchPreviewChange={actions.setShowSearchPreview}
       />
 

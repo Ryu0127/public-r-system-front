@@ -54,8 +54,8 @@ export interface KeywordPreset {
  * エゴサーチフィルタの状態
  */
 export interface EgoSearchFilters {
-  // 検索ワード
-  searchKeyword: string;
+  // 検索ワード（複数キーワード対応）
+  searchKeywords: string[];
 
   // 日付フィルタ
   dateRange: {
@@ -96,7 +96,7 @@ export interface EgoSearchFilters {
  * デフォルトのエゴサーチフィルタ
  */
 export const defaultEgoSearchFilters: EgoSearchFilters = {
-  searchKeyword: '',
+  searchKeywords: [''],
   dateRange: {
     preset: 'all',
   },

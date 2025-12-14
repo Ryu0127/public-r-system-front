@@ -36,9 +36,9 @@ export const SearchPreviewDisplay: React.FC<SearchPreviewDisplayProps> = ({
         </h3>
         <button
           onClick={onClearKeyword}
-          disabled={!filters.searchKeyword.trim()}
+          disabled={!filters.searchKeywords.some(k => k.trim() !== '')}
           className={`px-3 py-1 text-xs font-medium rounded-lg transition-all duration-200 border ${
-            filters.searchKeyword.trim()
+            filters.searchKeywords.some(k => k.trim() !== '')
               ? 'text-gray-600 hover:text-red-600 bg-gray-100 hover:bg-red-50 border-gray-200 hover:border-red-300 cursor-pointer'
               : 'text-gray-400 bg-gray-50 border-gray-100 cursor-not-allowed'
           }`}
