@@ -24,12 +24,10 @@ const getDateRangeFromPreset = (preset: DateRangePreset): { since?: string; unti
     case 'today':
       return {
         since: formatDate(today),
-        until: formatDate(today),
       };
     case 'yesterday':
       return {
         since: formatDate(yesterday),
-        until: formatDate(yesterday),
       };
     case 'last7days': {
       const sevenDaysAgo = new Date(today);
@@ -78,18 +76,14 @@ export const buildTwitterSearchUrl = (filters: EgoSearchFilters): string => {
   }
 
   // 日付範囲フィルタ
-  const { since, until } = filters.dateRange.preset === 'custom'
+  const { since } = filters.dateRange.preset === 'custom'
     ? {
         since: filters.dateRange.customStartDate,
-        until: filters.dateRange.customEndDate,
       }
     : getDateRangeFromPreset(filters.dateRange.preset);
 
   if (since) {
     searchParts.push(`since:${since}`);
-  }
-  if (until) {
-    searchParts.push(`until:${until}`);
   }
 
   // メディアフィルタ
@@ -166,18 +160,14 @@ export const buildSearchQueryPreview = (filters: EgoSearchFilters): string => {
     searchParts.push(filters.searchKeyword.trim());
   }
 
-  const { since, until } = filters.dateRange.preset === 'custom'
+  const { since } = filters.dateRange.preset === 'custom'
     ? {
         since: filters.dateRange.customStartDate,
-        until: filters.dateRange.customEndDate,
       }
     : getDateRangeFromPreset(filters.dateRange.preset);
 
   if (since) {
     searchParts.push(`since:${since}`);
-  }
-  if (until) {
-    searchParts.push(`until:${until}`);
   }
 
   const mediaOperator = getMediaFilterOperator(filters.mediaFilter);
