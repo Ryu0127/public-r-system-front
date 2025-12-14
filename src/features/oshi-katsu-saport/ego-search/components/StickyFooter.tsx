@@ -62,9 +62,9 @@ export const StickyFooter: React.FC<StickyFooterProps> = ({
             </button>
           </div>
 
-          {!showSearchPreview && filters.searchKeyword.trim() && (
+          {!showSearchPreview && filters.searchKeywords.some(k => k.trim() !== '') && (
             <p className="text-xs text-gray-500 text-center mt-2">
-              検索キーワード: {filters.searchKeyword.trim()}
+              検索キーワード: {filters.searchKeywords.filter(k => k.trim() !== '').join(', ')}
             </p>
           )}
 
