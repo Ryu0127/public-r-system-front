@@ -2,6 +2,7 @@ import React from 'react';
 import { EgoSearchState, EgoSearchActions } from '../hooks/useEgoSearchState';
 import { EgoSearchHeader } from '../components/EgoSearchHeader';
 import { SearchKeywordInput } from '../components/SearchKeywordInput';
+import { KeywordPresetsSelector } from '../components/KeywordPresetsSelector';
 import { AdvancedFilters } from '../components/AdvancedFilters';
 import { TalentAccountFilters } from '../components/TalentAccountFilters';
 import { HelpModal } from '../components/HelpModal';
@@ -42,6 +43,11 @@ export const EgoSearchPresenter: React.FC<EgoSearchPresenterProps> = ({
           value={state.filters.searchKeyword}
           onChange={actions.setSearchKeyword}
           onSearch={actions.handleSearchOnTwitter}
+        />
+
+        {/* 検索プリセット */}
+        <KeywordPresetsSelector
+          onPresetsSelect={actions.appendKeywordsFromPresets}
         />
 
         {/* タレントアカウントフィルタ */}

@@ -62,6 +62,7 @@ export interface EgoSearchActions {
 
   // 検索キーワード
   setSearchKeyword: (keyword: string) => void;
+  appendKeywordsFromPresets: (keywords: string[]) => void;
 
   // 日付フィルタ
   setDateRangePreset: (preset: DateRangePreset) => void;
@@ -166,6 +167,31 @@ export const useEgoSearchState = (
         ...prev,
         filters: { ...prev.filters, searchKeyword: keyword },
       }));
+    }, []),
+
+    /**
+     * プリセットからキーワードを追加
+     */
+    appendKeywordsFromPresets: useCallback((keywords: string[]) => {
+      setState(prev => {
+        const currentKeyword = prev.filters.searchKeyword.trim();
+        const newKeywords = keywords.join(' OR ');
+
+        // 現在のキーワードが空の場合はそのまま設定
+        if (!currentKeyword) {
+          return {
+            ...prev,
+            filters: { ...prev.filters, searchKeyword: newKeywords },
+          };
+        }
+
+        // 既存のキーワードに追加
+        const updatedKeyword = `${currentKeyword} ${newKeywords}`;
+        return {
+          ...prev,
+          filters: { ...prev.filters, searchKeyword: updatedKeyword },
+        };
+      });
     }, []),
 
     /**
