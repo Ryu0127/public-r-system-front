@@ -15,6 +15,8 @@ const formatDate = (date: Date): string => {
  */
 const getDateRangeFromPreset = (preset: DateRangePreset): { since?: string; until?: string } => {
   const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
   const yesterday = new Date(today);
   yesterday.setDate(yesterday.getDate() - 1);
 
@@ -22,12 +24,16 @@ const getDateRangeFromPreset = (preset: DateRangePreset): { since?: string; unti
     case 'all':
       return {};
     case 'today':
+      // 今日の00:00:00から23:59:59まで
       return {
         since: formatDate(today),
+        until: formatDate(tomorrow),
       };
     case 'yesterday':
+      // 昨日の00:00:00から23:59:59まで
       return {
         since: formatDate(yesterday),
+        until: formatDate(today),
       };
     case 'last7days': {
       const sevenDaysAgo = new Date(today);
@@ -88,14 +94,19 @@ export const buildTwitterSearchUrl = (filters: EgoSearchFilters): string => {
   }
 
   // 日付範囲フィルタ
-  const { since } = filters.dateRange.preset === 'custom'
+  const { since, until } = filters.dateRange.preset === 'custom'
     ? {
         since: filters.dateRange.customStartDate,
+        until: filters.dateRange.customEndDate,
       }
     : getDateRangeFromPreset(filters.dateRange.preset);
 
   if (since) {
     searchParts.push(`since:${since}`);
+  }
+
+  if (until) {
+    searchParts.push(`until:${until}`);
   }
 
   // メディアフィルタ
@@ -181,14 +192,19 @@ export const buildSearchQueryPreview = (filters: EgoSearchFilters): string => {
     }
   }
 
-  const { since } = filters.dateRange.preset === 'custom'
+  const { since, until } = filters.dateRange.preset === 'custom'
     ? {
         since: filters.dateRange.customStartDate,
+        until: filters.dateRange.customEndDate,
       }
     : getDateRangeFromPreset(filters.dateRange.preset);
 
   if (since) {
     searchParts.push(`since:${since}`);
+  }
+
+  if (until) {
+    searchParts.push(`until:${until}`);
   }
 
   const mediaOperator = getMediaFilterOperator(filters.mediaFilter);
