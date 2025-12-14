@@ -1,0 +1,116 @@
+/**
+ * エゴサーチサポート画面の型定義
+ */
+
+/**
+ * 日付範囲プリセット
+ */
+export type DateRangePreset =
+  | 'today'        // 今日
+  | 'yesterday'    // 昨日
+  | 'last7days'    // 過去7日
+  | 'last30days'   // 過去30日
+  | 'custom';      // カスタム
+
+/**
+ * メディアタイプフィルタ
+ */
+export type MediaFilter =
+  | 'all'          // すべて
+  | 'images'       // 画像のみ
+  | 'videos'       // 動画のみ
+  | 'media';       // 画像・動画両方
+
+/**
+ * タレントアカウント情報（メイン・サブアカウント対応）
+ */
+export interface TalentAccount {
+  talentId: string;
+  talentName: string;
+  mainAccount?: string;    // メインアカウント (@なし)
+  subAccount?: string;     // サブアカウント (@なし)
+}
+
+/**
+ * 除外ワード
+ */
+export interface ExcludeWord {
+  id: string;
+  word: string;
+  category?: string; // 荒らし、誹謗中傷など
+}
+
+/**
+ * エゴサーチフィルタの状態
+ */
+export interface EgoSearchFilters {
+  // 検索ワード
+  searchKeyword: string;
+
+  // 日付フィルタ
+  dateRange: {
+    preset: DateRangePreset;
+    customStartDate?: string; // YYYY-MM-DD形式
+    customEndDate?: string;   // YYYY-MM-DD形式
+  };
+
+  // メディアフィルタ
+  mediaFilter: MediaFilter;
+
+  // タレントアカウントフィルタ（エゴサーチでは"from"のみ使用）
+  talentAccounts: {
+    enabled: boolean;
+    selectedAccounts: TalentAccount[];
+  };
+
+  // 除外ワード
+  excludeWords: {
+    enabled: boolean;
+    selectedWords: ExcludeWord[];
+  };
+
+  // リプライを除外
+  excludeReplies: boolean;
+
+  // リツイートを除外
+  excludeRetweets: boolean;
+
+  // 最小いいね数
+  minLikes: number | null;
+
+  // 最小リツイート数
+  minRetweets: number | null;
+}
+
+/**
+ * デフォルトのエゴサーチフィルタ
+ */
+export const defaultEgoSearchFilters: EgoSearchFilters = {
+  searchKeyword: '',
+  dateRange: {
+    preset: 'last7days',
+  },
+  mediaFilter: 'all',
+  talentAccounts: {
+    enabled: false,
+    selectedAccounts: [],
+  },
+  excludeWords: {
+    enabled: false,
+    selectedWords: [],
+  },
+  excludeReplies: false,
+  excludeRetweets: false,
+  minLikes: null,
+  minRetweets: null,
+};
+
+/**
+ * デフォルトの除外ワード（荒らし・誹謗中傷対策）
+ */
+export const defaultExcludeWords: ExcludeWord[] = [
+  { id: '1', word: 'スパム', category: '荒らし' },
+  { id: '2', word: '誹謗中傷', category: '誹謗中傷' },
+  { id: '3', word: '悪質', category: '荒らし' },
+  { id: '4', word: '炎上', category: '荒らし' },
+];
