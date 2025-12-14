@@ -66,8 +66,9 @@ export const TalentAccountFilters: React.FC<TalentAccountFiltersProps> = ({ stat
       setEditingTalentId(talent.id);
       setShowAccountInput(true);
       const existingAccount = getTalentAccount(talent.id);
-      setMainAccount(existingAccount?.mainAccount || '');
-      setSubAccount(existingAccount?.subAccount || '');
+      // デフォルトアカウントを設定
+      setMainAccount(existingAccount?.mainAccount || 'robocosan');
+      setSubAccount(existingAccount?.subAccount || 'maybe_robochan');
       return;
     }
 
