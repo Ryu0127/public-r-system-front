@@ -6,6 +6,7 @@
  * 日付範囲プリセット
  */
 export type DateRangePreset =
+  | 'all'          // すべて
   | 'today'        // 今日
   | 'yesterday'    // 昨日
   | 'last7days'    // 過去7日
@@ -97,7 +98,7 @@ export interface EgoSearchFilters {
 export const defaultEgoSearchFilters: EgoSearchFilters = {
   searchKeyword: '',
   dateRange: {
-    preset: 'last7days',
+    preset: 'all',
   },
   mediaFilter: 'all',
   talentAccounts: {

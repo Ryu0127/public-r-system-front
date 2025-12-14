@@ -150,11 +150,6 @@ export const useEgoSearchState = (
      * Xで検索
      */
     handleSearchOnTwitter: useCallback(() => {
-      if (!state.filters.searchKeyword.trim()) {
-        alert('検索キーワードを入力してください');
-        return;
-      }
-
       const searchUrl = buildTwitterSearchUrl(state.filters);
       window.open(searchUrl, '_blank');
     }, [state.filters]),

@@ -19,6 +19,8 @@ const getDateRangeFromPreset = (preset: DateRangePreset): { since?: string; unti
   yesterday.setDate(yesterday.getDate() - 1);
 
   switch (preset) {
+    case 'all':
+      return {};
     case 'today':
       return {
         since: formatDate(today),

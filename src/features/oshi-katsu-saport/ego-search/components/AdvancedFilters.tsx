@@ -34,7 +34,17 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({ state, actions
           <label className="block text-sm font-medium text-gray-700 mb-2">
             投稿期間
           </label>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-3 gap-2">
+            <button
+              onClick={() => actions.setDateRangePreset('all')}
+              className={`px-3 py-2 text-sm rounded border ${
+                filters.dateRange.preset === 'all'
+                  ? 'bg-blue-500 text-white border-blue-500'
+                  : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+              }`}
+            >
+              すべて
+            </button>
             <button
               onClick={() => actions.setDateRangePreset('today')}
               className={`px-3 py-2 text-sm rounded border ${
