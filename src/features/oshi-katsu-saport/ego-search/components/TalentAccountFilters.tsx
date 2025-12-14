@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { EgoSearchState, EgoSearchActions, Talent } from '../hooks/useEgoSearchState';
 import { TalentAccount } from '../types';
 import { getTalentAccount } from '../utils/talentAccountsStorage';
@@ -15,6 +15,7 @@ export const TalentAccountFilters: React.FC<TalentAccountFiltersProps> = ({ stat
   const [subAccount, setSubAccount] = useState('');
   const [talentSearchQuery, setTalentSearchQuery] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const comboboxRef = useRef<HTMLDivElement>(null);
 
   const { filters, data } = state;
 
@@ -22,6 +23,20 @@ export const TalentAccountFilters: React.FC<TalentAccountFiltersProps> = ({ stat
   const filteredTalents = data.talents.filter((talent: Talent) =>
     talent.talentNameJoin.toLowerCase().includes(talentSearchQuery.toLowerCase())
   );
+
+  // 外側クリックでドロップダウンを閉じる
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (comboboxRef.current && !comboboxRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   // タレントアカウント設定
   const handleSaveTalentAccount = (talentId: string, talentName: string) => {
@@ -57,11 +72,13 @@ export const TalentAccountFilters: React.FC<TalentAccountFiltersProps> = ({ stat
     }
 
     actions.toggleTalentAccount(savedAccount);
+    setTalentSearchQuery('');
+    setIsDropdownOpen(false);
   };
 
   return (
-    <div className="max-w-2xl mx-auto mb-8 animate-fade-in" style={{ animationDelay: '0.3s' }}>
-      <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-200 shadow-lg">
+    <div className="max-w-2xl mx-auto mb-8 animate-fade-in overflow-visible relative z-[10000]" style={{ animationDelay: '0.3s' }}>
+      <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-200 shadow-lg overflow-visible">
         <div className="flex items-center justify-between mb-2">
           <label className="flex items-center space-x-2">
             <input
@@ -81,9 +98,12 @@ export const TalentAccountFilters: React.FC<TalentAccountFiltersProps> = ({ stat
           <>
             {/* タレント選択コンボボックス */}
             <div className="mb-3">
-              <label className="block text-xs text-gray-600 mb-2">タレント選択</label>
-              <div className="relative">
+              <label htmlFor="talent-combobox" className="block text-sm font-semibold text-gray-700 mb-3">
+                タレントを選択
+              </label>
+              <div className="relative" ref={comboboxRef}>
                 <input
+                  id="talent-combobox"
                   type="text"
                   value={talentSearchQuery}
                   onChange={(e) => {
@@ -92,8 +112,14 @@ export const TalentAccountFilters: React.FC<TalentAccountFiltersProps> = ({ stat
                   }}
                   onFocus={() => setIsDropdownOpen(true)}
                   placeholder="タレント名を入力して検索..."
-                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-3 pr-10 bg-white border-2 border-gray-200 focus:border-[#1DA1F2] focus:outline-none rounded-xl text-gray-800 transition-all duration-200"
                 />
+                {/* 検索アイコン */}
+                <div className="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none text-gray-400">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </div>
 
                 {/* ドロップダウンリスト */}
                 {isDropdownOpen && filteredTalents.length > 0 && (
@@ -107,35 +133,40 @@ export const TalentAccountFilters: React.FC<TalentAccountFiltersProps> = ({ stat
                       return (
                         <div
                           key={talent.id}
-                          onClick={() => {
-                            handleToggleTalent(talent);
-                            setIsDropdownOpen(false);
-                            setTalentSearchQuery('');
-                          }}
-                          className={`px-4 py-3 cursor-pointer transition-all duration-200 flex items-center justify-between ${
+                          onClick={() => handleToggleTalent(talent)}
+                          className={`px-4 py-3 cursor-pointer transition-all duration-200 ${
                             isSelected
                               ? 'bg-[#1DA1F2] text-white'
                               : 'hover:bg-blue-50 text-gray-700'
                           }`}
                         >
-                          <div>
-                            <div>{talent.talentName}</div>
-                            {savedAccount && (
-                              <div className="text-xs opacity-75 mt-1">
-                                {savedAccount.mainAccount && `@${savedAccount.mainAccount}`}
-                                {savedAccount.mainAccount && savedAccount.subAccount && ' / '}
-                                {savedAccount.subAccount && `@${savedAccount.subAccount}`}
-                              </div>
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <div className="font-medium">{talent.talentNameJoin}</div>
+                              {savedAccount && (
+                                <div className={`text-xs mt-1 ${isSelected ? 'opacity-90' : 'text-gray-500'}`}>
+                                  {savedAccount.mainAccount && `@${savedAccount.mainAccount}`}
+                                  {savedAccount.mainAccount && savedAccount.subAccount && ' / '}
+                                  {savedAccount.subAccount && `@${savedAccount.subAccount}`}
+                                </div>
+                              )}
+                            </div>
+                            {!savedAccount && (
+                              <span className="text-xs px-2 py-1 bg-amber-100 text-amber-800 rounded">
+                                未設定
+                              </span>
                             )}
                           </div>
-                          {!savedAccount && (
-                            <span className="text-xs px-2 py-1 bg-amber-100 text-amber-800 rounded">
-                              未設定
-                            </span>
-                          )}
                         </div>
                       );
                     })}
+                  </div>
+                )}
+
+                {/* 結果が見つからない場合 */}
+                {isDropdownOpen && talentSearchQuery && filteredTalents.length === 0 && (
+                  <div className="absolute z-[9999] w-full mt-2 bg-white border-2 border-gray-200 rounded-xl shadow-xl p-4 text-center text-gray-500">
+                    該当するタレントが見つかりません
                   </div>
                 )}
               </div>
