@@ -37,6 +37,7 @@ export interface EgoSearchState {
   config: {
     isLoading: boolean;
     isHelpModalOpen: boolean;
+    showSearchPreview: boolean;
   };
   data: {
     talents: Talent[];
@@ -93,6 +94,7 @@ export interface EgoSearchActions {
   setIsHelpModalOpen: (isOpen: boolean) => void;
   setTalentSearchQuery: (query: string) => void;
   setIsDropdownOpen: (isOpen: boolean) => void;
+  setShowSearchPreview: (show: boolean) => void;
 }
 
 /**
@@ -418,6 +420,16 @@ export const useEgoSearchState = (
       setState(prev => ({
         ...prev,
         ui: { ...prev.ui, isDropdownOpen: isOpen },
+      }));
+    }, []),
+
+    /**
+     * 検索プレビュー表示/非表示
+     */
+    setShowSearchPreview: useCallback((show: boolean) => {
+      setState(prev => ({
+        ...prev,
+        config: { ...prev.config, showSearchPreview: show },
       }));
     }, []),
   };

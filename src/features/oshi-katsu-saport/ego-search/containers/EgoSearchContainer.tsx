@@ -8,6 +8,7 @@ const initialState: EgoSearchState = {
   config: {
     isLoading: true,
     isHelpModalOpen: false,
+    showSearchPreview: false,
   },
   data: {
     talents: [],

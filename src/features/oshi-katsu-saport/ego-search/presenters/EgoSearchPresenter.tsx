@@ -59,8 +59,11 @@ export const EgoSearchPresenter: React.FC<EgoSearchPresenterProps> = ({
 
       {/* 固定フッター */}
       <StickyFooter
+        filters={state.filters}
+        showSearchPreview={state.config.showSearchPreview}
         onSearchOnTwitter={actions.handleSearchOnTwitter}
-        searchKeyword={state.filters.searchKeyword}
+        onClearKeyword={() => actions.setSearchKeyword('')}
+        onShowSearchPreviewChange={actions.setShowSearchPreview}
       />
 
       {/* ヘルプモーダル */}
