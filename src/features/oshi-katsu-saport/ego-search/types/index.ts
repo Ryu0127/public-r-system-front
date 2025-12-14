@@ -22,13 +22,12 @@ export type MediaFilter =
   | 'media';       // 画像・動画両方
 
 /**
- * タレントアカウント情報（メイン・サブアカウント対応）
+ * タレントアカウント情報（複数アカウント対応）
  */
 export interface TalentAccount {
   talentId: string;
   talentName: string;
-  mainAccount?: string;    // メインアカウント (@なし)
-  subAccount?: string;     // サブアカウント (@なし)
+  accounts: string[];    // アカウントリスト (@なし)
 }
 
 /**

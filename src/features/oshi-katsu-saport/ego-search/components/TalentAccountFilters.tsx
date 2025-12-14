@@ -11,8 +11,8 @@ interface TalentAccountFiltersProps {
 export const TalentAccountFilters: React.FC<TalentAccountFiltersProps> = ({ state, actions }) => {
   const [showAccountInput, setShowAccountInput] = useState(false);
   const [editingTalentId, setEditingTalentId] = useState<string | null>(null);
-  const [mainAccount, setMainAccount] = useState('');
-  const [subAccount, setSubAccount] = useState('');
+  const [accounts, setAccounts] = useState<string[]>(['robocosan', 'maybe_robochan']);
+  const [newAccountInput, setNewAccountInput] = useState('');
   const [talentSearchQuery, setTalentSearchQuery] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const comboboxRef = useRef<HTMLDivElement>(null);
@@ -38,37 +38,46 @@ export const TalentAccountFilters: React.FC<TalentAccountFiltersProps> = ({ stat
     };
   }, []);
 
-  // タレントアカウント設定
+  // アカウントを追加
+  const handleAddAccount = () => {
+    const trimmedAccount = newAccountInput.replace('@', '').trim();
+    if (trimmedAccount && !accounts.includes(trimmedAccount)) {
+      setAccounts([...accounts, trimmedAccount]);
+      setNewAccountInput('');
+    }
+  };
+
+  // アカウントを削除
+  const handleRemoveAccount = (accountToRemove: string) => {
+    setAccounts(accounts.filter(acc => acc !== accountToRemove));
+  };
+
+  // タレントアカウント設定を保存
   const handleSaveTalentAccount = (talentId: string, talentName: string) => {
-    if (!mainAccount.trim() && !subAccount.trim()) {
-      alert('メインアカウントまたはサブアカウントのいずれかを入力してください');
+    if (accounts.length === 0) {
+      alert('最低1つのアカウントを入力してください');
       return;
     }
 
-    actions.saveTalentAccountInfo(
-      talentId,
-      talentName,
-      mainAccount.trim() ? mainAccount.replace('@', '').trim() : undefined,
-      subAccount.trim() ? subAccount.replace('@', '').trim() : undefined
-    );
+    actions.saveTalentAccountInfo(talentId, talentName, accounts);
 
     setEditingTalentId(null);
-    setMainAccount('');
-    setSubAccount('');
+    setAccounts(['robocosan', 'maybe_robochan']);
+    setNewAccountInput('');
     setShowAccountInput(false);
   };
 
   // タレント選択時にアカウント情報を取得
   const handleToggleTalent = (talent: Talent) => {
     const savedAccount = getTalentAccount(talent.id);
-    if (!savedAccount || (!savedAccount.mainAccount && !savedAccount.subAccount)) {
+    if (!savedAccount || savedAccount.accounts.length === 0) {
       // アカウント情報が未設定の場合、入力を促す
       setEditingTalentId(talent.id);
       setShowAccountInput(true);
       const existingAccount = getTalentAccount(talent.id);
       // デフォルトアカウントを設定
-      setMainAccount(existingAccount?.mainAccount || 'robocosan');
-      setSubAccount(existingAccount?.subAccount || 'maybe_robochan');
+      setAccounts(existingAccount && existingAccount.accounts.length > 0 ? existingAccount.accounts : ['robocosan', 'maybe_robochan']);
+      setNewAccountInput('');
       return;
     }
 
@@ -134,15 +143,13 @@ export const TalentAccountFilters: React.FC<TalentAccountFiltersProps> = ({ stat
                       <div className="flex items-center justify-between">
                         <div>
                           <div className="font-medium">{talent.talentNameJoin}</div>
-                          {savedAccount && (
+                          {savedAccount && savedAccount.accounts.length > 0 && (
                             <div className={`text-xs mt-1 ${isSelected ? 'opacity-90' : 'text-gray-500'}`}>
-                              {savedAccount.mainAccount && `@${savedAccount.mainAccount}`}
-                              {savedAccount.mainAccount && savedAccount.subAccount && ' / '}
-                              {savedAccount.subAccount && `@${savedAccount.subAccount}`}
+                              {savedAccount.accounts.map(acc => `@${acc}`).join(', ')}
                             </div>
                           )}
                         </div>
-                        {!savedAccount && (
+                        {(!savedAccount || savedAccount.accounts.length === 0) && (
                           <span className="text-xs px-2 py-1 bg-amber-100 text-amber-800 rounded">
                             未設定
                           </span>
@@ -169,34 +176,58 @@ export const TalentAccountFilters: React.FC<TalentAccountFiltersProps> = ({ stat
             <p className="text-sm text-gray-700 font-semibold mb-3">
               {data.talents.find((t) => t.id === editingTalentId)?.talentName} のTwitterアカウント名
             </p>
-            <div className="space-y-2">
-              <div>
-                <label className="text-xs text-gray-600 block mb-1">メインアカウント</label>
-                <div className="flex items-center border border-gray-300 rounded focus-within:ring-2 focus-within:ring-blue-500 bg-white">
-                  <span className="px-2 text-gray-500">@</span>
-                  <input
-                    type="text"
-                    value={mainAccount}
-                    onChange={(e) => setMainAccount(e.target.value)}
-                    placeholder="アカウント名"
-                    className="flex-1 px-2 py-2 text-sm focus:outline-none"
-                  />
+
+            {/* 登録済みアカウント一覧 */}
+            {accounts.length > 0 && (
+              <div className="mb-3">
+                <label className="text-xs text-gray-600 block mb-2">登録済みアカウント</label>
+                <div className="space-y-1">
+                  {accounts.map((account, index) => (
+                    <div key={index} className="flex items-center gap-2 p-2 bg-white rounded border border-gray-300">
+                      <span className="text-gray-500">@</span>
+                      <span className="flex-1 text-sm text-gray-800">{account}</span>
+                      <button
+                        onClick={() => handleRemoveAccount(account)}
+                        className="text-red-600 hover:text-red-700 text-xs px-2 py-1"
+                        title="削除"
+                      >
+                        削除
+                      </button>
+                    </div>
+                  ))}
                 </div>
               </div>
-              <div>
-                <label className="text-xs text-gray-600 block mb-1">サブアカウント（任意）</label>
-                <div className="flex items-center border border-gray-300 rounded focus-within:ring-2 focus-within:ring-blue-500 bg-white">
+            )}
+
+            {/* 新しいアカウント追加 */}
+            <div className="mb-3">
+              <label className="text-xs text-gray-600 block mb-1">アカウントを追加</label>
+              <div className="flex gap-2">
+                <div className="flex-1 flex items-center border border-gray-300 rounded focus-within:ring-2 focus-within:ring-blue-500 bg-white">
                   <span className="px-2 text-gray-500">@</span>
                   <input
                     type="text"
-                    value={subAccount}
-                    onChange={(e) => setSubAccount(e.target.value)}
+                    value={newAccountInput}
+                    onChange={(e) => setNewAccountInput(e.target.value)}
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleAddAccount();
+                      }
+                    }}
                     placeholder="アカウント名"
                     className="flex-1 px-2 py-2 text-sm focus:outline-none"
                   />
                 </div>
+                <button
+                  onClick={handleAddAccount}
+                  className="px-3 py-2 text-sm bg-blue-500 text-white rounded hover:bg-blue-600"
+                >
+                  追加
+                </button>
               </div>
             </div>
+
             <div className="flex gap-2 mt-3">
               <button
                 onClick={() => {
@@ -213,8 +244,8 @@ export const TalentAccountFilters: React.FC<TalentAccountFiltersProps> = ({ stat
                 onClick={() => {
                   setShowAccountInput(false);
                   setEditingTalentId(null);
-                  setMainAccount('');
-                  setSubAccount('');
+                  setAccounts(['robocosan', 'maybe_robochan']);
+                  setNewAccountInput('');
                 }}
                 className="px-3 py-2 text-sm bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
               >
@@ -237,9 +268,7 @@ export const TalentAccountFilters: React.FC<TalentAccountFiltersProps> = ({ stat
                   <div>
                     <div className="font-semibold text-gray-800">{account.talentName}</div>
                     <div className="text-xs text-gray-600">
-                      {account.mainAccount && `@${account.mainAccount}`}
-                      {account.mainAccount && account.subAccount && ' / '}
-                      {account.subAccount && `@${account.subAccount}`}
+                      {account.accounts.map(acc => `@${acc}`).join(', ')}
                     </div>
                   </div>
                   <button

@@ -74,7 +74,7 @@ export interface EgoSearchActions {
   // タレントアカウントフィルタ
   setTalentAccountsEnabled: (enabled: boolean) => void;
   toggleTalentAccount: (account: TalentAccount) => void;
-  saveTalentAccountInfo: (talentId: string, talentName: string, mainAccount?: string, subAccount?: string) => void;
+  saveTalentAccountInfo: (talentId: string, talentName: string, accounts: string[]) => void;
 
   // 除外ワードフィルタ
   setExcludeWordsEnabled: (enabled: boolean) => void;
@@ -278,14 +278,12 @@ export const useEgoSearchState = (
     saveTalentAccountInfo: useCallback((
       talentId: string,
       talentName: string,
-      mainAccount?: string,
-      subAccount?: string
+      accounts: string[]
     ) => {
       const account: TalentAccount = {
         talentId,
         talentName,
-        mainAccount,
-        subAccount,
+        accounts,
       };
       saveTalentAccount(account);
     }, []),

@@ -96,18 +96,17 @@ export const buildTwitterSearchUrl = (filters: EgoSearchFilters): string => {
     searchParts.push(mediaOperator);
   }
 
-  // タレントアカウントフィルタ（メイン・サブアカウント両方を検索）
+  // タレントアカウントフィルタ（全アカウントを検索）
   if (filters.talentAccounts.enabled && filters.talentAccounts.selectedAccounts.length > 0) {
-    const accounts = filters.talentAccounts.selectedAccounts;
+    const talentAccounts = filters.talentAccounts.selectedAccounts;
     const fromParts: string[] = [];
 
-    accounts.forEach(account => {
-      if (account.mainAccount) {
-        fromParts.push(`from:${account.mainAccount}`);
-      }
-      if (account.subAccount) {
-        fromParts.push(`from:${account.subAccount}`);
-      }
+    talentAccounts.forEach(talent => {
+      talent.accounts.forEach(account => {
+        if (account) {
+          fromParts.push(`from:${account}`);
+        }
+      });
     });
 
     if (fromParts.length > 0) {
@@ -185,16 +184,15 @@ export const buildSearchQueryPreview = (filters: EgoSearchFilters): string => {
   }
 
   if (filters.talentAccounts.enabled && filters.talentAccounts.selectedAccounts.length > 0) {
-    const accounts = filters.talentAccounts.selectedAccounts;
+    const talentAccounts = filters.talentAccounts.selectedAccounts;
     const fromParts: string[] = [];
 
-    accounts.forEach(account => {
-      if (account.mainAccount) {
-        fromParts.push(`from:${account.mainAccount}`);
-      }
-      if (account.subAccount) {
-        fromParts.push(`from:${account.subAccount}`);
-      }
+    talentAccounts.forEach(talent => {
+      talent.accounts.forEach(account => {
+        if (account) {
+          fromParts.push(`from:${account}`);
+        }
+      });
     });
 
     if (fromParts.length > 0) {
