@@ -11,12 +11,23 @@ const formatDate = (date: Date): string => {
 };
 
 /**
+ * 日付と時刻をYYYY-MM-DD_HH:MM:SS_JST形式に変換
+ */
+const formatDateTime = (date: Date, hour: number, minute: number, second: number): string => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const h = String(hour).padStart(2, '0');
+  const m = String(minute).padStart(2, '0');
+  const s = String(second).padStart(2, '0');
+  return `${year}-${month}-${day}_${h}:${m}:${s}_JST`;
+};
+
+/**
  * 日付範囲プリセットから具体的な日付を取得
  */
 const getDateRangeFromPreset = (preset: DateRangePreset): { since?: string; until?: string } => {
   const today = new Date();
-  const tomorrow = new Date(today);
-  tomorrow.setDate(tomorrow.getDate() + 1);
   const yesterday = new Date(today);
   yesterday.setDate(yesterday.getDate() - 1);
 
@@ -26,14 +37,14 @@ const getDateRangeFromPreset = (preset: DateRangePreset): { since?: string; unti
     case 'today':
       // 今日の00:00:00から23:59:59まで
       return {
-        since: formatDate(today),
-        until: formatDate(tomorrow),
+        since: formatDateTime(today, 0, 0, 0),
+        until: formatDateTime(today, 23, 59, 59),
       };
     case 'yesterday':
       // 昨日の00:00:00から23:59:59まで
       return {
-        since: formatDate(yesterday),
-        until: formatDate(today),
+        since: formatDateTime(yesterday, 0, 0, 0),
+        until: formatDateTime(yesterday, 23, 59, 59),
       };
     case 'last7days': {
       const sevenDaysAgo = new Date(today);
