@@ -55,24 +55,16 @@ export const StickyFooter: React.FC<StickyFooterProps> = ({
             {/* Xで検索ボタン */}
             <button
               onClick={onSearchOnTwitter}
-              disabled={!filters.searchKeyword.trim()}
-              className={`flex-1 py-3 rounded-xl font-semibold text-lg transition-all duration-300 flex items-center justify-center gap-2 ${
-                filters.searchKeyword.trim()
-                  ? 'bg-gradient-to-r from-[#1DA1F2] to-[#0d8bd9] hover:from-[#0d8bd9] hover:to-[#1DA1F2] text-white shadow-xl shadow-blue-500/40 hover:shadow-2xl hover:shadow-blue-500/50 hover:scale-105'
-                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-              }`}
+              className="flex-1 py-3 rounded-xl font-semibold text-lg transition-all duration-300 flex items-center justify-center gap-2 bg-gradient-to-r from-[#1DA1F2] to-[#0d8bd9] hover:from-[#0d8bd9] hover:to-[#1DA1F2] text-white shadow-xl shadow-blue-500/40 hover:shadow-2xl hover:shadow-blue-500/50 hover:scale-105"
             >
               <SearchIcon />
               Xで検索する
             </button>
           </div>
 
-          {!showSearchPreview && (
+          {!showSearchPreview && filters.searchKeyword.trim() && (
             <p className="text-xs text-gray-500 text-center mt-2">
-              {filters.searchKeyword.trim()
-                ? `検索キーワード: ${filters.searchKeyword.trim()}`
-                : '検索キーワードを入力してください'
-              }
+              検索キーワード: {filters.searchKeyword.trim()}
             </p>
           )}
 
