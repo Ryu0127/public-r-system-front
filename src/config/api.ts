@@ -3,22 +3,22 @@
  */
 
 // APIベースURL（環境変数から取得、デフォルトはlocalhost）
-export const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000';
+export const API_BASE_URL = process.env.REACT_APP_API_DOMAIN || 'http://localhost:8000/api';
 
 // APIエンドポイント
 export const API_ENDPOINTS = {
   // イベント管理（管理者用）
   events: {
-    list: `${API_BASE_URL}/api/admin/events`,
-    detail: (id: string) => `${API_BASE_URL}/api/admin/events/${id}`,
-    create: `${API_BASE_URL}/api/admin/events`,
-    update: (id: string) => `${API_BASE_URL}/api/admin/events/${id}`,
-    delete: (id: string) => `${API_BASE_URL}/api/admin/events/${id}`,
+    list: `${API_BASE_URL}/admin/events`,
+    detail: (id: string) => `${API_BASE_URL}/admin/events/${id}`,
+    create: `${API_BASE_URL}/admin/events`,
+    update: (id: string) => `${API_BASE_URL}/admin/events/${id}`,
+    delete: (id: string) => `${API_BASE_URL}/admin/events/${id}`,
   },
   // パブリックイベント（一般ユーザー用）
   publicEvents: {
-    list: `${API_BASE_URL}/api/admin/events`,
-    detail: (id: string) => `${API_BASE_URL}/api/events/${id}`,
+    list: `${API_BASE_URL}/admin/events`,
+    detail: (id: string) => `${API_BASE_URL}/events/${id}`,
   },
 };
 
