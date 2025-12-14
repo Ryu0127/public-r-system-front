@@ -61,7 +61,7 @@ export interface EgoSearchActions {
   handleSearchOnTwitter: () => void;
 
   // 検索キーワード
-  setSearchKeyword: (keyword: string) => void;
+  setSearchKeywords: (keywords: string[]) => void;
   appendKeywordsFromPresets: (keywords: string[]) => void;
 
   // 日付フィルタ
@@ -157,10 +157,10 @@ export const useEgoSearchState = (
     /**
      * 検索キーワード設定
      */
-    setSearchKeyword: useCallback((keyword: string) => {
+    setSearchKeywords: useCallback((keywords: string[]) => {
       setState(prev => ({
         ...prev,
-        filters: { ...prev.filters, searchKeyword: keyword },
+        filters: { ...prev.filters, searchKeywords: keywords },
       }));
     }, []),
 
@@ -169,22 +169,20 @@ export const useEgoSearchState = (
      */
     appendKeywordsFromPresets: useCallback((keywords: string[]) => {
       setState(prev => {
-        const currentKeyword = prev.filters.searchKeyword.trim();
-        const newKeywords = keywords.join(' OR ');
+        const currentKeywords = prev.filters.searchKeywords.filter(k => k.trim() !== '');
 
-        // 現在のキーワードが空の場合はそのまま設定
-        if (!currentKeyword) {
+        // 現在のキーワードが空の場合はプリセットのキーワードをそのまま設定
+        if (currentKeywords.length === 0) {
           return {
             ...prev,
-            filters: { ...prev.filters, searchKeyword: newKeywords },
+            filters: { ...prev.filters, searchKeywords: keywords },
           };
         }
 
-        // 既存のキーワードに追加
-        const updatedKeyword = `${currentKeyword} ${newKeywords}`;
+        // 既存のキーワードにプリセットのキーワードを追加
         return {
           ...prev,
-          filters: { ...prev.filters, searchKeyword: updatedKeyword },
+          filters: { ...prev.filters, searchKeywords: [...currentKeywords, ...keywords] },
         };
       });
     }, []),
