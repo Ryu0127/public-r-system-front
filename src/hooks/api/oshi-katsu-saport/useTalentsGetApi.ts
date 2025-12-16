@@ -13,7 +13,7 @@ export interface Talent {
   talentNameEn: string;
   groupName: string;
   groupId: number;
-  xAccounts: string[];
+  twitterAccounts: string[];
 }
 
 const getApiUrl = (): string => {
@@ -41,7 +41,7 @@ export const useTalentsGetApi = () => {
               talentNameEn: 'Tokino Sora',
               groupName: '0期生',
               groupId: 2,
-              xAccounts: ['tokino_sora']
+              twitterAccounts: ['tokino_sora']
             },
             {
               id: '2',
@@ -49,7 +49,7 @@ export const useTalentsGetApi = () => {
               talentNameEn: 'Roboco-san',
               groupName: '0期生',
               groupId: 2,
-              xAccounts: ['robocosan', 'maybe_robochan']
+              twitterAccounts: ['robocosan', 'maybe_robochan']
             }
           ]
         }

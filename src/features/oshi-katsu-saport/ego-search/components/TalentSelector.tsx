@@ -39,7 +39,7 @@ export const TalentSelector: React.FC<TalentSelectorProps> = ({ state, actions }
     const talentAccount: TalentAccount = {
       talentId: talent.id,
       talentName: talent.talentName,
-      accounts: talent.xAccounts,
+      accounts: talent.twitterAccounts,
     };
     actions.toggleTalentAccount(talentAccount);
   };
@@ -82,7 +82,7 @@ export const TalentSelector: React.FC<TalentSelectorProps> = ({ state, actions }
 
       {/* 説明 */}
       <p className="text-sm text-gray-600">
-        検索対象のタレントを選択してください。選択したタレントのXアカウント投稿のみが検索対象となります。
+        検索対象のタレントを選択してください。選択したタレントのTwitterアカウント投稿のみが検索対象となります。
       </p>
 
       {/* グループ別タレント一覧 */}
@@ -137,9 +137,9 @@ export const TalentSelector: React.FC<TalentSelectorProps> = ({ state, actions }
                         {talent.talentNameEn}
                       </div>
 
-                      {/* Xアカウント */}
+                      {/* Twitterアカウント */}
                       <div className="mt-2 flex flex-wrap gap-1">
-                        {talent.xAccounts.map((account, idx) => (
+                        {talent.twitterAccounts.map((account, idx) => (
                           <span
                             key={idx}
                             className="inline-flex items-center px-2 py-1 rounded-md bg-sky-100 text-sky-700 text-xs font-medium"

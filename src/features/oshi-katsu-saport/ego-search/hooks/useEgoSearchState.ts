@@ -30,7 +30,7 @@ export interface Talent {
   talentNameJoin: string;
   groupName: string;
   groupId: number;
-  xAccounts: string[];
+  twitterAccounts: string[];
 }
 
 /**
@@ -139,7 +139,7 @@ export const useEgoSearchState = (
               talentNameJoin: talent.talentName + '（' + talent.talentNameEn + '）',
               groupName: talent.groupName,
               groupId: talent.groupId,
-              xAccounts: talent.xAccounts,
+              twitterAccounts: talent.twitterAccounts,
             })) ?? [],
           },
         }));
