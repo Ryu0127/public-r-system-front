@@ -52,8 +52,28 @@ export const EgoSearchPresenter: React.FC<EgoSearchPresenterProps> = ({
 
         {/* タレント選択 */}
         <TalentSelector
-          state={state}
-          actions={actions}
+          talents={state.data.talents}
+          selectedTalent={state.filters.talentAccounts.selectedAccounts.length > 0
+            ? state.data.talents.find(t => t.id === state.filters.talentAccounts.selectedAccounts[0].talentId) || null
+            : null
+          }
+          searchQuery={state.ui.talentSearchQuery}
+          isDropdownOpen={state.ui.isDropdownOpen}
+          enabled={state.filters.talentAccounts.enabled}
+          onSearchQueryChange={actions.setTalentSearchQuery}
+          onTalentSelect={(talent) => {
+            // 既存の選択を解除してから新しいタレントを選択
+            if (state.filters.talentAccounts.selectedAccounts.length > 0) {
+              actions.toggleTalentAccount(state.filters.talentAccounts.selectedAccounts[0]);
+            }
+            actions.toggleTalentAccount({
+              talentId: talent.id,
+              talentName: talent.talentName,
+              accounts: talent.twitterAccounts,
+            });
+          }}
+          onDropdownOpenChange={actions.setIsDropdownOpen}
+          onEnabledChange={actions.setTalentAccountsEnabled}
         />
 
         {/* 高度な検索フィルタ */}
