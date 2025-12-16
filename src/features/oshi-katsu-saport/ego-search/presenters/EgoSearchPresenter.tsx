@@ -71,6 +71,9 @@ export const EgoSearchPresenter: React.FC<EgoSearchPresenterProps> = ({
               talentName: talent.talentName,
               accounts: talent.twitterAccounts,
             });
+            // 検索クエリをクリアしてドロップダウンを閉じる
+            actions.setTalentSearchQuery('');
+            actions.setIsDropdownOpen(false);
           }}
           onDropdownOpenChange={actions.setIsDropdownOpen}
           onEnabledChange={actions.setTalentAccountsEnabled}
