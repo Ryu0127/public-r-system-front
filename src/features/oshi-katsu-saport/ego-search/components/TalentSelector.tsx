@@ -68,22 +68,38 @@ export const TalentSelector: React.FC<TalentSelectorProps> = ({ state, actions }
   return (
     <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-blue-100 space-y-4">
       {/* ヘッダー */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="w-1 h-6 bg-gradient-to-b from-blue-500 to-sky-400 rounded-full" />
-          <h2 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent">
-            タレント選択
-          </h2>
-        </div>
-        <span className="text-sm text-gray-500">
-          {state.filters.talentAccounts.selectedAccounts.length}件選択中
-        </span>
+      <div className="flex items-center gap-2">
+        <div className="w-1 h-6 bg-gradient-to-b from-blue-500 to-sky-400 rounded-full" />
+        <h2 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent">
+          タレント選択
+        </h2>
       </div>
 
       {/* 説明 */}
       <p className="text-sm text-gray-600">
-        検索対象のタレントを選択してください。選択したタレントのTwitterアカウント投稿のみが検索対象となります。
+        タレントを選択すると、そのタレントのTwitterアカウント投稿のみを検索対象にできます。
       </p>
+
+      {/* 絞り込み有効化チェックボックス */}
+      {state.filters.talentAccounts.selectedAccounts.length > 0 && (
+        <div className="flex items-start gap-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+          <input
+            type="checkbox"
+            id="enable-talent-filter"
+            checked={state.filters.talentAccounts.enabled}
+            onChange={(e) => actions.setTalentAccountsEnabled(e.target.checked)}
+            className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 mt-0.5"
+          />
+          <div className="flex-1">
+            <label htmlFor="enable-talent-filter" className="text-sm font-semibold text-gray-800 cursor-pointer">
+              選択したタレントで絞り込む（{state.filters.talentAccounts.selectedAccounts.length}件選択中）
+            </label>
+            <p className="text-xs text-gray-600 mt-1">
+              {state.filters.talentAccounts.selectedAccounts.map(acc => acc.talentName).join('、')}のTwitter投稿のみを検索します
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* グループ別タレント一覧 */}
       <div className="space-y-6">
@@ -164,41 +180,6 @@ export const TalentSelector: React.FC<TalentSelectorProps> = ({ state, actions }
         ))}
       </div>
 
-      {/* 選択状況 */}
-      {state.filters.talentAccounts.selectedAccounts.length > 0 && (
-        <div className="mt-4 pt-4 border-t border-gray-200">
-          <div className="text-sm text-gray-600 mb-2">選択中のタレント:</div>
-          <div className="flex flex-wrap gap-2">
-            {state.filters.talentAccounts.selectedAccounts.map(account => (
-              <div
-                key={account.talentId}
-                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-100 text-blue-800 text-sm"
-              >
-                <span className="font-medium">{account.talentName}</span>
-                <button
-                  onClick={() => actions.toggleTalentAccount(account)}
-                  className="hover:bg-blue-200 rounded-full p-0.5 transition-colors"
-                  aria-label={`${account.talentName}の選択を解除`}
-                >
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 };
