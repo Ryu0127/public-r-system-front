@@ -3,6 +3,7 @@ import { EgoSearchState, EgoSearchActions } from '../hooks/useEgoSearchState';
 import { EgoSearchHeader } from '../components/EgoSearchHeader';
 import { SearchKeywordInput } from '../components/SearchKeywordInput';
 import { KeywordPresetsSelector } from '../components/KeywordPresetsSelector';
+import { TalentSelector } from '../components/TalentSelector';
 import { AdvancedFilters } from '../components/AdvancedFilters';
 import { TalentAccountFilters } from '../components/TalentAccountFilters';
 import { HelpModal } from '../components/HelpModal';
@@ -48,6 +49,12 @@ export const EgoSearchPresenter: React.FC<EgoSearchPresenterProps> = ({
         {/* 検索プリセット */}
         <KeywordPresetsSelector
           onPresetsSelect={actions.appendKeywordsFromPresets}
+        />
+
+        {/* タレント選択 */}
+        <TalentSelector
+          state={state}
+          actions={actions}
         />
 
         {/* タレントアカウントフィルタ */}

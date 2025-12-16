@@ -28,6 +28,9 @@ export interface Talent {
   talentName: string;
   talentNameEn: string;
   talentNameJoin: string;
+  groupName: string;
+  groupId: number;
+  xAccounts: string[];
 }
 
 /**
@@ -134,6 +137,9 @@ export const useEgoSearchState = (
               talentName: talent.talentName,
               talentNameEn: talent.talentNameEn,
               talentNameJoin: talent.talentName + '（' + talent.talentNameEn + '）',
+              groupName: talent.groupName,
+              groupId: talent.groupId,
+              xAccounts: talent.xAccounts,
             })) ?? [],
           },
         }));
