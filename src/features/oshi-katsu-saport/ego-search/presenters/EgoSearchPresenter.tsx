@@ -77,6 +77,18 @@ export const EgoSearchPresenter: React.FC<EgoSearchPresenterProps> = ({
           }}
           onDropdownOpenChange={actions.setIsDropdownOpen}
           onEnabledChange={actions.setTalentAccountsEnabled}
+          onReset={() => {
+            // 選択を解除
+            if (state.filters.talentAccounts.selectedAccounts.length > 0) {
+              actions.toggleTalentAccount(state.filters.talentAccounts.selectedAccounts[0]);
+            }
+            // チェックボックスをオフに
+            actions.setTalentAccountsEnabled(false);
+            // 検索クエリをクリア
+            actions.setTalentSearchQuery('');
+            // ドロップダウンを閉じる
+            actions.setIsDropdownOpen(false);
+          }}
         />
 
         {/* 高度な検索フィルタ */}

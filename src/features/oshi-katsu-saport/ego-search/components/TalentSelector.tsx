@@ -11,6 +11,7 @@ interface TalentSelectorProps {
   onTalentSelect: (talent: Talent) => void;
   onDropdownOpenChange: (isOpen: boolean) => void;
   onEnabledChange: (enabled: boolean) => void;
+  onReset: () => void;
 }
 
 export const TalentSelector: React.FC<TalentSelectorProps> = ({
@@ -23,6 +24,7 @@ export const TalentSelector: React.FC<TalentSelectorProps> = ({
   onTalentSelect,
   onDropdownOpenChange,
   onEnabledChange,
+  onReset,
 }) => {
   const comboboxRef = useRef<HTMLDivElement>(null);
 
@@ -48,9 +50,17 @@ export const TalentSelector: React.FC<TalentSelectorProps> = ({
   return (
     <section className="max-w-2xl mx-auto mb-8 animate-fade-in overflow-visible relative z-[10000]" style={{ animationDelay: '0.2s' }}>
       <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-200 shadow-lg overflow-visible">
-        <label htmlFor="talent-combobox" className="block text-sm font-semibold text-gray-700 mb-3">
-          タレントを選択
-        </label>
+        <div className="flex items-center justify-between mb-3">
+          <label htmlFor="talent-combobox" className="block text-sm font-semibold text-gray-700">
+            タレントを選択
+          </label>
+          <button
+            onClick={onReset}
+            className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-200 rounded transition-colors"
+          >
+            リセット
+          </button>
+        </div>
         <div className="relative" ref={comboboxRef}>
           <input
             id="talent-combobox"
