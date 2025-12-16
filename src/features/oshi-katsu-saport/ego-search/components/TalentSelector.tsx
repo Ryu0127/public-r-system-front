@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useRef, useEffect } from 'react';
 import { EgoSearchState, EgoSearchActions } from '../hooks/useEgoSearchState';
 import { TalentAccount } from '../types';
 
@@ -9,39 +9,97 @@ interface TalentSelectorProps {
 
 /**
  * タレント選択コンポーネント
- * タレント一覧をグループごとに表示し、選択したタレントをフィルタに追加する
+ * グループセレクトボックスとタレントコンボボックスで1人のタレントを選択
  */
 export const TalentSelector: React.FC<TalentSelectorProps> = ({ state, actions }) => {
-  // グループごとにタレントを分類
-  const talentsByGroup = useMemo(() => {
-    const grouped = new Map<string, typeof state.data.talents>();
+  const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const comboboxRef = useRef<HTMLDivElement>(null);
 
+  // グループ一覧を取得
+  const groups = useMemo(() => {
+    const groupMap = new Map<number, { id: number; name: string }>();
     state.data.talents.forEach(talent => {
-      const groupName = talent.groupName;
-      if (!grouped.has(groupName)) {
-        grouped.set(groupName, []);
+      if (!groupMap.has(talent.groupId)) {
+        groupMap.set(talent.groupId, {
+          id: talent.groupId,
+          name: talent.groupName,
+        });
       }
-      grouped.get(groupName)?.push(talent);
     });
-
-    return grouped;
+    return Array.from(groupMap.values()).sort((a, b) => a.id - b.id);
   }, [state.data.talents]);
 
-  // タレントが選択されているかチェック
-  const isTalentSelected = (talentId: string) => {
-    return state.filters.talentAccounts.selectedAccounts.some(
-      account => account.talentId === talentId
-    );
-  };
+  // 選択されたグループでフィルタリングされたタレント一覧
+  const filteredTalents = useMemo(() => {
+    let talents = state.data.talents;
 
-  // タレント選択の切り替え
-  const handleTalentToggle = (talent: typeof state.data.talents[0]) => {
+    // グループでフィルタ
+    if (selectedGroupId !== null) {
+      talents = talents.filter(t => t.groupId === selectedGroupId);
+    }
+
+    // 検索クエリでフィルタ
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      talents = talents.filter(t =>
+        t.talentName.toLowerCase().includes(query) ||
+        t.talentNameEn.toLowerCase().includes(query)
+      );
+    }
+
+    return talents;
+  }, [state.data.talents, selectedGroupId, searchQuery]);
+
+  // 現在選択されているタレント
+  const selectedTalent = useMemo(() => {
+    if (state.filters.talentAccounts.selectedAccounts.length === 0) {
+      return null;
+    }
+    const selectedAccount = state.filters.talentAccounts.selectedAccounts[0];
+    return state.data.talents.find(t => t.id === selectedAccount.talentId) || null;
+  }, [state.filters.talentAccounts.selectedAccounts, state.data.talents]);
+
+  // 外側クリックでドロップダウンを閉じる
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (comboboxRef.current && !comboboxRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // タレント選択
+  const handleSelectTalent = (talent: typeof state.data.talents[0]) => {
     const talentAccount: TalentAccount = {
       talentId: talent.id,
       talentName: talent.talentName,
       accounts: talent.twitterAccounts,
     };
-    actions.toggleTalentAccount(talentAccount);
+
+    // 既に選択されている場合は選択解除、そうでなければ選択
+    if (selectedTalent?.id === talent.id) {
+      actions.toggleTalentAccount(talentAccount);
+    } else {
+      // 既存の選択を解除してから新しいタレントを選択
+      if (state.filters.talentAccounts.selectedAccounts.length > 0) {
+        actions.toggleTalentAccount(state.filters.talentAccounts.selectedAccounts[0]);
+      }
+      actions.toggleTalentAccount(talentAccount);
+    }
+
+    setSearchQuery('');
+    setIsDropdownOpen(false);
+  };
+
+  // グループ変更時の処理
+  const handleGroupChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const groupId = e.target.value === '' ? null : parseInt(e.target.value);
+    setSelectedGroupId(groupId);
+    setSearchQuery('');
   };
 
   if (state.config.isLoading) {
@@ -80,8 +138,109 @@ export const TalentSelector: React.FC<TalentSelectorProps> = ({ state, actions }
         タレントを選択すると、そのタレントのTwitterアカウント投稿のみを検索対象にできます。
       </p>
 
+      {/* グループとタレント選択 */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* グループセレクトボックス */}
+        <div>
+          <label htmlFor="group-select" className="block text-sm font-medium text-gray-700 mb-2">
+            グループ
+          </label>
+          <select
+            id="group-select"
+            value={selectedGroupId === null ? '' : selectedGroupId}
+            onChange={handleGroupChange}
+            className="w-full px-4 py-3 bg-white border-2 border-gray-200 focus:border-blue-500 focus:outline-none rounded-xl text-gray-800 transition-all duration-200"
+          >
+            <option value="">すべてのグループ</option>
+            {groups.map(group => (
+              <option key={group.id} value={group.id}>
+                {group.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* タレントコンボボックス */}
+        <div>
+          <label htmlFor="talent-combobox" className="block text-sm font-medium text-gray-700 mb-2">
+            タレント
+          </label>
+          <div className="relative" ref={comboboxRef}>
+            <input
+              id="talent-combobox"
+              type="text"
+              value={searchQuery || (selectedTalent ? selectedTalent.talentNameJoin : '')}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setIsDropdownOpen(true);
+              }}
+              onFocus={() => setIsDropdownOpen(true)}
+              placeholder="タレント名を入力または選択..."
+              className="w-full px-4 py-3 pr-10 bg-white border-2 border-gray-200 focus:border-blue-500 focus:outline-none rounded-xl text-gray-800 transition-all duration-200"
+            />
+            {/* ドロップダウンアイコン */}
+            <div
+              className="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none text-gray-400"
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+
+            {/* ドロップダウンリスト */}
+            {isDropdownOpen && filteredTalents.length > 0 && (
+              <div className="absolute z-[9999] w-full mt-2 bg-white border-2 border-gray-200 rounded-xl shadow-xl max-h-60 overflow-y-auto">
+                {filteredTalents.map((talent) => {
+                  const isSelected = selectedTalent?.id === talent.id;
+
+                  return (
+                    <div
+                      key={talent.id}
+                      onClick={() => handleSelectTalent(talent)}
+                      className={`px-4 py-3 cursor-pointer transition-all duration-200 ${
+                        isSelected
+                          ? 'bg-blue-500 text-white'
+                          : 'hover:bg-blue-50 text-gray-700'
+                      }`}
+                    >
+                      <div className="font-medium">{talent.talentName}</div>
+                      <div className={`text-xs mt-1 ${isSelected ? 'text-blue-100' : 'text-gray-500'}`}>
+                        {talent.talentNameEn}
+                      </div>
+                      {/* Twitterアカウント */}
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {talent.twitterAccounts.map((account, idx) => (
+                          <span
+                            key={idx}
+                            className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium ${
+                              isSelected
+                                ? 'bg-blue-400 text-white'
+                                : 'bg-sky-100 text-sky-700'
+                            }`}
+                          >
+                            @{account}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* 結果が見つからない場合 */}
+            {isDropdownOpen && searchQuery && filteredTalents.length === 0 && (
+              <div className="absolute z-[9999] w-full mt-2 bg-white border-2 border-gray-200 rounded-xl shadow-xl p-4 text-center text-gray-500">
+                該当するタレントが見つかりません
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
       {/* 絞り込み有効化チェックボックス */}
-      {state.filters.talentAccounts.selectedAccounts.length > 0 && (
+      {selectedTalent && (
         <div className="flex items-start gap-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
           <input
             type="checkbox"
@@ -92,94 +251,16 @@ export const TalentSelector: React.FC<TalentSelectorProps> = ({ state, actions }
           />
           <div className="flex-1">
             <label htmlFor="enable-talent-filter" className="text-sm font-semibold text-gray-800 cursor-pointer">
-              選択したタレントで絞り込む（{state.filters.talentAccounts.selectedAccounts.length}件選択中）
+              選択したタレントで絞り込む
             </label>
             <p className="text-xs text-gray-600 mt-1">
-              {state.filters.talentAccounts.selectedAccounts.map(acc => acc.talentName).join('、')}のTwitter投稿のみを検索します
+              {selectedTalent.talentName}のTwitter投稿（
+              {selectedTalent.twitterAccounts.map(acc => `@${acc}`).join('、')}
+              ）のみを検索します
             </p>
           </div>
         </div>
       )}
-
-      {/* グループ別タレント一覧 */}
-      <div className="space-y-6">
-        {Array.from(talentsByGroup.entries()).map(([groupName, talents]) => (
-          <div key={groupName} className="space-y-3">
-            {/* グループ名 */}
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-sky-400 flex items-center justify-center text-white text-xs font-bold shadow-md">
-                {groupName.charAt(0)}
-              </div>
-              <h3 className="font-semibold text-gray-700">{groupName}</h3>
-              <span className="text-xs text-gray-400">
-                ({talents.length}名)
-              </span>
-            </div>
-
-            {/* タレント一覧 */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pl-10">
-              {talents.map(talent => (
-                <div
-                  key={talent.id}
-                  className={`
-                    relative p-4 rounded-xl border-2 transition-all cursor-pointer
-                    hover:shadow-md
-                    ${
-                      isTalentSelected(talent.id)
-                        ? 'border-blue-500 bg-blue-50/50'
-                        : 'border-gray-200 bg-white hover:border-blue-300'
-                    }
-                  `}
-                  onClick={() => handleTalentToggle(talent)}
-                >
-                  <div className="flex items-start gap-3">
-                    {/* チェックボックス */}
-                    <div className="flex-shrink-0 mt-0.5">
-                      <input
-                        type="checkbox"
-                        checked={isTalentSelected(talent.id)}
-                        onChange={() => handleTalentToggle(talent)}
-                        className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 cursor-pointer"
-                        onClick={(e) => e.stopPropagation()}
-                      />
-                    </div>
-
-                    {/* タレント情報 */}
-                    <div className="flex-1 min-w-0">
-                      <div className="font-medium text-gray-900">
-                        {talent.talentName}
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        {talent.talentNameEn}
-                      </div>
-
-                      {/* Twitterアカウント */}
-                      <div className="mt-2 flex flex-wrap gap-1">
-                        {talent.twitterAccounts.map((account, idx) => (
-                          <span
-                            key={idx}
-                            className="inline-flex items-center px-2 py-1 rounded-md bg-sky-100 text-sky-700 text-xs font-medium"
-                          >
-                            <svg
-                              className="w-3 h-3 mr-1"
-                              fill="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                            </svg>
-                            @{account}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-
     </div>
   );
 };
