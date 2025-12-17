@@ -64,6 +64,9 @@ export const HashtagSearchPresenter: React.FC<HashtagSearchPresenterProps> = ({
             talentName: talent.talentName,
             talentNameEn: talent.talentNameEn,
             talentNameJoin: talent.talentName + '（' + talent.talentNameEn + '）',
+            groupName: talent.groupName,
+            groupId: talent.groupId,
+            twitterAccounts: talent.twitterAccounts,
           })}
           onDropdownOpenChange={actions.setIsDropdownOpen}
         />

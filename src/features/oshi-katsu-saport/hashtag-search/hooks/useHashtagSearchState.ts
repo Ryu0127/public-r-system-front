@@ -31,6 +31,9 @@ export interface Talent {
   talentName: string;
   talentNameEn: string;
   talentNameJoin: string;
+  groupName: string;
+  groupId: number;
+  twitterAccounts: string[];
 }
 
 export interface HashtagSearchActions {
@@ -166,6 +169,9 @@ export const useHashtagSearchState = (
             talentName: talent.talentName,
             talentNameEn: talent.talentNameEn,
             talentNameJoin: talent.talentName + '（' + talent.talentNameEn + '）',
+            groupName: talent.groupName,
+            groupId: talent.groupId,
+            twitterAccounts: talent.twitterAccounts,
           })) ?? []),
         }));
 

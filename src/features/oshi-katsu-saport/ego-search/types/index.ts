@@ -14,15 +14,6 @@ export type DateRangePreset =
   | 'custom';      // カスタム
 
 /**
- * メディアタイプフィルタ
- */
-export type MediaFilter =
-  | 'all'          // すべて
-  | 'images'       // 画像のみ
-  | 'videos'       // 動画のみ
-  | 'media';       // 画像・動画両方
-
-/**
  * タレントアカウント情報（複数アカウント対応）
  */
 export interface TalentAccount {
@@ -64,9 +55,6 @@ export interface EgoSearchFilters {
     customEndDate?: string;   // YYYY-MM-DD形式
   };
 
-  // メディアフィルタ
-  mediaFilter: MediaFilter;
-
   // タレントアカウントフィルタ（エゴサーチでは"from"のみ使用）
   talentAccounts: {
     enabled: boolean;
@@ -84,12 +72,6 @@ export interface EgoSearchFilters {
 
   // リツイートを除外
   excludeRetweets: boolean;
-
-  // 最小いいね数
-  minLikes: number | null;
-
-  // 最小リツイート数
-  minRetweets: number | null;
 }
 
 /**
@@ -100,7 +82,6 @@ export const defaultEgoSearchFilters: EgoSearchFilters = {
   dateRange: {
     preset: 'all',
   },
-  mediaFilter: 'all',
   talentAccounts: {
     enabled: false,
     selectedAccounts: [],
@@ -111,8 +92,6 @@ export const defaultEgoSearchFilters: EgoSearchFilters = {
   },
   excludeReplies: false,
   excludeRetweets: false,
-  minLikes: null,
-  minRetweets: null,
 };
 
 /**
