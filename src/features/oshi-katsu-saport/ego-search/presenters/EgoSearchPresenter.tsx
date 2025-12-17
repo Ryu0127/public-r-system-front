@@ -3,8 +3,8 @@ import { EgoSearchState, EgoSearchActions } from '../hooks/useEgoSearchState';
 import { EgoSearchHeader } from '../components/EgoSearchHeader';
 import { SearchKeywordInput } from '../components/SearchKeywordInput';
 import { KeywordPresetsSelector } from '../components/KeywordPresetsSelector';
+import { TalentSelector } from '../components/TalentSelector';
 import { AdvancedFilters } from '../components/AdvancedFilters';
-import { TalentAccountFilters } from '../components/TalentAccountFilters';
 import { HelpModal } from '../components/HelpModal';
 import { StickyFooter } from '../components/StickyFooter';
 
@@ -50,10 +50,45 @@ export const EgoSearchPresenter: React.FC<EgoSearchPresenterProps> = ({
           onPresetsSelect={actions.appendKeywordsFromPresets}
         />
 
-        {/* タレントアカウントフィルタ */}
-        <TalentAccountFilters
-          state={state}
-          actions={actions}
+        {/* タレント選択 */}
+        <TalentSelector
+          talents={state.data.talents}
+          selectedTalent={state.filters.talentAccounts.selectedAccounts.length > 0
+            ? state.data.talents.find(t => t.id === state.filters.talentAccounts.selectedAccounts[0].talentId) || null
+            : null
+          }
+          searchQuery={state.ui.talentSearchQuery}
+          isDropdownOpen={state.ui.isDropdownOpen}
+          enabled={state.filters.talentAccounts.enabled}
+          onSearchQueryChange={actions.setTalentSearchQuery}
+          onTalentSelect={(talent) => {
+            // 既存の選択を解除してから新しいタレントを選択
+            if (state.filters.talentAccounts.selectedAccounts.length > 0) {
+              actions.toggleTalentAccount(state.filters.talentAccounts.selectedAccounts[0]);
+            }
+            actions.toggleTalentAccount({
+              talentId: talent.id,
+              talentName: talent.talentName,
+              accounts: talent.twitterAccounts,
+            });
+            // 検索クエリをクリアしてドロップダウンを閉じる
+            actions.setTalentSearchQuery('');
+            actions.setIsDropdownOpen(false);
+          }}
+          onDropdownOpenChange={actions.setIsDropdownOpen}
+          onEnabledChange={actions.setTalentAccountsEnabled}
+          onReset={() => {
+            // 選択を解除
+            if (state.filters.talentAccounts.selectedAccounts.length > 0) {
+              actions.toggleTalentAccount(state.filters.talentAccounts.selectedAccounts[0]);
+            }
+            // チェックボックスをオフに
+            actions.setTalentAccountsEnabled(false);
+            // 検索クエリをクリア
+            actions.setTalentSearchQuery('');
+            // ドロップダウンを閉じる
+            actions.setIsDropdownOpen(false);
+          }}
         />
 
         {/* 高度な検索フィルタ */}

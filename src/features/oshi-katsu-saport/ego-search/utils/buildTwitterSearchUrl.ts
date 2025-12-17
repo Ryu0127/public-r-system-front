@@ -1,4 +1,4 @@
-import { EgoSearchFilters, MediaFilter, DateRangePreset } from '../types';
+import { EgoSearchFilters, DateRangePreset } from '../types';
 
 /**
  * 日付をYYYY-MM-DD形式に変換
@@ -66,22 +66,6 @@ const getDateRangeFromPreset = (preset: DateRangePreset): { since?: string; unti
 };
 
 /**
- * メディアフィルタをTwitter検索演算子に変換
- */
-const getMediaFilterOperator = (mediaFilter: MediaFilter): string => {
-  switch (mediaFilter) {
-    case 'images':
-      return 'filter:images';
-    case 'videos':
-      return 'filter:videos';
-    case 'media':
-      return 'filter:media';
-    default:
-      return '';
-  }
-};
-
-/**
  * Twitter高度検索URLを構築（エゴサーチ用）
  */
 export const buildTwitterSearchUrl = (filters: EgoSearchFilters): string => {
@@ -120,12 +104,6 @@ export const buildTwitterSearchUrl = (filters: EgoSearchFilters): string => {
     searchParts.push(`until:${until}`);
   }
 
-  // メディアフィルタ
-  const mediaOperator = getMediaFilterOperator(filters.mediaFilter);
-  if (mediaOperator) {
-    searchParts.push(mediaOperator);
-  }
-
   // タレントアカウントフィルタ（全アカウントを検索）
   if (filters.talentAccounts.enabled && filters.talentAccounts.selectedAccounts.length > 0) {
     const talentAccounts = filters.talentAccounts.selectedAccounts;
@@ -157,16 +135,6 @@ export const buildTwitterSearchUrl = (filters: EgoSearchFilters): string => {
   // リツイートを除外
   if (filters.excludeRetweets) {
     searchParts.push('-filter:retweets');
-  }
-
-  // 最小いいね数
-  if (filters.minLikes !== null && filters.minLikes > 0) {
-    searchParts.push(`min_faves:${filters.minLikes}`);
-  }
-
-  // 最小リツイート数
-  if (filters.minRetweets !== null && filters.minRetweets > 0) {
-    searchParts.push(`min_retweets:${filters.minRetweets}`);
   }
 
   // 除外ワード
@@ -218,11 +186,6 @@ export const buildSearchQueryPreview = (filters: EgoSearchFilters): string => {
     searchParts.push(`until:${until}`);
   }
 
-  const mediaOperator = getMediaFilterOperator(filters.mediaFilter);
-  if (mediaOperator) {
-    searchParts.push(mediaOperator);
-  }
-
   if (filters.talentAccounts.enabled && filters.talentAccounts.selectedAccounts.length > 0) {
     const talentAccounts = filters.talentAccounts.selectedAccounts;
     const fromParts: string[] = [];
@@ -250,14 +213,6 @@ export const buildSearchQueryPreview = (filters: EgoSearchFilters): string => {
 
   if (filters.excludeRetweets) {
     searchParts.push('-filter:retweets');
-  }
-
-  if (filters.minLikes !== null && filters.minLikes > 0) {
-    searchParts.push(`min_faves:${filters.minLikes}`);
-  }
-
-  if (filters.minRetweets !== null && filters.minRetweets > 0) {
-    searchParts.push(`min_retweets:${filters.minRetweets}`);
   }
 
   if (filters.excludeWords.enabled && filters.excludeWords.selectedWords.length > 0) {

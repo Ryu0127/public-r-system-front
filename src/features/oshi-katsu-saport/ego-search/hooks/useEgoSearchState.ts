@@ -6,7 +6,6 @@ import {
   ExcludeWord,
   TalentAccount,
   DateRangePreset,
-  MediaFilter,
 } from '../types';
 import { buildTwitterSearchUrl } from '../utils/buildTwitterSearchUrl';
 import {
@@ -28,6 +27,9 @@ export interface Talent {
   talentName: string;
   talentNameEn: string;
   talentNameJoin: string;
+  groupName: string;
+  groupId: number;
+  twitterAccounts: string[];
 }
 
 /**
@@ -68,9 +70,6 @@ export interface EgoSearchActions {
   setDateRangePreset: (preset: DateRangePreset) => void;
   setCustomDateRange: (startDate: string, endDate: string) => void;
 
-  // メディアフィルタ
-  setMediaFilter: (filter: MediaFilter) => void;
-
   // タレントアカウントフィルタ
   setTalentAccountsEnabled: (enabled: boolean) => void;
   toggleTalentAccount: (account: TalentAccount) => void;
@@ -85,8 +84,6 @@ export interface EgoSearchActions {
   // その他のフィルタ
   setExcludeReplies: (exclude: boolean) => void;
   setExcludeRetweets: (exclude: boolean) => void;
-  setMinLikes: (count: number | null) => void;
-  setMinRetweets: (count: number | null) => void;
 
   // フィルタリセット
   resetFilters: () => void;
@@ -134,6 +131,9 @@ export const useEgoSearchState = (
               talentName: talent.talentName,
               talentNameEn: talent.talentNameEn,
               talentNameJoin: talent.talentName + '（' + talent.talentNameEn + '）',
+              groupName: talent.groupName,
+              groupId: talent.groupId,
+              twitterAccounts: talent.twitterAccounts,
             })) ?? [],
           },
         }));
@@ -214,16 +214,6 @@ export const useEgoSearchState = (
             customEndDate: endDate,
           },
         },
-      }));
-    }, []),
-
-    /**
-     * メディアフィルタ設定
-     */
-    setMediaFilter: useCallback((filter: MediaFilter) => {
-      setState(prev => ({
-        ...prev,
-        filters: { ...prev.filters, mediaFilter: filter },
       }));
     }, []),
 
@@ -377,26 +367,6 @@ export const useEgoSearchState = (
       setState(prev => ({
         ...prev,
         filters: { ...prev.filters, excludeRetweets: exclude },
-      }));
-    }, []),
-
-    /**
-     * 最小いいね数設定
-     */
-    setMinLikes: useCallback((count: number | null) => {
-      setState(prev => ({
-        ...prev,
-        filters: { ...prev.filters, minLikes: count },
-      }));
-    }, []),
-
-    /**
-     * 最小リツイート数設定
-     */
-    setMinRetweets: useCallback((count: number | null) => {
-      setState(prev => ({
-        ...prev,
-        filters: { ...prev.filters, minRetweets: count },
       }));
     }, []),
 
