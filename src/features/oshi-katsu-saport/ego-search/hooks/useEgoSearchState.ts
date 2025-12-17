@@ -1,5 +1,5 @@
 import { useCallback, useEffect, Dispatch, SetStateAction } from 'react';
-import { useTalentsGetApi, Talent as ApiTalent } from 'hooks/api/oshi-katsu-saport/useTalentsGetApi';
+import { useEgoSearchTalentsGetApi, Talent as ApiTalent } from 'hooks/api/oshi-katsu-saport/useEgoSearchTalentsGetApi';
 import {
   EgoSearchFilters,
   defaultEgoSearchFilters,
@@ -105,7 +105,7 @@ export const useEgoSearchState = (
   actions: EgoSearchActions;
 } => {
   // API Hooks
-  const talentsApi = useTalentsGetApi();
+  const talentsApi = useEgoSearchTalentsGetApi();
 
   // アクション実装
   const actions: EgoSearchActions = {
@@ -119,7 +119,7 @@ export const useEgoSearchState = (
           config: { ...prev.config, isLoading: true },
         }));
 
-        const result = await talentsApi.executeTalentsGet();
+        const result = await talentsApi.executeEgoSearchTalentsGet();
 
         setState(prev => ({
           ...prev,
