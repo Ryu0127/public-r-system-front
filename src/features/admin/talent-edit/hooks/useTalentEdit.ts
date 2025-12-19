@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
   AdminTalent,
   TalentListResponse,
@@ -181,11 +181,6 @@ export const useTalentEdit = () => {
   const getTalentById = (id: string): AdminTalent | undefined => {
     return talents.find((talent) => talent.id.toString() === id);
   };
-
-  // 初期データの取得
-  useEffect(() => {
-    fetchTalents();
-  }, []);
 
   return {
     talents,

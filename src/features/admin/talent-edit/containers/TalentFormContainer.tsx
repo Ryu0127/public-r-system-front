@@ -7,30 +7,33 @@ import { AdminTalent } from '../types';
 const TalentFormContainer: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const {
-    talents,
     loading,
     error,
     createTalent,
     updateTalent,
     deleteTalent,
-    getTalentById,
+    fetchTalentById,
   } = useTalentEdit();
 
   const [talent, setTalent] = useState<AdminTalent | undefined>(undefined);
   const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
-    if (id && !loading) {
-      // 編集モード: IDからタレントを取得（loading完了後）
-      const foundTalent = getTalentById(id);
-      if (foundTalent) {
-        setTalent(foundTalent);
-        setNotFound(false);
-      } else {
-        setNotFound(true);
+    const loadTalent = async () => {
+      if (id) {
+        // 編集モード: タレント詳細APIを呼び出し
+        const fetchedTalent = await fetchTalentById(id);
+        if (fetchedTalent) {
+          setTalent(fetchedTalent);
+          setNotFound(false);
+        } else {
+          setNotFound(true);
+        }
       }
-    }
-  }, [id, loading, getTalentById, talents]);
+    };
+
+    loadTalent();
+  }, [id, fetchTalentById]);
 
   const handleSave = async (talentData: Partial<AdminTalent>) => {
     if (id) {
