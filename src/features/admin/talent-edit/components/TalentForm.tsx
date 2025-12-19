@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { AdminTalent, GROUP_OPTIONS } from '../types';
+import { AdminTalent, GROUP_OPTIONS, TalentHashtag } from '../types';
 
 interface TalentFormProps {
   talent?: AdminTalent;
@@ -15,9 +15,10 @@ const TalentForm: React.FC<TalentFormProps> = ({ talent, onSave, onCancel, onDel
     groupName: '',
     groupId: 1,
     twitterAccounts: [],
+    hashtags: [],
     status: 'active',
     debutDate: '',
-    graduationDate: '',
+    birthday: '',
     affiliation: '',
     profile: '',
     profileImageUrl: '',
@@ -27,6 +28,7 @@ const TalentForm: React.FC<TalentFormProps> = ({ talent, onSave, onCancel, onDel
   });
 
   const [twitterAccountInput, setTwitterAccountInput] = useState('');
+  const [hashtagInput, setHashtagInput] = useState({ tag: '', description: '' });
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -60,6 +62,26 @@ const TalentForm: React.FC<TalentFormProps> = ({ talent, onSave, onCancel, onDel
     setFormData((prev) => ({
       ...prev,
       twitterAccounts: (prev.twitterAccounts || []).filter((a) => a !== account),
+    }));
+  };
+
+  const handleAddHashtag = () => {
+    const tag = hashtagInput.tag.trim().replace(/^#/, '');
+    const description = hashtagInput.description.trim();
+    if (tag && description) {
+      const newHashtag: TalentHashtag = { tag, description };
+      setFormData((prev) => ({
+        ...prev,
+        hashtags: [...(prev.hashtags || []), newHashtag],
+      }));
+      setHashtagInput({ tag: '', description: '' });
+    }
+  };
+
+  const handleRemoveHashtag = (index: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      hashtags: (prev.hashtags || []).filter((_, i) => i !== index),
     }));
   };
 
@@ -156,13 +178,15 @@ const TalentForm: React.FC<TalentFormProps> = ({ talent, onSave, onCancel, onDel
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">卒業日</label>
+            <label className="block text-sm font-medium mb-2">誕生日（MM-DD）</label>
             <input
-              type="date"
-              name="graduationDate"
-              value={formData.graduationDate}
+              type="text"
+              name="birthday"
+              value={formData.birthday}
               onChange={handleChange}
               className="w-full px-4 py-2 border rounded"
+              placeholder="05-20"
+              pattern="[0-1][0-9]-[0-3][0-9]"
             />
           </div>
         </div>
@@ -201,6 +225,57 @@ const TalentForm: React.FC<TalentFormProps> = ({ talent, onSave, onCancel, onDel
                 type="button"
                 onClick={() => handleRemoveTwitterAccount(account)}
                 className="text-red-500 hover:text-red-700"
+              >
+                ×
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ハッシュタグ */}
+      <div className="bg-white rounded-lg shadow p-6">
+        <h2 className="text-xl font-bold mb-4">ハッシュタグ</h2>
+
+        <div className="flex gap-2 mb-4">
+          <input
+            type="text"
+            value={hashtagInput.tag}
+            onChange={(e) => setHashtagInput({ ...hashtagInput, tag: e.target.value })}
+            placeholder="ハッシュタグ（#なし）"
+            className="w-1/3 px-4 py-2 border rounded"
+          />
+          <input
+            type="text"
+            value={hashtagInput.description}
+            onChange={(e) => setHashtagInput({ ...hashtagInput, description: e.target.value })}
+            onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddHashtag())}
+            placeholder="説明"
+            className="flex-1 px-4 py-2 border rounded"
+          />
+          <button
+            type="button"
+            onClick={handleAddHashtag}
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            追加
+          </button>
+        </div>
+
+        <div className="space-y-2">
+          {formData.hashtags?.map((hashtag, index) => (
+            <div
+              key={index}
+              className="flex items-center justify-between bg-purple-50 px-4 py-2 rounded"
+            >
+              <div>
+                <span className="font-semibold text-purple-700">#{hashtag.tag}</span>
+                <span className="ml-3 text-gray-600">{hashtag.description}</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => handleRemoveHashtag(index)}
+                className="text-red-500 hover:text-red-700 font-bold"
               >
                 ×
               </button>

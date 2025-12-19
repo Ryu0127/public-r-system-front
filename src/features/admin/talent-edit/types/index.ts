@@ -3,6 +3,15 @@
  */
 
 /**
+ * ハッシュタグ
+ */
+export interface TalentHashtag {
+  id?: number;
+  tag: string;
+  description: string;
+}
+
+/**
  * タレントの基本型（既存のTalent型を拡張）
  */
 export interface AdminTalent {
@@ -12,9 +21,10 @@ export interface AdminTalent {
   groupName: string;            // グループ名（0期生、1期生など）
   groupId: number;              // グループID
   twitterAccounts: string[];    // Twitterアカウント（@なし）
+  hashtags?: TalentHashtag[];   // ハッシュタグ
   status?: 'active' | 'inactive' | 'graduated';  // ステータス
   debutDate?: string;           // デビュー日（YYYY-MM-DD）
-  graduationDate?: string;      // 卒業日（YYYY-MM-DD）
+  birthday?: string;            // 誕生日（MM-DD形式）
   affiliation?: string;         // 所属（ホロライブ、ホロスターズなど）
   profile?: string;             // プロフィール
   profileImageUrl?: string;     // プロフィール画像URL
@@ -63,9 +73,10 @@ export interface TalentFormData {
   groupName: string;
   groupId: number;
   twitterAccounts: string[];
+  hashtags?: TalentHashtag[];
   status?: 'active' | 'inactive' | 'graduated';
   debutDate?: string;
-  graduationDate?: string;
+  birthday?: string;
   affiliation?: string;
   profile?: string;
   profileImageUrl?: string;
