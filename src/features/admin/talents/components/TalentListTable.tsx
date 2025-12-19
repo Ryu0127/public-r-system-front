@@ -89,7 +89,7 @@ const TalentListTable: React.FC<TalentListTableProps> = ({
                           className="inline-block bg-purple-50 text-purple-700 px-2 py-1 rounded text-xs"
                           title={hashtag.description}
                         >
-                          #{hashtag.tag}
+                          #{hashtag.hashtag}
                         </span>
                       ))}
                     </div>

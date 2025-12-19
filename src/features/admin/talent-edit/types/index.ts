@@ -7,7 +7,7 @@
  */
 export interface TalentHashtag {
   id?: number;
-  tag: string;
+  hashtag: string;
   description: string;
 }
 

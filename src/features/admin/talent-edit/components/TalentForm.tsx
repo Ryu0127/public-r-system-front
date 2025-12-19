@@ -66,10 +66,10 @@ const TalentForm: React.FC<TalentFormProps> = ({ talent, onSave, onCancel, onDel
   };
 
   const handleAddHashtag = () => {
-    const tag = hashtagInput.tag.trim().replace(/^#/, '');
+    const hashtag = hashtagInput.tag.trim().replace(/^#/, '');
     const description = hashtagInput.description.trim();
-    if (tag && description) {
-      const newHashtag: TalentHashtag = { tag, description };
+    if (hashtag && description) {
+      const newHashtag: TalentHashtag = { hashtag, description };
       setFormData((prev) => ({
         ...prev,
         hashtags: [...(prev.hashtags || []), newHashtag],
@@ -270,7 +270,7 @@ const TalentForm: React.FC<TalentFormProps> = ({ talent, onSave, onCancel, onDel
             >
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="font-bold text-purple-700 text-base">#{hashtag.tag}</span>
+                  <span className="font-bold text-purple-700 text-base">#{hashtag.hashtag}</span>
                 </div>
                 <div className="text-sm text-gray-700">
                   {hashtag.description}
