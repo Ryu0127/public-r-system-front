@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import {
   AdminTalent,
   TalentListResponse,
@@ -44,7 +44,7 @@ export const useTalentEdit = () => {
   };
 
   // タレント詳細を取得
-  const fetchTalentById = async (id: string): Promise<AdminTalent | null> => {
+  const fetchTalentById = useCallback(async (id: string): Promise<AdminTalent | null> => {
     setLoading(true);
     setError(null);
     try {
@@ -72,7 +72,7 @@ export const useTalentEdit = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   // タレントを作成
   const createTalent = async (talentData: Partial<AdminTalent>): Promise<boolean> => {
