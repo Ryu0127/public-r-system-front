@@ -266,16 +266,20 @@ const TalentForm: React.FC<TalentFormProps> = ({ talent, onSave, onCancel, onDel
           {formData.hashtags?.map((hashtag, index) => (
             <div
               key={index}
-              className="flex items-center justify-between bg-purple-50 px-4 py-2 rounded"
+              className="flex items-start justify-between bg-purple-50 px-4 py-3 rounded border border-purple-200"
             >
-              <div>
-                <span className="font-semibold text-purple-700">#{hashtag.tag}</span>
-                <span className="ml-3 text-gray-600">{hashtag.description}</span>
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="font-bold text-purple-700 text-base">#{hashtag.tag}</span>
+                </div>
+                <div className="text-sm text-gray-700">
+                  {hashtag.description}
+                </div>
               </div>
               <button
                 type="button"
                 onClick={() => handleRemoveHashtag(index)}
-                className="text-red-500 hover:text-red-700 font-bold"
+                className="text-red-500 hover:text-red-700 font-bold text-xl ml-4"
               >
                 ×
               </button>
