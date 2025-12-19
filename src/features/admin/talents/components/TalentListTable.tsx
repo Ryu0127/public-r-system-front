@@ -45,6 +45,7 @@ const TalentListTable: React.FC<TalentListTableProps> = ({
             <th className="px-4 py-2 border-b text-left text-sm font-medium">英語名</th>
             <th className="px-4 py-2 border-b text-left text-sm font-medium">グループ</th>
             <th className="px-4 py-2 border-b text-left text-sm font-medium">Twitterアカウント</th>
+            <th className="px-4 py-2 border-b text-left text-sm font-medium">ハッシュタグ</th>
             <th className="px-4 py-2 border-b text-left text-sm font-medium">ステータス</th>
             <th className="px-4 py-2 border-b text-left text-sm font-medium">操作</th>
           </tr>
@@ -52,7 +53,7 @@ const TalentListTable: React.FC<TalentListTableProps> = ({
         <tbody>
           {talents.length === 0 ? (
             <tr>
-              <td colSpan={7} className="px-4 py-8 text-center text-gray-500">
+              <td colSpan={8} className="px-4 py-8 text-center text-gray-500">
                 タレントがありません
               </td>
             </tr>
@@ -72,6 +73,23 @@ const TalentListTable: React.FC<TalentListTableProps> = ({
                           className="inline-block bg-blue-50 text-blue-700 px-2 py-1 rounded text-xs"
                         >
                           @{account}
+                        </span>
+                      ))}
+                    </div>
+                  ) : (
+                    '-'
+                  )}
+                </td>
+                <td className="px-4 py-2 border-b text-sm">
+                  {talent.hashtags && talent.hashtags.length > 0 ? (
+                    <div className="flex flex-wrap gap-1">
+                      {talent.hashtags.map((hashtag, index) => (
+                        <span
+                          key={index}
+                          className="inline-block bg-purple-50 text-purple-700 px-2 py-1 rounded text-xs"
+                          title={hashtag.description}
+                        >
+                          #{hashtag.tag}
                         </span>
                       ))}
                     </div>
