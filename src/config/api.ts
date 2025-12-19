@@ -20,6 +20,14 @@ export const API_ENDPOINTS = {
     list: `${API_BASE_URL}/admin/events`,
     detail: (id: string) => `${API_BASE_URL}/events/${id}`,
   },
+  // タレント管理（管理者用）
+  talents: {
+    list: `${API_BASE_URL}/admin/talents`,
+    detail: (id: string) => `${API_BASE_URL}/admin/talents/${id}`,
+    create: `${API_BASE_URL}/admin/talents`,
+    update: (id: string) => `${API_BASE_URL}/admin/talents/${id}`,
+    delete: (id: string) => `${API_BASE_URL}/admin/talents/${id}`,
+  },
 };
 
 /**
