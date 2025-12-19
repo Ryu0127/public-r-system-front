@@ -11,6 +11,8 @@ import LifeScheduleMonthContainer from 'features/life/life-schedule-month/contai
 import EventsCalendarContainer from 'features/events/events-calendar/containers/EventsCalendarContainer';
 import EventAdminContainer from 'features/admin/events/containers/EventAdminContainer';
 import EventFormContainer from 'features/admin/event-edit/containers/EventFormContainer';
+import TalentAdminContainer from 'features/admin/talents/containers/TalentAdminContainer';
+import TalentFormContainer from 'features/admin/talent-edit/containers/TalentFormContainer';
 import LoginContainer from 'features/auth/login/containers/LoginContainer';
 import './App.css';
 
@@ -50,6 +52,10 @@ function App() {
         <Route path="/admin/events" element={<EventAdminContainer />} />
         <Route path="/admin/events/new" element={<EventFormContainer />} />
         <Route path="/admin/events/:id/edit" element={<EventFormContainer />} />
+        {/* タレント管理画面 */}
+        <Route path="/admin/talents" element={<TalentAdminContainer />} />
+        <Route path="/admin/talents/new" element={<TalentFormContainer />} />
+        <Route path="/admin/talents/:id/edit" element={<TalentFormContainer />} />
       </Routes>
     </Router>
   );
