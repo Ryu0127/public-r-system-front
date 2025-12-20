@@ -3,6 +3,14 @@
  */
 
 /**
+ * 検索ワードグループ
+ */
+export interface SearchWorkGroup {
+  gropuName: string; // Note: API has typo "gropu" instead of "group"
+  keywords: string[];
+}
+
+/**
  * ハッシュタグ
  */
 export interface TalentHashtag {
@@ -22,6 +30,7 @@ export interface AdminTalent {
   groupId: number;              // グループID
   twitterAccounts: string[];    // Twitterアカウント（@なし）
   hashtags?: TalentHashtag[];   // ハッシュタグ
+  searchWorks?: SearchWorkGroup[]; // タレント別検索ワード
   status?: 'active' | 'inactive' | 'graduated';  // ステータス
   debutDate?: string;           // デビュー日（YYYY-MM-DD）
   birthday?: string;            // 誕生日（MM-DD形式）
@@ -74,6 +83,7 @@ export interface TalentFormData {
   groupId: number;
   twitterAccounts: string[];
   hashtags?: TalentHashtag[];
+  searchWorks?: SearchWorkGroup[];
   status?: 'active' | 'inactive' | 'graduated';
   debutDate?: string;
   birthday?: string;
