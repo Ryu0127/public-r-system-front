@@ -90,8 +90,8 @@ export const defaultEgoSearchFilters: EgoSearchFilters = {
     enabled: false,
     selectedWords: [],
   },
-  excludeReplies: false,
-  excludeRetweets: false,
+  excludeReplies: true,
+  excludeRetweets: true,
 };
 
 /**
