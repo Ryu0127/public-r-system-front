@@ -91,26 +91,17 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({ state, actions
         {/* 投稿タイプフィルタ */}
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            除外設定
+            表示設定
           </label>
           <div className="space-y-2">
             <label className="flex items-center space-x-2">
               <input
                 type="checkbox"
-                checked={filters.excludeReplies}
-                onChange={(e) => actions.setExcludeReplies(e.target.checked)}
+                checked={!filters.excludeReplies}
+                onChange={(e) => actions.setExcludeReplies(!e.target.checked)}
                 className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
               />
-              <span className="text-sm text-gray-700">リプライを除外</span>
-            </label>
-            <label className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                checked={filters.excludeRetweets}
-                onChange={(e) => actions.setExcludeRetweets(e.target.checked)}
-                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-              />
-              <span className="text-sm text-gray-700">リツイートを除外</span>
+              <span className="text-sm text-gray-700">リプライを表示</span>
             </label>
           </div>
         </div>

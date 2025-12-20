@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { AdminTalent, GROUP_OPTIONS, TalentHashtag } from '../types';
+import { AdminTalent, GROUP_OPTIONS, TalentHashtag, SearchWordGroup } from '../types';
 
 interface TalentFormProps {
   talent?: AdminTalent;
@@ -16,6 +16,7 @@ const TalentForm: React.FC<TalentFormProps> = ({ talent, onSave, onCancel, onDel
     groupId: 1,
     twitterAccounts: [],
     hashtags: [],
+    searchWordGroups: [],
     status: 'active',
     debutDate: '',
     birthday: '',
@@ -29,6 +30,7 @@ const TalentForm: React.FC<TalentFormProps> = ({ talent, onSave, onCancel, onDel
 
   const [twitterAccountInput, setTwitterAccountInput] = useState('');
   const [hashtagInput, setHashtagInput] = useState({ tag: '', description: '' });
+  const [searchWordGroupInput, setSearchWordGroupInput] = useState({ category: '', newCategoryName: '', keyword: '' });
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -83,6 +85,84 @@ const TalentForm: React.FC<TalentFormProps> = ({ talent, onSave, onCancel, onDel
       ...prev,
       hashtags: (prev.hashtags || []).filter((_, i) => i !== index),
     }));
+  };
+
+  const handleAddSearchWork = () => {
+    // 新規カテゴリの場合は newCategoryName を使用、それ以外は選択されたカテゴリを使用
+    const category = searchWordGroupInput.category === '__NEW__'
+      ? searchWordGroupInput.newCategoryName.trim()
+      : searchWordGroupInput.category.trim();
+    const keyword = searchWordGroupInput.keyword.trim();
+
+    if (category && keyword) {
+      setFormData((prev) => {
+        const existingGroup = prev.searchWordGroups?.find(g => g.gropuName === category);
+
+        if (existingGroup) {
+          // 既存のカテゴリにキーワードを追加
+          if (!existingGroup.keywords.includes(keyword)) {
+            return {
+              ...prev,
+              searchWordGroups: prev.searchWordGroups?.map(g =>
+                g.gropuName === category
+                  ? { ...g, keywords: [...g.keywords, keyword] }
+                  : g
+              ),
+            };
+          }
+          return prev; // 既に存在する場合は何もしない
+        } else {
+          // 新しいカテゴリを作成
+          const newSearchWordGroup: SearchWordGroup = { gropuName: category, keywords: [keyword] };
+          return {
+            ...prev,
+            searchWordGroups: [...(prev.searchWordGroups || []), newSearchWordGroup],
+          };
+        }
+      });
+
+      // 新規カテゴリの場合は、カテゴリ選択を保持してnewCategoryNameとkeywordをクリア
+      // 既存カテゴリの場合は、カテゴリ選択を保持してkeywordのみクリア
+      setSearchWordGroupInput({
+        category: searchWordGroupInput.category,
+        newCategoryName: '',
+        keyword: ''
+      });
+    }
+  };
+
+  const handleRemoveSearchWork = (index: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      searchWordGroups: (prev.searchWordGroups || []).filter((_, i) => i !== index),
+    }));
+  };
+
+  const handleAddKeywordToSearchWork = (groupIndex: number, keyword: string) => {
+    const trimmedKeyword = keyword.trim();
+    if (trimmedKeyword && formData.searchWordGroups) {
+      const updatedSearchWordGroups = [...formData.searchWordGroups];
+      if (!updatedSearchWordGroups[groupIndex].keywords.includes(trimmedKeyword)) {
+        updatedSearchWordGroups[groupIndex].keywords.push(trimmedKeyword);
+        setFormData((prev) => ({
+          ...prev,
+          searchWordGroups: updatedSearchWordGroups,
+        }));
+      }
+    }
+  };
+
+  const handleRemoveKeywordFromSearchWork = (groupIndex: number, keywordIndex: number) => {
+    if (formData.searchWordGroups) {
+      const updatedSearchWordGroups = [...formData.searchWordGroups];
+      updatedSearchWordGroups[groupIndex].keywords = updatedSearchWordGroups[groupIndex].keywords.filter(
+        (_, i) => i !== keywordIndex
+      );
+      setFormData((prev) => ({
+        ...prev,
+        searchWordGroups: updatedSearchWordGroups,
+      }));
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -283,6 +363,112 @@ const TalentForm: React.FC<TalentFormProps> = ({ talent, onSave, onCancel, onDel
               >
                 ×
               </button>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* タレント別検索ワード */}
+      <div className="bg-white rounded-lg shadow p-6">
+        <h2 className="text-xl font-bold mb-4">タレント別検索ワード</h2>
+        <p className="text-sm text-gray-600 mb-4">
+          エゴサーチ機能で使用する、タレント別の検索ワードをカテゴリごとに登録できます。<br />
+          同じカテゴリに複数のキーワードを登録する場合は、カテゴリを選択してキーワードを1つずつ追加してください。
+        </p>
+
+        <div className="space-y-2 mb-4">
+          <div className="flex gap-2">
+            <select
+              value={searchWordGroupInput.category}
+              onChange={(e) => setSearchWordGroupInput({ ...searchWordGroupInput, category: e.target.value, newCategoryName: '' })}
+              className="w-1/3 px-4 py-2 border rounded"
+            >
+              <option value="">カテゴリを選択</option>
+              {Array.from(new Set(formData.searchWordGroups?.map(g => g.gropuName) || [])).map(category => (
+                <option key={category} value={category}>{category}</option>
+              ))}
+              <option value="__NEW__">+ 新規カテゴリ</option>
+            </select>
+            <input
+              type="text"
+              value={searchWordGroupInput.keyword}
+              onChange={(e) => setSearchWordGroupInput({ ...searchWordGroupInput, keyword: e.target.value })}
+              onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddSearchWork())}
+              placeholder="キーワード（例: そらちゃん）"
+              className="flex-1 px-4 py-2 border rounded"
+            />
+            <button
+              type="button"
+              onClick={handleAddSearchWork}
+              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            >
+              追加
+            </button>
+          </div>
+          {searchWordGroupInput.category === '__NEW__' && (
+            <div className="flex gap-2">
+              <div className="w-1/3"></div>
+              <input
+                type="text"
+                value={searchWordGroupInput.newCategoryName}
+                onChange={(e) => setSearchWordGroupInput({ ...searchWordGroupInput, newCategoryName: e.target.value })}
+                placeholder="新しいカテゴリ名（例: タレント、イベント、ハッピーワード）"
+                className="flex-1 px-4 py-2 border rounded bg-yellow-50"
+              />
+              <div className="px-4 py-2 opacity-0">追加</div>
+            </div>
+          )}
+        </div>
+
+        <div className="space-y-4">
+          {formData.searchWordGroups?.map((group, groupIndex) => (
+            <div
+              key={groupIndex}
+              className="bg-green-50 px-4 py-3 rounded border border-green-200"
+            >
+              <div className="flex items-start justify-between mb-2">
+                <div className="flex-1">
+                  <span className="font-bold text-green-700 text-base">{group.gropuName}</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleRemoveSearchWork(groupIndex)}
+                  className="text-red-500 hover:text-red-700 font-bold text-xl ml-4"
+                >
+                  ×
+                </button>
+              </div>
+              <div className="flex flex-wrap gap-2 mb-2">
+                {group.keywords.map((keyword, keywordIndex) => (
+                  <div
+                    key={keywordIndex}
+                    className="flex items-center gap-2 bg-white text-green-700 px-3 py-1 rounded border border-green-300"
+                  >
+                    <span>{keyword}</span>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveKeywordFromSearchWork(groupIndex, keywordIndex)}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <div className="flex gap-2 mt-2">
+                <input
+                  type="text"
+                  placeholder="キーワードを追加"
+                  className="flex-1 px-3 py-1 border rounded text-sm"
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleAddKeywordToSearchWork(groupIndex, (e.target as HTMLInputElement).value);
+                      (e.target as HTMLInputElement).value = '';
+                    }
+                  }}
+                />
+              </div>
             </div>
           ))}
         </div>

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, Dispatch, SetStateAction } from 'react';
-import { useEgoSearchTalentsGetApi, Talent as ApiTalent } from 'hooks/api/oshi-katsu-saport/useEgoSearchTalentsGetApi';
+import { useEgoSearchTalentsGetApi, Talent as ApiTalent, SearchWordGroup } from 'hooks/api/oshi-katsu-saport/useEgoSearchTalentsGetApi';
 import {
   EgoSearchFilters,
   defaultEgoSearchFilters,
@@ -30,6 +30,7 @@ export interface Talent {
   groupName: string;
   groupId: number;
   twitterAccounts: string[];
+  searchWordGroups: SearchWordGroup[];
 }
 
 /**
@@ -65,6 +66,9 @@ export interface EgoSearchActions {
   // 検索キーワード
   setSearchKeywords: (keywords: string[]) => void;
   appendKeywordsFromPresets: (keywords: string[]) => void;
+
+  // タレント別検索ワード
+  setTalentKeywordsByCategory: (selectedByCategory: Record<string, string[]>) => void;
 
   // 日付フィルタ
   setDateRangePreset: (preset: DateRangePreset) => void;
@@ -134,6 +138,7 @@ export const useEgoSearchState = (
               groupName: talent.groupName,
               groupId: talent.groupId,
               twitterAccounts: talent.twitterAccounts,
+              searchWordGroups: talent.searchWordGroups ?? [],
             })) ?? [],
           },
         }));
@@ -185,6 +190,19 @@ export const useEgoSearchState = (
           filters: { ...prev.filters, searchKeywords: [...currentKeywords, ...keywords] },
         };
       });
+    }, []),
+
+    /**
+     * タレント別検索ワード設定（カテゴリごと）
+     */
+    setTalentKeywordsByCategory: useCallback((selectedByCategory: Record<string, string[]>) => {
+      setState(prev => ({
+        ...prev,
+        filters: {
+          ...prev.filters,
+          talentKeywords: { selectedByCategory },
+        },
+      }));
     }, []),
 
     /**

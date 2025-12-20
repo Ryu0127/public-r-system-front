@@ -71,20 +71,57 @@ const getDateRangeFromPreset = (preset: DateRangePreset): { since?: string; unti
 export const buildTwitterSearchUrl = (filters: EgoSearchFilters): string => {
   const searchParts: string[] = [];
 
-  // 検索キーワード（完全一致・OR検索）
-  const validKeywords = filters.searchKeywords
-    .map(k => k.trim())
-    .filter(k => k !== '');
+  // タレント別検索ワードがある場合は、AND/OR組み合わせロジックを使用
+  const talentKeywordsByCategory = filters.talentKeywords?.selectedByCategory || {};
+  const hasTalentKeywords = Object.keys(talentKeywordsByCategory).length > 0;
 
-  if (validKeywords.length > 0) {
-    // 各キーワードをダブルクォーテーションで囲んで完全一致にする
-    const quotedKeywords = validKeywords.map(k => `"${k}"`);
+  if (hasTalentKeywords) {
+    // タレントカテゴリのキーワードを基本キーワードとする
+    const baseKeywords = talentKeywordsByCategory['タレント'] || [];
 
-    // 複数キーワードの場合はOR検索（括弧で囲む）
-    if (quotedKeywords.length === 1) {
-      searchParts.push(quotedKeywords[0]);
-    } else {
-      searchParts.push(`(${quotedKeywords.join(' OR ')})`);
+    // 他のカテゴリのキーワードを取得
+    const otherCategories = Object.keys(talentKeywordsByCategory).filter(cat => cat !== 'タレント');
+    const otherKeywords = otherCategories.flatMap(cat => talentKeywordsByCategory[cat]);
+
+    if (baseKeywords.length > 0 && otherKeywords.length > 0) {
+      // 基本キーワードと他のキーワードをANDで組み合わせ、それらをORで結合
+      const combinations = baseKeywords.flatMap(baseKeyword =>
+        otherKeywords.map(otherKeyword => `("${baseKeyword}" AND "${otherKeyword}")`)
+      );
+      searchParts.push(`(${combinations.join(' OR ')})`);
+    } else if (baseKeywords.length > 0) {
+      // 基本キーワードのみの場合
+      const quotedKeywords = baseKeywords.map(k => `"${k}"`);
+      if (quotedKeywords.length === 1) {
+        searchParts.push(quotedKeywords[0]);
+      } else {
+        searchParts.push(`(${quotedKeywords.join(' OR ')})`);
+      }
+    } else if (otherKeywords.length > 0) {
+      // 他のキーワードのみの場合
+      const quotedKeywords = otherKeywords.map(k => `"${k}"`);
+      if (quotedKeywords.length === 1) {
+        searchParts.push(quotedKeywords[0]);
+      } else {
+        searchParts.push(`(${quotedKeywords.join(' OR ')})`);
+      }
+    }
+  } else {
+    // 通常の検索キーワード（完全一致・OR検索）
+    const validKeywords = filters.searchKeywords
+      .map(k => k.trim())
+      .filter(k => k !== '');
+
+    if (validKeywords.length > 0) {
+      // 各キーワードをダブルクォーテーションで囲んで完全一致にする
+      const quotedKeywords = validKeywords.map(k => `"${k}"`);
+
+      // 複数キーワードの場合はOR検索（括弧で囲む）
+      if (quotedKeywords.length === 1) {
+        searchParts.push(quotedKeywords[0]);
+      } else {
+        searchParts.push(`(${quotedKeywords.join(' OR ')})`);
+      }
     }
   }
 
@@ -132,11 +169,6 @@ export const buildTwitterSearchUrl = (filters: EgoSearchFilters): string => {
     searchParts.push('-filter:replies');
   }
 
-  // リツイートを除外
-  if (filters.excludeRetweets) {
-    searchParts.push('-filter:retweets');
-  }
-
   // 除外ワード
   if (filters.excludeWords.enabled && filters.excludeWords.selectedWords.length > 0) {
     const excludeParts = filters.excludeWords.selectedWords.map(
@@ -158,16 +190,53 @@ export const buildTwitterSearchUrl = (filters: EgoSearchFilters): string => {
 export const buildSearchQueryPreview = (filters: EgoSearchFilters): string => {
   const searchParts: string[] = [];
 
-  const validKeywords = filters.searchKeywords
-    .map(k => k.trim())
-    .filter(k => k !== '');
+  // タレント別検索ワードがある場合は、AND/OR組み合わせロジックを使用
+  const talentKeywordsByCategory = filters.talentKeywords?.selectedByCategory || {};
+  const hasTalentKeywords = Object.keys(talentKeywordsByCategory).length > 0;
 
-  if (validKeywords.length > 0) {
-    const quotedKeywords = validKeywords.map(k => `"${k}"`);
-    if (quotedKeywords.length === 1) {
-      searchParts.push(quotedKeywords[0]);
-    } else {
-      searchParts.push(`(${quotedKeywords.join(' OR ')})`);
+  if (hasTalentKeywords) {
+    // タレントカテゴリのキーワードを基本キーワードとする
+    const baseKeywords = talentKeywordsByCategory['タレント'] || [];
+
+    // 他のカテゴリのキーワードを取得
+    const otherCategories = Object.keys(talentKeywordsByCategory).filter(cat => cat !== 'タレント');
+    const otherKeywords = otherCategories.flatMap(cat => talentKeywordsByCategory[cat]);
+
+    if (baseKeywords.length > 0 && otherKeywords.length > 0) {
+      // 基本キーワードと他のキーワードをANDで組み合わせ、それらをORで結合
+      const combinations = baseKeywords.flatMap(baseKeyword =>
+        otherKeywords.map(otherKeyword => `("${baseKeyword}" AND "${otherKeyword}")`)
+      );
+      searchParts.push(`(${combinations.join(' OR ')})`);
+    } else if (baseKeywords.length > 0) {
+      // 基本キーワードのみの場合
+      const quotedKeywords = baseKeywords.map(k => `"${k}"`);
+      if (quotedKeywords.length === 1) {
+        searchParts.push(quotedKeywords[0]);
+      } else {
+        searchParts.push(`(${quotedKeywords.join(' OR ')})`);
+      }
+    } else if (otherKeywords.length > 0) {
+      // 他のキーワードのみの場合
+      const quotedKeywords = otherKeywords.map(k => `"${k}"`);
+      if (quotedKeywords.length === 1) {
+        searchParts.push(quotedKeywords[0]);
+      } else {
+        searchParts.push(`(${quotedKeywords.join(' OR ')})`);
+      }
+    }
+  } else {
+    const validKeywords = filters.searchKeywords
+      .map(k => k.trim())
+      .filter(k => k !== '');
+
+    if (validKeywords.length > 0) {
+      const quotedKeywords = validKeywords.map(k => `"${k}"`);
+      if (quotedKeywords.length === 1) {
+        searchParts.push(quotedKeywords[0]);
+      } else {
+        searchParts.push(`(${quotedKeywords.join(' OR ')})`);
+      }
     }
   }
 
@@ -209,10 +278,6 @@ export const buildSearchQueryPreview = (filters: EgoSearchFilters): string => {
 
   if (filters.excludeReplies) {
     searchParts.push('-filter:replies');
-  }
-
-  if (filters.excludeRetweets) {
-    searchParts.push('-filter:retweets');
   }
 
   if (filters.excludeWords.enabled && filters.excludeWords.selectedWords.length > 0) {
