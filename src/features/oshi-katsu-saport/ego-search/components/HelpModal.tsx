@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 interface HelpModalProps {
   isOpen: boolean;
@@ -6,11 +6,31 @@ interface HelpModalProps {
 }
 
 export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
+  // モーダル表示中はメイン画面のスクロールを無効化
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+
+    // クリーンアップ関数
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="sticky top-0 bg-gradient-to-r from-sky-500 to-blue-600 text-white p-6 rounded-t-2xl">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-bold">エゴサーチ サポート - 使い方</h2>
@@ -33,10 +53,50 @@ export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
               基本的な使い方
             </h3>
             <ol className="space-y-2 text-gray-700 list-decimal list-inside">
-              <li>検索キーワードを入力します（例: ホロライブ、配信、歌ってみた）</li>
-              <li>必要に応じて高度な検索フィルタを設定します</li>
-              <li>「Xで検索」ボタンをクリックして、Xの検索画面が開きます</li>
+              <li>タレントを選択します。</li>
+              <li>選択したタレントごとの検索ワードや、選択したタレントの投稿のみで検索クエリを作成することができます。</li>
+              <li>必要に応じて高度な検索フィルタで検索条件を設定することもできます。</li>
+              <li>「Xで検索」ボタンをクリックすることで、検索クエリを設定した状態でXの検索画面が開きます。</li>
             </ol>
+          </section>
+
+          {/* タレントの投稿のみで検索 */}
+          <section>
+            <h3 className="text-lg font-bold text-gray-800 mb-3 flex items-center gap-2">
+              <span className="text-2xl">👤</span>
+              タレントの投稿のみで検索
+            </h3>
+            <div className="space-y-2 text-gray-700">
+              <p>
+                特定のタレントのアカウントから投稿されたポストのみを検索することができます。
+              </p>
+              <ol className="space-y-1 list-decimal list-inside text-sm">
+                <li>タレントを選択し、「タレントアカウントで絞り込み」のチェックボックスをオンにします。</li>
+                <li>「Xで検索」ボタンをクリックすることで、選択したタレントのTwitterアカウントから投稿されたポストのみで検索できます。</li>
+              </ol>
+            </div>
+          </section>
+
+          {/* タレント別ワード検索 */}
+          <section>
+            <h3 className="text-lg font-bold text-gray-800 mb-3 flex items-center gap-2">
+              <span className="text-2xl">🔖</span>
+              タレント別ワード検索
+            </h3>
+            <div className="space-y-2 text-gray-700">
+              <p>
+                タレントを選択すると、そのタレントに関連するエゴサワードが表示されます。表示内容から選択することでエゴサワードに追加することができます。
+              </p>
+              <ol className="space-y-1 list-decimal list-inside text-sm">
+                <li>タレントを選択後、「タレント別検索ワード」セクションが表示されます。</li>
+                <li>「開く」ボタンをクリックすると、カテゴリ別のキーワード一覧が表示されます。</li>
+                <li>追加したいキーワードをクリックして選択します。</li>
+                <li>選択したキーワードが自動的に検索キーワードに追加されます。</li>
+              </ol>
+              <span>※「検索プレビューを表示」ボタンをクリックすると、検索クエリのプレビューが表示されます。</span><br/>
+              <span>※「タレント」と「ワード」ボタンをクリックすると、タレントとワードの組み合わせで検索クエリが作成されます。</span><br/>
+              <span>例：タレントを「ときのそら」、ワードを「ライブ」「そらぱ」で選択すると、「"ときのそら" + "ライブ"」もしくは「"ときのそら" + "そらぱ"」で検索できる検索クエリが追加されます。</span>
+            </div>
           </section>
 
           {/* 高度な検索フィルタ */}
@@ -49,46 +109,15 @@ export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
               <div>
                 <h4 className="font-semibold text-gray-800 mb-1">投稿期間</h4>
                 <p className="text-sm text-gray-600">
-                  今日、昨日、過去7日間、過去30日間から選択できます。
+                  すべて、今日、昨日、過去7日間、過去30日間から選択できます。
                 </p>
               </div>
               <div>
-                <h4 className="font-semibold text-gray-800 mb-1">メディアタイプ</h4>
+                <h4 className="font-semibold text-gray-800 mb-1">表示設定</h4>
                 <p className="text-sm text-gray-600">
-                  すべて、画像のみ、動画のみ、画像・動画から選択できます。
+                  「リプライを表示」のチェックを外すことで、リプライを除外して元のポストのみを検索できます。
                 </p>
               </div>
-              <div>
-                <h4 className="font-semibold text-gray-800 mb-1">エンゲージメント</h4>
-                <p className="text-sm text-gray-600">
-                  最小いいね数、最小リツイート数を設定して、人気のあるポストのみを検索できます。
-                </p>
-              </div>
-              <div>
-                <h4 className="font-semibold text-gray-800 mb-1">除外設定</h4>
-                <p className="text-sm text-gray-600">
-                  リプライやリツイートを除外して、元のポストのみを検索できます。
-                </p>
-              </div>
-            </div>
-          </section>
-
-          {/* タレントアカウントフィルタ */}
-          <section>
-            <h3 className="text-lg font-bold text-gray-800 mb-3 flex items-center gap-2">
-              <span className="text-2xl">👤</span>
-              タレントアカウントフィルタ
-            </h3>
-            <div className="space-y-2 text-gray-700">
-              <p>
-                特定のタレントの投稿のみを検索したい場合に使用します。
-              </p>
-              <ol className="space-y-1 list-decimal list-inside text-sm">
-                <li>「タレントアカウントで絞り込み」をチェック</li>
-                <li>タレントを選択（初回は未設定の場合、アカウント名を入力）</li>
-                <li>メインアカウントとサブアカウントの両方を設定できます</li>
-                <li>検索時は、設定した両方のアカウントから検索されます</li>
-              </ol>
             </div>
           </section>
 
@@ -103,10 +132,10 @@ export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
                 特定のワードを含むポストを検索結果から除外できます。
               </p>
               <ol className="space-y-1 list-decimal list-inside text-sm">
-                <li>「除外ワードフィルタ」をチェック</li>
-                <li>「+ 追加」をクリックして除外したいワードを入力</li>
-                <li>追加したワードをチェックして有効化</li>
-                <li>荒らしや誹謗中傷対策に活用できます</li>
+                <li>「除外ワードフィルタ」のチェックボックスをオンにします</li>
+                <li>「+ 追加」をクリックして除外したいワードを入力します</li>
+                <li>追加したワードのチェックボックスをオンにして有効化します</li>
+                <li>荒らしや誹謗中傷対策、または、特定のワードを含むポストを除外したい場合に活用できます</li>
               </ol>
             </div>
           </section>
@@ -118,10 +147,8 @@ export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
               Tips
             </h3>
             <ul className="space-y-1 text-sm text-amber-900 list-disc list-inside">
-              <li>複数のキーワードを検索する場合はスペースで区切ってください</li>
-              <li>完全一致で検索したい場合は、キーワードを「"」で囲んでください</li>
-              <li>フィルタ設定は組み合わせて使用できます</li>
-              <li>検索クエリプレビューで実際の検索内容を確認できます</li>
+              <li>検索クエリプレビューで実際の検索クエリ内容を確認できます</li>
+              <li>「Xで検索」ボタンを押下すると、検索クエリを設定した状態でXの検索画面が開きます。</li>
             </ul>
           </section>
         </div>
