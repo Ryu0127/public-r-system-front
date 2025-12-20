@@ -4,12 +4,14 @@ import { Talent } from '../hooks/useEgoSearchState';
 
 interface KeywordPresetsSelectorProps {
   onPresetsSelect: (keywords: string[]) => void;
+  onTalentKeywordsChange?: (selectedByCategory: Record<string, string[]>) => void;
   selectedTalent?: Talent | null;
   disabled?: boolean;
 }
 
 export const KeywordPresetsSelector: React.FC<KeywordPresetsSelectorProps> = ({
   onPresetsSelect,
+  onTalentKeywordsChange,
   selectedTalent,
   disabled = false,
 }) => {
@@ -20,6 +22,9 @@ export const KeywordPresetsSelector: React.FC<KeywordPresetsSelectorProps> = ({
   useEffect(() => {
     setSelectedPresetIds(new Set());
     onPresetsSelect([]);
+    if (onTalentKeywordsChange) {
+      onTalentKeywordsChange({});
+    }
   }, [selectedTalent?.id]);
 
   // タレントが選択されている場合はそのタレントの検索ワードを使用、そうでない場合は固定プリセット
@@ -61,13 +66,33 @@ export const KeywordPresetsSelector: React.FC<KeywordPresetsSelectorProps> = ({
       .filter((preset) => newSelected.has(preset.id))
       .map((preset) => preset.keyword);
 
-    onPresetsSelect(selectedKeywords);
+    // タレント別検索ワードの場合は、カテゴリごとに分類して通知
+    if (selectedTalent && onTalentKeywordsChange) {
+      const selectedByCategory: Record<string, string[]> = {};
+      presetsToUse
+        .filter((preset) => newSelected.has(preset.id))
+        .forEach((preset) => {
+          const category = preset.category || 'その他';
+          if (!selectedByCategory[category]) {
+            selectedByCategory[category] = [];
+          }
+          selectedByCategory[category].push(preset.keyword);
+        });
+      onTalentKeywordsChange(selectedByCategory);
+    } else {
+      // 固定プリセットの場合は従来通り
+      onPresetsSelect(selectedKeywords);
+    }
   };
 
   // すべてクリア
   const handleClearAll = () => {
     setSelectedPresetIds(new Set());
-    onPresetsSelect([]);
+    if (selectedTalent && onTalentKeywordsChange) {
+      onTalentKeywordsChange({});
+    } else {
+      onPresetsSelect([]);
+    }
   };
 
   return (

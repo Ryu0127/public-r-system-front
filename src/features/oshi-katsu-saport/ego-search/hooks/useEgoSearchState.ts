@@ -67,6 +67,9 @@ export interface EgoSearchActions {
   setSearchKeywords: (keywords: string[]) => void;
   appendKeywordsFromPresets: (keywords: string[]) => void;
 
+  // タレント別検索ワード
+  setTalentKeywordsByCategory: (selectedByCategory: Record<string, string[]>) => void;
+
   // 日付フィルタ
   setDateRangePreset: (preset: DateRangePreset) => void;
   setCustomDateRange: (startDate: string, endDate: string) => void;
@@ -187,6 +190,19 @@ export const useEgoSearchState = (
           filters: { ...prev.filters, searchKeywords: [...currentKeywords, ...keywords] },
         };
       });
+    }, []),
+
+    /**
+     * タレント別検索ワード設定（カテゴリごと）
+     */
+    setTalentKeywordsByCategory: useCallback((selectedByCategory: Record<string, string[]>) => {
+      setState(prev => ({
+        ...prev,
+        filters: {
+          ...prev.filters,
+          talentKeywords: { selectedByCategory },
+        },
+      }));
     }, []),
 
     /**

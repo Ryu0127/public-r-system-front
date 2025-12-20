@@ -82,6 +82,7 @@ export const EgoSearchPresenter: React.FC<EgoSearchPresenterProps> = ({
         {/* 検索プリセット */}
         <KeywordPresetsSelector
           onPresetsSelect={actions.appendKeywordsFromPresets}
+          onTalentKeywordsChange={actions.setTalentKeywordsByCategory}
           selectedTalent={state.filters.talentAccounts.selectedAccounts.length > 0
             ? state.data.talents.find(t => t.id === state.filters.talentAccounts.selectedAccounts[0].talentId) || null
             : null
