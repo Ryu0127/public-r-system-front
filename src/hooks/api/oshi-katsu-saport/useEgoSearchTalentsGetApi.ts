@@ -8,7 +8,7 @@ export interface EgoSearchTalentsApiResponse {
 }
 
 export interface SearchWordGroup {
-  gropuName: string; // Note: API has typo "gropu" instead of "group"
+  groupName: string;
   keywords: string[];
 }
 

@@ -34,7 +34,7 @@ export const KeywordPresetsSelector: React.FC<KeywordPresetsSelectorProps> = ({
           id: `${selectedTalent.id}-${groupIndex}-${keywordIndex}`,
           label: keyword,
           keyword: keyword,
-          category: group.gropuName, // API has typo "gropu"
+          category: group.groupName,
         }))
       )
     : keywordPresets;

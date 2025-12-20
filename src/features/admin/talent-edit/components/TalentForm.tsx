@@ -96,7 +96,7 @@ const TalentForm: React.FC<TalentFormProps> = ({ talent, onSave, onCancel, onDel
 
     if (category && keyword) {
       setFormData((prev) => {
-        const existingGroup = prev.searchWordGroups?.find(g => g.gropuName === category);
+        const existingGroup = prev.searchWordGroups?.find(g => g.groupName === category);
 
         if (existingGroup) {
           // 既存のカテゴリにキーワードを追加
@@ -104,7 +104,7 @@ const TalentForm: React.FC<TalentFormProps> = ({ talent, onSave, onCancel, onDel
             return {
               ...prev,
               searchWordGroups: prev.searchWordGroups?.map(g =>
-                g.gropuName === category
+                g.groupName === category
                   ? { ...g, keywords: [...g.keywords, keyword] }
                   : g
               ),
@@ -113,7 +113,7 @@ const TalentForm: React.FC<TalentFormProps> = ({ talent, onSave, onCancel, onDel
           return prev; // 既に存在する場合は何もしない
         } else {
           // 新しいカテゴリを作成
-          const newSearchWordGroup: SearchWordGroup = { gropuName: category, keywords: [keyword] };
+          const newSearchWordGroup: SearchWordGroup = { groupName: category, keywords: [keyword] };
           return {
             ...prev,
             searchWordGroups: [...(prev.searchWordGroups || []), newSearchWordGroup],
@@ -384,7 +384,7 @@ const TalentForm: React.FC<TalentFormProps> = ({ talent, onSave, onCancel, onDel
               className="w-1/3 px-4 py-2 border rounded"
             >
               <option value="">カテゴリを選択</option>
-              {Array.from(new Set(formData.searchWordGroups?.map(g => g.gropuName) || [])).map(category => (
+              {Array.from(new Set(formData.searchWordGroups?.map(g => g.groupName) || [])).map(category => (
                 <option key={category} value={category}>{category}</option>
               ))}
               <option value="__NEW__">+ 新規カテゴリ</option>
@@ -428,7 +428,7 @@ const TalentForm: React.FC<TalentFormProps> = ({ talent, onSave, onCancel, onDel
             >
               <div className="flex items-start justify-between mb-2">
                 <div className="flex-1">
-                  <span className="font-bold text-green-700 text-base">{group.gropuName}</span>
+                  <span className="font-bold text-green-700 text-base">{group.groupName}</span>
                 </div>
                 <button
                   type="button"
