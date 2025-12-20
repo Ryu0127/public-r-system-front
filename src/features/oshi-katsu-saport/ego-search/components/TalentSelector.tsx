@@ -121,12 +121,12 @@ export const TalentSelector: React.FC<TalentSelectorProps> = ({
                 onChange={(e) => onEnabledChange(e.target.checked)}
                 className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
               />
-              <span className="text-sm font-medium text-gray-700">選択したタレントで絞り込む</span>
+              <span className="text-sm font-medium text-gray-700">選択したタレントの投稿のみで絞り込む</span>
             </label>
             <p className="text-xs text-gray-500 mt-1 ml-6">
-              {selectedTalent.talentName}のTwitter投稿（
+              {selectedTalent.talentName}の投稿（
               {selectedTalent.twitterAccounts.map(acc => `@${acc}`).join('、')}
-              ）のみを検索します
+              ）のみで絞り込む
             </p>
           </div>
         )}
