@@ -30,7 +30,7 @@ const TalentForm: React.FC<TalentFormProps> = ({ talent, onSave, onCancel, onDel
 
   const [twitterAccountInput, setTwitterAccountInput] = useState('');
   const [hashtagInput, setHashtagInput] = useState({ tag: '', description: '' });
-  const [searchWorkInput, setSearchWorkInput] = useState({ category: '', keywords: '' });
+  const [searchWorkInput, setSearchWorkInput] = useState({ category: '', keyword: '' });
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -89,17 +89,34 @@ const TalentForm: React.FC<TalentFormProps> = ({ talent, onSave, onCancel, onDel
 
   const handleAddSearchWork = () => {
     const category = searchWorkInput.category.trim();
-    const keywordsText = searchWorkInput.keywords.trim();
-    if (category && keywordsText) {
-      const keywords = keywordsText.split(',').map(k => k.trim()).filter(k => k !== '');
-      if (keywords.length > 0) {
-        const newSearchWork: SearchWorkGroup = { gropuName: category, keywords };
-        setFormData((prev) => ({
-          ...prev,
-          searchWorks: [...(prev.searchWorks || []), newSearchWork],
-        }));
-        setSearchWorkInput({ category: '', keywords: '' });
-      }
+    const keyword = searchWorkInput.keyword.trim();
+    if (category && keyword) {
+      setFormData((prev) => {
+        const existingGroup = prev.searchWorks?.find(g => g.gropuName === category);
+
+        if (existingGroup) {
+          // 既存のカテゴリにキーワードを追加
+          if (!existingGroup.keywords.includes(keyword)) {
+            return {
+              ...prev,
+              searchWorks: prev.searchWorks?.map(g =>
+                g.gropuName === category
+                  ? { ...g, keywords: [...g.keywords, keyword] }
+                  : g
+              ),
+            };
+          }
+          return prev; // 既に存在する場合は何もしない
+        } else {
+          // 新しいカテゴリを作成
+          const newSearchWork: SearchWorkGroup = { gropuName: category, keywords: [keyword] };
+          return {
+            ...prev,
+            searchWorks: [...(prev.searchWorks || []), newSearchWork],
+          };
+        }
+      });
+      setSearchWorkInput({ category, keyword: '' }); // カテゴリは保持、キーワードのみクリア
     }
   };
 
@@ -344,23 +361,30 @@ const TalentForm: React.FC<TalentFormProps> = ({ talent, onSave, onCancel, onDel
       <div className="bg-white rounded-lg shadow p-6">
         <h2 className="text-xl font-bold mb-4">タレント別検索ワード</h2>
         <p className="text-sm text-gray-600 mb-4">
-          エゴサーチ機能で使用する、タレント別の検索ワードをカテゴリごとに登録できます。
+          エゴサーチ機能で使用する、タレント別の検索ワードをカテゴリごとに登録できます。<br />
+          同じカテゴリに複数のキーワードを登録する場合は、カテゴリを選択してキーワードを1つずつ追加してください。
         </p>
 
         <div className="flex gap-2 mb-4">
           <input
             type="text"
+            list="category-list"
             value={searchWorkInput.category}
             onChange={(e) => setSearchWorkInput({ ...searchWorkInput, category: e.target.value })}
             placeholder="カテゴリ名（例: タレント、イベント、ハッピーワード）"
             className="w-1/3 px-4 py-2 border rounded"
           />
+          <datalist id="category-list">
+            {Array.from(new Set(formData.searchWorks?.map(g => g.gropuName) || [])).map(category => (
+              <option key={category} value={category} />
+            ))}
+          </datalist>
           <input
             type="text"
-            value={searchWorkInput.keywords}
-            onChange={(e) => setSearchWorkInput({ ...searchWorkInput, keywords: e.target.value })}
+            value={searchWorkInput.keyword}
+            onChange={(e) => setSearchWorkInput({ ...searchWorkInput, keyword: e.target.value })}
             onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddSearchWork())}
-            placeholder="キーワード（カンマ区切り: そらちゃん,ときのそら）"
+            placeholder="キーワード（例: そらちゃん）"
             className="flex-1 px-4 py-2 border rounded"
           />
           <button
