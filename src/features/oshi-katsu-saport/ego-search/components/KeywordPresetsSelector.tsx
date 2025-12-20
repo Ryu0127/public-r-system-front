@@ -75,9 +75,9 @@ export const KeywordPresetsSelector: React.FC<KeywordPresetsSelectorProps> = ({
       <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-200 shadow-lg">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h3 className="text-sm font-semibold text-gray-700">検索プリセット</h3>
+            <h3 className="text-sm font-semibold text-gray-700">タレント別検索ワード</h3>
             <p className="text-xs text-gray-500 mt-1">
-              よく使うキーワードをすばやく選択できます
+              タレント別に関連するキーワードを選択して、検索ワードに追加できます
             </p>
           </div>
           <button
