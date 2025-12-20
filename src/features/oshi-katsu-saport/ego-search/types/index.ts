@@ -72,6 +72,11 @@ export interface EgoSearchFilters {
 
   // リツイートを除外
   excludeRetweets: boolean;
+
+  // タレント別検索ワード（カテゴリごとに選択されたキーワード）
+  talentKeywords: {
+    selectedByCategory: Record<string, string[]>;
+  };
 }
 
 /**
@@ -90,8 +95,11 @@ export const defaultEgoSearchFilters: EgoSearchFilters = {
     enabled: false,
     selectedWords: [],
   },
-  excludeReplies: false,
-  excludeRetweets: false,
+  excludeReplies: true,
+  excludeRetweets: true,
+  talentKeywords: {
+    selectedByCategory: {},
+  },
 };
 
 /**

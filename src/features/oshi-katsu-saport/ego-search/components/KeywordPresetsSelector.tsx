@@ -1,20 +1,46 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { KeywordPreset, keywordPresets } from '../types';
+import { Talent } from '../hooks/useEgoSearchState';
 
 interface KeywordPresetsSelectorProps {
   onPresetsSelect: (keywords: string[]) => void;
+  onTalentKeywordsChange?: (selectedByCategory: Record<string, string[]>) => void;
+  selectedTalent?: Talent | null;
   disabled?: boolean;
 }
 
 export const KeywordPresetsSelector: React.FC<KeywordPresetsSelectorProps> = ({
   onPresetsSelect,
+  onTalentKeywordsChange,
+  selectedTalent,
   disabled = false,
 }) => {
   const [selectedPresetIds, setSelectedPresetIds] = useState<Set<string>>(new Set());
   const [isExpanded, setIsExpanded] = useState(false);
 
+  // タレント変更時に選択をクリア
+  useEffect(() => {
+    setSelectedPresetIds(new Set());
+    onPresetsSelect([]);
+    if (onTalentKeywordsChange) {
+      onTalentKeywordsChange({});
+    }
+  }, [selectedTalent?.id]);
+
+  // タレントが選択されている場合はそのタレントの検索ワードを使用、そうでない場合は固定プリセット
+  const presetsToUse: KeywordPreset[] = selectedTalent?.searchWordGroups
+    ? selectedTalent.searchWordGroups.flatMap((group, groupIndex) =>
+        group.keywords.map((keyword, keywordIndex) => ({
+          id: `${selectedTalent.id}-${groupIndex}-${keywordIndex}`,
+          label: keyword,
+          keyword: keyword,
+          category: group.gropuName, // API has typo "gropu"
+        }))
+      )
+    : keywordPresets;
+
   // カテゴリごとにプリセットをグループ化
-  const presetsByCategory = keywordPresets.reduce((acc, preset) => {
+  const presetsByCategory = presetsToUse.reduce((acc, preset) => {
     const category = preset.category || 'その他';
     if (!acc[category]) {
       acc[category] = [];
@@ -36,17 +62,37 @@ export const KeywordPresetsSelector: React.FC<KeywordPresetsSelectorProps> = ({
     setSelectedPresetIds(newSelected);
 
     // 選択されたプリセットのキーワードを抽出
-    const selectedKeywords = keywordPresets
+    const selectedKeywords = presetsToUse
       .filter((preset) => newSelected.has(preset.id))
       .map((preset) => preset.keyword);
 
-    onPresetsSelect(selectedKeywords);
+    // タレント別検索ワードの場合は、カテゴリごとに分類して通知
+    if (selectedTalent && onTalentKeywordsChange) {
+      const selectedByCategory: Record<string, string[]> = {};
+      presetsToUse
+        .filter((preset) => newSelected.has(preset.id))
+        .forEach((preset) => {
+          const category = preset.category || 'その他';
+          if (!selectedByCategory[category]) {
+            selectedByCategory[category] = [];
+          }
+          selectedByCategory[category].push(preset.keyword);
+        });
+      onTalentKeywordsChange(selectedByCategory);
+    } else {
+      // 固定プリセットの場合は従来通り
+      onPresetsSelect(selectedKeywords);
+    }
   };
 
   // すべてクリア
   const handleClearAll = () => {
     setSelectedPresetIds(new Set());
-    onPresetsSelect([]);
+    if (selectedTalent && onTalentKeywordsChange) {
+      onTalentKeywordsChange({});
+    } else {
+      onPresetsSelect([]);
+    }
   };
 
   return (
@@ -54,9 +100,9 @@ export const KeywordPresetsSelector: React.FC<KeywordPresetsSelectorProps> = ({
       <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-200 shadow-lg">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h3 className="text-sm font-semibold text-gray-700">検索プリセット</h3>
+            <h3 className="text-sm font-semibold text-gray-700">タレント別検索ワード</h3>
             <p className="text-xs text-gray-500 mt-1">
-              よく使うキーワードをすばやく選択できます
+              タレント別に関連するキーワードを選択して、検索ワードに追加できます
             </p>
           </div>
           <button

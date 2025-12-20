@@ -38,18 +38,6 @@ export const EgoSearchPresenter: React.FC<EgoSearchPresenterProps> = ({
           onHelpClick={() => actions.setIsHelpModalOpen(true)}
         />
 
-        {/* 検索キーワード入力 */}
-        <SearchKeywordInput
-          values={state.filters.searchKeywords}
-          onChange={actions.setSearchKeywords}
-          onSearch={actions.handleSearchOnTwitter}
-        />
-
-        {/* 検索プリセット */}
-        <KeywordPresetsSelector
-          onPresetsSelect={actions.appendKeywordsFromPresets}
-        />
-
         {/* タレント選択 */}
         <TalentSelector
           talents={state.data.talents}
@@ -89,6 +77,22 @@ export const EgoSearchPresenter: React.FC<EgoSearchPresenterProps> = ({
             // ドロップダウンを閉じる
             actions.setIsDropdownOpen(false);
           }}
+        />
+
+        {/* 検索プリセット */}
+        {state.filters.talentAccounts.selectedAccounts.length > 0 && (
+          <KeywordPresetsSelector
+            onPresetsSelect={actions.appendKeywordsFromPresets}
+            onTalentKeywordsChange={actions.setTalentKeywordsByCategory}
+            selectedTalent={state.data.talents.find(t => t.id === state.filters.talentAccounts.selectedAccounts[0].talentId) || null}
+          />
+        )}
+
+        {/* 検索キーワード入力 */}
+        <SearchKeywordInput
+          values={state.filters.searchKeywords}
+          onChange={actions.setSearchKeywords}
+          onSearch={actions.handleSearchOnTwitter}
         />
 
         {/* 高度な検索フィルタ */}
