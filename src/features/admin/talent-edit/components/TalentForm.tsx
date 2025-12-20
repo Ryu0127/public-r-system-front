@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { AdminTalent, GROUP_OPTIONS, TalentHashtag, SearchWorkGroup } from '../types';
+import { AdminTalent, GROUP_OPTIONS, TalentHashtag, SearchWordGroup } from '../types';
 
 interface TalentFormProps {
   talent?: AdminTalent;
@@ -16,7 +16,7 @@ const TalentForm: React.FC<TalentFormProps> = ({ talent, onSave, onCancel, onDel
     groupId: 1,
     twitterAccounts: [],
     hashtags: [],
-    searchWorks: [],
+    searchWordGroups: [],
     status: 'active',
     debutDate: '',
     birthday: '',
@@ -30,7 +30,7 @@ const TalentForm: React.FC<TalentFormProps> = ({ talent, onSave, onCancel, onDel
 
   const [twitterAccountInput, setTwitterAccountInput] = useState('');
   const [hashtagInput, setHashtagInput] = useState({ tag: '', description: '' });
-  const [searchWorkInput, setSearchWorkInput] = useState({ category: '', newCategoryName: '', keyword: '' });
+  const [searchWordGroupInput, setSearchWordGroupInput] = useState({ category: '', newCategoryName: '', keyword: '' });
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -89,21 +89,21 @@ const TalentForm: React.FC<TalentFormProps> = ({ talent, onSave, onCancel, onDel
 
   const handleAddSearchWork = () => {
     // 新規カテゴリの場合は newCategoryName を使用、それ以外は選択されたカテゴリを使用
-    const category = searchWorkInput.category === '__NEW__'
-      ? searchWorkInput.newCategoryName.trim()
-      : searchWorkInput.category.trim();
-    const keyword = searchWorkInput.keyword.trim();
+    const category = searchWordGroupInput.category === '__NEW__'
+      ? searchWordGroupInput.newCategoryName.trim()
+      : searchWordGroupInput.category.trim();
+    const keyword = searchWordGroupInput.keyword.trim();
 
     if (category && keyword) {
       setFormData((prev) => {
-        const existingGroup = prev.searchWorks?.find(g => g.gropuName === category);
+        const existingGroup = prev.searchWordGroups?.find(g => g.gropuName === category);
 
         if (existingGroup) {
           // 既存のカテゴリにキーワードを追加
           if (!existingGroup.keywords.includes(keyword)) {
             return {
               ...prev,
-              searchWorks: prev.searchWorks?.map(g =>
+              searchWordGroups: prev.searchWordGroups?.map(g =>
                 g.gropuName === category
                   ? { ...g, keywords: [...g.keywords, keyword] }
                   : g
@@ -113,18 +113,18 @@ const TalentForm: React.FC<TalentFormProps> = ({ talent, onSave, onCancel, onDel
           return prev; // 既に存在する場合は何もしない
         } else {
           // 新しいカテゴリを作成
-          const newSearchWork: SearchWorkGroup = { gropuName: category, keywords: [keyword] };
+          const newSearchWordGroup: SearchWordGroup = { gropuName: category, keywords: [keyword] };
           return {
             ...prev,
-            searchWorks: [...(prev.searchWorks || []), newSearchWork],
+            searchWordGroups: [...(prev.searchWordGroups || []), newSearchWordGroup],
           };
         }
       });
 
       // 新規カテゴリの場合は、カテゴリ選択を保持してnewCategoryNameとkeywordをクリア
       // 既存カテゴリの場合は、カテゴリ選択を保持してkeywordのみクリア
-      setSearchWorkInput({
-        category: searchWorkInput.category,
+      setSearchWordGroupInput({
+        category: searchWordGroupInput.category,
         newCategoryName: '',
         keyword: ''
       });
@@ -134,33 +134,33 @@ const TalentForm: React.FC<TalentFormProps> = ({ talent, onSave, onCancel, onDel
   const handleRemoveSearchWork = (index: number) => {
     setFormData((prev) => ({
       ...prev,
-      searchWorks: (prev.searchWorks || []).filter((_, i) => i !== index),
+      searchWordGroups: (prev.searchWordGroups || []).filter((_, i) => i !== index),
     }));
   };
 
   const handleAddKeywordToSearchWork = (groupIndex: number, keyword: string) => {
     const trimmedKeyword = keyword.trim();
-    if (trimmedKeyword && formData.searchWorks) {
-      const updatedSearchWorks = [...formData.searchWorks];
-      if (!updatedSearchWorks[groupIndex].keywords.includes(trimmedKeyword)) {
-        updatedSearchWorks[groupIndex].keywords.push(trimmedKeyword);
+    if (trimmedKeyword && formData.searchWordGroups) {
+      const updatedSearchWordGroups = [...formData.searchWordGroups];
+      if (!updatedSearchWordGroups[groupIndex].keywords.includes(trimmedKeyword)) {
+        updatedSearchWordGroups[groupIndex].keywords.push(trimmedKeyword);
         setFormData((prev) => ({
           ...prev,
-          searchWorks: updatedSearchWorks,
+          searchWordGroups: updatedSearchWordGroups,
         }));
       }
     }
   };
 
   const handleRemoveKeywordFromSearchWork = (groupIndex: number, keywordIndex: number) => {
-    if (formData.searchWorks) {
-      const updatedSearchWorks = [...formData.searchWorks];
-      updatedSearchWorks[groupIndex].keywords = updatedSearchWorks[groupIndex].keywords.filter(
+    if (formData.searchWordGroups) {
+      const updatedSearchWordGroups = [...formData.searchWordGroups];
+      updatedSearchWordGroups[groupIndex].keywords = updatedSearchWordGroups[groupIndex].keywords.filter(
         (_, i) => i !== keywordIndex
       );
       setFormData((prev) => ({
         ...prev,
-        searchWorks: updatedSearchWorks,
+        searchWordGroups: updatedSearchWordGroups,
       }));
     }
   };
@@ -379,20 +379,20 @@ const TalentForm: React.FC<TalentFormProps> = ({ talent, onSave, onCancel, onDel
         <div className="space-y-2 mb-4">
           <div className="flex gap-2">
             <select
-              value={searchWorkInput.category}
-              onChange={(e) => setSearchWorkInput({ ...searchWorkInput, category: e.target.value, newCategoryName: '' })}
+              value={searchWordGroupInput.category}
+              onChange={(e) => setSearchWordGroupInput({ ...searchWordGroupInput, category: e.target.value, newCategoryName: '' })}
               className="w-1/3 px-4 py-2 border rounded"
             >
               <option value="">カテゴリを選択</option>
-              {Array.from(new Set(formData.searchWorks?.map(g => g.gropuName) || [])).map(category => (
+              {Array.from(new Set(formData.searchWordGroups?.map(g => g.gropuName) || [])).map(category => (
                 <option key={category} value={category}>{category}</option>
               ))}
               <option value="__NEW__">+ 新規カテゴリ</option>
             </select>
             <input
               type="text"
-              value={searchWorkInput.keyword}
-              onChange={(e) => setSearchWorkInput({ ...searchWorkInput, keyword: e.target.value })}
+              value={searchWordGroupInput.keyword}
+              onChange={(e) => setSearchWordGroupInput({ ...searchWordGroupInput, keyword: e.target.value })}
               onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddSearchWork())}
               placeholder="キーワード（例: そらちゃん）"
               className="flex-1 px-4 py-2 border rounded"
@@ -405,13 +405,13 @@ const TalentForm: React.FC<TalentFormProps> = ({ talent, onSave, onCancel, onDel
               追加
             </button>
           </div>
-          {searchWorkInput.category === '__NEW__' && (
+          {searchWordGroupInput.category === '__NEW__' && (
             <div className="flex gap-2">
               <div className="w-1/3"></div>
               <input
                 type="text"
-                value={searchWorkInput.newCategoryName}
-                onChange={(e) => setSearchWorkInput({ ...searchWorkInput, newCategoryName: e.target.value })}
+                value={searchWordGroupInput.newCategoryName}
+                onChange={(e) => setSearchWordGroupInput({ ...searchWordGroupInput, newCategoryName: e.target.value })}
                 placeholder="新しいカテゴリ名（例: タレント、イベント、ハッピーワード）"
                 className="flex-1 px-4 py-2 border rounded bg-yellow-50"
               />
@@ -421,7 +421,7 @@ const TalentForm: React.FC<TalentFormProps> = ({ talent, onSave, onCancel, onDel
         </div>
 
         <div className="space-y-4">
-          {formData.searchWorks?.map((group, groupIndex) => (
+          {formData.searchWordGroups?.map((group, groupIndex) => (
             <div
               key={groupIndex}
               className="bg-green-50 px-4 py-3 rounded border border-green-200"

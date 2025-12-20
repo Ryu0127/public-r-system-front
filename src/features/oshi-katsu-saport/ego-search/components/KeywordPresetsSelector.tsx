@@ -28,8 +28,8 @@ export const KeywordPresetsSelector: React.FC<KeywordPresetsSelectorProps> = ({
   }, [selectedTalent?.id]);
 
   // タレントが選択されている場合はそのタレントの検索ワードを使用、そうでない場合は固定プリセット
-  const presetsToUse: KeywordPreset[] = selectedTalent?.searchWorks
-    ? selectedTalent.searchWorks.flatMap((group, groupIndex) =>
+  const presetsToUse: KeywordPreset[] = selectedTalent?.searchWordGroups
+    ? selectedTalent.searchWordGroups.flatMap((group, groupIndex) =>
         group.keywords.map((keyword, keywordIndex) => ({
           id: `${selectedTalent.id}-${groupIndex}-${keywordIndex}`,
           label: keyword,

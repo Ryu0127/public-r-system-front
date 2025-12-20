@@ -7,7 +7,7 @@ export interface EgoSearchTalentsApiResponse {
   };
 }
 
-export interface SearchWorkGroup {
+export interface SearchWordGroup {
   gropuName: string; // Note: API has typo "gropu" instead of "group"
   keywords: string[];
 }
@@ -19,7 +19,7 @@ export interface Talent {
   groupName: string;
   groupId: number;
   twitterAccounts: string[];
-  searchWorks: SearchWorkGroup[];
+  searchWordGroups: SearchWordGroup[];
 }
 
 const getApiUrl = (): string => {

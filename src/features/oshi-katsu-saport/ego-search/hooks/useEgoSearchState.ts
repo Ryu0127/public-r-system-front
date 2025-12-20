@@ -1,5 +1,5 @@
 import { useCallback, useEffect, Dispatch, SetStateAction } from 'react';
-import { useEgoSearchTalentsGetApi, Talent as ApiTalent, SearchWorkGroup } from 'hooks/api/oshi-katsu-saport/useEgoSearchTalentsGetApi';
+import { useEgoSearchTalentsGetApi, Talent as ApiTalent, SearchWordGroup } from 'hooks/api/oshi-katsu-saport/useEgoSearchTalentsGetApi';
 import {
   EgoSearchFilters,
   defaultEgoSearchFilters,
@@ -30,7 +30,7 @@ export interface Talent {
   groupName: string;
   groupId: number;
   twitterAccounts: string[];
-  searchWorks: SearchWorkGroup[];
+  searchWordGroups: SearchWordGroup[];
 }
 
 /**
@@ -138,7 +138,7 @@ export const useEgoSearchState = (
               groupName: talent.groupName,
               groupId: talent.groupId,
               twitterAccounts: talent.twitterAccounts,
-              searchWorks: talent.searchWorks ?? [],
+              searchWordGroups: talent.searchWordGroups ?? [],
             })) ?? [],
           },
         }));
