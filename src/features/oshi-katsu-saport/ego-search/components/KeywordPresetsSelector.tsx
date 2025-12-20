@@ -1,20 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { KeywordPreset, keywordPresets } from '../types';
+import { Talent } from '../hooks/useEgoSearchState';
 
 interface KeywordPresetsSelectorProps {
   onPresetsSelect: (keywords: string[]) => void;
+  selectedTalent?: Talent | null;
   disabled?: boolean;
 }
 
 export const KeywordPresetsSelector: React.FC<KeywordPresetsSelectorProps> = ({
   onPresetsSelect,
+  selectedTalent,
   disabled = false,
 }) => {
   const [selectedPresetIds, setSelectedPresetIds] = useState<Set<string>>(new Set());
   const [isExpanded, setIsExpanded] = useState(false);
 
+  // タレント変更時に選択をクリア
+  useEffect(() => {
+    setSelectedPresetIds(new Set());
+    onPresetsSelect([]);
+  }, [selectedTalent?.id]);
+
+  // タレントが選択されている場合はそのタレントの検索ワードを使用、そうでない場合は固定プリセット
+  const presetsToUse: KeywordPreset[] = selectedTalent?.searchWorks
+    ? selectedTalent.searchWorks.flatMap((group, groupIndex) =>
+        group.keywords.map((keyword, keywordIndex) => ({
+          id: `${selectedTalent.id}-${groupIndex}-${keywordIndex}`,
+          label: keyword,
+          keyword: keyword,
+          category: group.gropuName, // API has typo "gropu"
+        }))
+      )
+    : keywordPresets;
+
   // カテゴリごとにプリセットをグループ化
-  const presetsByCategory = keywordPresets.reduce((acc, preset) => {
+  const presetsByCategory = presetsToUse.reduce((acc, preset) => {
     const category = preset.category || 'その他';
     if (!acc[category]) {
       acc[category] = [];
@@ -36,7 +57,7 @@ export const KeywordPresetsSelector: React.FC<KeywordPresetsSelectorProps> = ({
     setSelectedPresetIds(newSelected);
 
     // 選択されたプリセットのキーワードを抽出
-    const selectedKeywords = keywordPresets
+    const selectedKeywords = presetsToUse
       .filter((preset) => newSelected.has(preset.id))
       .map((preset) => preset.keyword);
 
