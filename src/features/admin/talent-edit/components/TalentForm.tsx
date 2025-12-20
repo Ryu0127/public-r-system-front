@@ -30,7 +30,7 @@ const TalentForm: React.FC<TalentFormProps> = ({ talent, onSave, onCancel, onDel
 
   const [twitterAccountInput, setTwitterAccountInput] = useState('');
   const [hashtagInput, setHashtagInput] = useState({ tag: '', description: '' });
-  const [searchWorkInput, setSearchWorkInput] = useState({ category: '', keyword: '' });
+  const [searchWorkInput, setSearchWorkInput] = useState({ category: '', newCategoryName: '', keyword: '' });
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -88,8 +88,12 @@ const TalentForm: React.FC<TalentFormProps> = ({ talent, onSave, onCancel, onDel
   };
 
   const handleAddSearchWork = () => {
-    const category = searchWorkInput.category.trim();
+    // 新規カテゴリの場合は newCategoryName を使用、それ以外は選択されたカテゴリを使用
+    const category = searchWorkInput.category === '__NEW__'
+      ? searchWorkInput.newCategoryName.trim()
+      : searchWorkInput.category.trim();
     const keyword = searchWorkInput.keyword.trim();
+
     if (category && keyword) {
       setFormData((prev) => {
         const existingGroup = prev.searchWorks?.find(g => g.gropuName === category);
@@ -116,7 +120,14 @@ const TalentForm: React.FC<TalentFormProps> = ({ talent, onSave, onCancel, onDel
           };
         }
       });
-      setSearchWorkInput({ category, keyword: '' }); // カテゴリは保持、キーワードのみクリア
+
+      // 新規カテゴリの場合は、カテゴリ選択を保持してnewCategoryNameとkeywordをクリア
+      // 既存カテゴリの場合は、カテゴリ選択を保持してkeywordのみクリア
+      setSearchWorkInput({
+        category: searchWorkInput.category,
+        newCategoryName: '',
+        keyword: ''
+      });
     }
   };
 
@@ -365,35 +376,48 @@ const TalentForm: React.FC<TalentFormProps> = ({ talent, onSave, onCancel, onDel
           同じカテゴリに複数のキーワードを登録する場合は、カテゴリを選択してキーワードを1つずつ追加してください。
         </p>
 
-        <div className="flex gap-2 mb-4">
-          <input
-            type="text"
-            list="category-list"
-            value={searchWorkInput.category}
-            onChange={(e) => setSearchWorkInput({ ...searchWorkInput, category: e.target.value })}
-            placeholder="カテゴリ名（例: タレント、イベント、ハッピーワード）"
-            className="w-1/3 px-4 py-2 border rounded"
-          />
-          <datalist id="category-list">
-            {Array.from(new Set(formData.searchWorks?.map(g => g.gropuName) || [])).map(category => (
-              <option key={category} value={category} />
-            ))}
-          </datalist>
-          <input
-            type="text"
-            value={searchWorkInput.keyword}
-            onChange={(e) => setSearchWorkInput({ ...searchWorkInput, keyword: e.target.value })}
-            onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddSearchWork())}
-            placeholder="キーワード（例: そらちゃん）"
-            className="flex-1 px-4 py-2 border rounded"
-          />
-          <button
-            type="button"
-            onClick={handleAddSearchWork}
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-          >
-            追加
-          </button>
+        <div className="space-y-2 mb-4">
+          <div className="flex gap-2">
+            <select
+              value={searchWorkInput.category}
+              onChange={(e) => setSearchWorkInput({ ...searchWorkInput, category: e.target.value, newCategoryName: '' })}
+              className="w-1/3 px-4 py-2 border rounded"
+            >
+              <option value="">カテゴリを選択</option>
+              {Array.from(new Set(formData.searchWorks?.map(g => g.gropuName) || [])).map(category => (
+                <option key={category} value={category}>{category}</option>
+              ))}
+              <option value="__NEW__">+ 新規カテゴリ</option>
+            </select>
+            <input
+              type="text"
+              value={searchWorkInput.keyword}
+              onChange={(e) => setSearchWorkInput({ ...searchWorkInput, keyword: e.target.value })}
+              onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddSearchWork())}
+              placeholder="キーワード（例: そらちゃん）"
+              className="flex-1 px-4 py-2 border rounded"
+            />
+            <button
+              type="button"
+              onClick={handleAddSearchWork}
+              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            >
+              追加
+            </button>
+          </div>
+          {searchWorkInput.category === '__NEW__' && (
+            <div className="flex gap-2">
+              <div className="w-1/3"></div>
+              <input
+                type="text"
+                value={searchWorkInput.newCategoryName}
+                onChange={(e) => setSearchWorkInput({ ...searchWorkInput, newCategoryName: e.target.value })}
+                placeholder="新しいカテゴリ名（例: タレント、イベント、ハッピーワード）"
+                className="flex-1 px-4 py-2 border rounded bg-yellow-50"
+              />
+              <div className="px-4 py-2 opacity-0">追加</div>
+            </div>
+          )}
         </div>
 
         <div className="space-y-4">
