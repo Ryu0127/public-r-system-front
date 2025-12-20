@@ -132,11 +132,6 @@ export const buildTwitterSearchUrl = (filters: EgoSearchFilters): string => {
     searchParts.push('-filter:replies');
   }
 
-  // リツイートを除外
-  if (filters.excludeRetweets) {
-    searchParts.push('-filter:retweets');
-  }
-
   // 除外ワード
   if (filters.excludeWords.enabled && filters.excludeWords.selectedWords.length > 0) {
     const excludeParts = filters.excludeWords.selectedWords.map(
@@ -209,10 +204,6 @@ export const buildSearchQueryPreview = (filters: EgoSearchFilters): string => {
 
   if (filters.excludeReplies) {
     searchParts.push('-filter:replies');
-  }
-
-  if (filters.excludeRetweets) {
-    searchParts.push('-filter:retweets');
   }
 
   if (filters.excludeWords.enabled && filters.excludeWords.selectedWords.length > 0) {
