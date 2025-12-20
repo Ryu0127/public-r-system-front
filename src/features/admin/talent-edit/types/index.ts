@@ -6,7 +6,7 @@
  * 検索ワードグループ
  */
 export interface SearchWordGroup {
-  gropuName: string; // Note: API has typo "gropu" instead of "group"
+  groupName: string; // Note: API has typo "gropu" instead of "group"
   keywords: string[];
 }
 
