@@ -20,7 +20,7 @@ const EventsCalendarContainer: React.FC = () => {
       isLoading: true,
       sidebarVisible: false,
       viewMode: 'calendar',
-      selectedFilters: ['イベント申込', 'イベント当落-入金'], // デフォルトで全て選択
+      selectedFilters: ['イベント申込', 'イベント当落-入金', 'live', 'コラボイベント', 'ポップアップストア'], // デフォルトで全て選択
     },
     data: {
       eventsMap: {},
