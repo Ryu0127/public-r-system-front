@@ -97,30 +97,16 @@ const isToday = (date: Date): boolean => {
  * イベントタイプのアイコンを取得
  */
 const getEventTypeIcon = (type: HololiveEvent['type']): string => {
-  switch (type) {
-    case 'anniversary':
-      return '🎉';
-    case 'live':
-      return '🎤';
-    case 'concert':
-      return '🎵';
-    case 'meet':
-      return '🤝';
-    case 'collab':
-      return '👥';
-    case 'birthday':
-      return '🎂';
-    case 'goods':
-      return '🛍️';
-    case 'voice':
-      return '🎧';
-    case 'application':
-      return '📝';
-    case 'lottery-payment':
-      return '💰';
-    default:
-      return '📅';
-  }
+  const iconMap: { [key: string]: string } = {
+    'live': '🎤',
+    'ファンミーティング': '🤝',
+    'コラボイベント': '👥',
+    'ポップアップストア': '🛍️',
+    'リアルイベント': '🎪',
+    'イベント申込': '📝',
+    'イベント当落-入金': '💰',
+  };
+  return iconMap[type] || '📅';
 };
 
 /**

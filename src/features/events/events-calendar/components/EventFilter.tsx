@@ -7,33 +7,34 @@ interface EventFilterProps {
 }
 
 /**
- * イベントフィルターコンポーネント
+ * イベントフィルターコンポーネント（チェックボックス形式）
  */
 const EventFilter: React.FC<EventFilterProps> = ({ selectedFilters, onToggleFilter }) => {
   const filterOptions: { value: FilterCategory; label: string }[] = [
-    { value: 'streaming', label: '記念配信' },
-    { value: 'event', label: 'イベント' },
-    { value: 'application', label: 'イベント申込' },
-    { value: 'lottery-payment', label: 'イベント当落-入金' },
-    { value: 'goods', label: '期間限定グッズ/ボイス' },
+    { value: 'イベント申込', label: 'イベント申込' },
+    { value: 'イベント当落-入金', label: 'イベント当落-入金' },
   ];
 
   return (
-    <div className="flex items-center gap-2 flex-wrap">
+    <div className="flex items-center gap-4 flex-wrap">
+      <span className="text-sm font-medium text-gray-700">表示項目:</span>
       {filterOptions.map((option) => {
         const isSelected = selectedFilters.includes(option.value);
         return (
-          <button
+          <label
             key={option.value}
-            onClick={() => onToggleFilter(option.value)}
-            className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
-              isSelected
-                ? 'bg-gradient-to-r from-amber-400 to-orange-400 text-white shadow-md'
-                : 'bg-white text-gray-600 border border-gray-300 hover:border-amber-400 hover:text-amber-600'
-            }`}
+            className="flex items-center gap-2 cursor-pointer group"
           >
-            {option.label}
-          </button>
+            <input
+              type="checkbox"
+              checked={isSelected}
+              onChange={() => onToggleFilter(option.value)}
+              className="w-4 h-4 rounded border-gray-300 text-amber-500 focus:ring-amber-500 cursor-pointer"
+            />
+            <span className="text-sm font-medium text-gray-700 group-hover:text-amber-600 transition-colors">
+              {option.label}
+            </span>
+          </label>
         );
       })}
     </div>

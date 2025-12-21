@@ -11,60 +11,23 @@ interface EventDetailModalProps {
  * イベントタイプのアイコンを取得
  */
 const getEventTypeIcon = (type: HololiveEvent['type']): string => {
-  switch (type) {
-    case 'anniversary':
-      return '🎉';
-    case 'live':
-      return '🎤';
-    case 'concert':
-      return '🎵';
-    case 'meet':
-      return '🤝';
-    case 'collab':
-      return '👥';
-    case 'birthday':
-      return '🎂';
-    case 'goods':
-      return '🛍️';
-    case 'voice':
-      return '🎧';
-    case 'application':
-      return '📝';
-    case 'lottery-payment':
-      return '💰';
-    default:
-      return '📅';
-  }
+  const iconMap: { [key: string]: string } = {
+    'live': '🎤',
+    'ファンミーティング': '🤝',
+    'コラボイベント': '👥',
+    'ポップアップストア': '🛍️',
+    'リアルイベント': '🎪',
+    'イベント申込': '📝',
+    'イベント当落-入金': '💰',
+  };
+  return iconMap[type] || '📅';
 };
 
 /**
- * イベントタイプの表示名を取得
+ * イベントタイプの表示名を取得（APIのtype値がそのまま表示名）
  */
 const getEventTypeName = (type: HololiveEvent['type']): string => {
-  switch (type) {
-    case 'anniversary':
-      return '記念配信';
-    case 'live':
-      return 'ライブ';
-    case 'concert':
-      return 'コンサート';
-    case 'meet':
-      return 'リアルイベント';
-    case 'collab':
-      return 'コラボ配信';
-    case 'birthday':
-      return '誕生日配信';
-    case 'goods':
-      return 'グッズ';
-    case 'voice':
-      return 'ボイス';
-    case 'application':
-      return 'イベント申込';
-    case 'lottery-payment':
-      return 'イベント当落-入金';
-    default:
-      return 'その他';
-  }
+  return type; // APIのtype値がそのまま表示名
 };
 
 /**

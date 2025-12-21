@@ -1,49 +1,23 @@
-import { EventType, FilterCategory, EventsMap } from '../types';
-
-/**
- * イベントタイプからフィルターカテゴリへのマッピング
- */
-export const getEventCategory = (eventType: EventType): FilterCategory => {
-  switch (eventType) {
-    case 'anniversary':
-    case 'birthday':
-    case 'collab':
-      return 'streaming';
-    case 'live':
-    case 'concert':
-    case 'meet':
-      return 'event';
-    case 'application': // イベント申込は個別カテゴリ
-      return 'application';
-    case 'lottery-payment': // イベント当落-入金は個別カテゴリ
-      return 'lottery-payment';
-    case 'goods':
-    case 'voice':
-      return 'goods';
-    case 'other':
-    default:
-      return 'streaming'; // デフォルトは配信イベント
-  }
-};
+import { FilterCategory, EventsMap } from '../types';
 
 /**
  * フィルターに基づいてイベントマップをフィルタリング
+ * selectedFiltersに含まれているtypeのイベントのみを表示
  */
 export const filterEventsMap = (
   eventsMap: EventsMap,
   selectedFilters: FilterCategory[]
 ): EventsMap => {
-  // フィルターが選択されていない場合はすべて表示
-  if (selectedFilters.length === 0) {
-    return eventsMap;
-  }
-
   const filteredMap: EventsMap = {};
 
   Object.keys(eventsMap).forEach((dateKey) => {
     const filteredEvents = eventsMap[dateKey].filter((event) => {
-      const category = getEventCategory(event.type);
-      return selectedFilters.includes(category);
+      // フィルター対象のtypeの場合、selectedFiltersに含まれているかチェック
+      if (event.type === 'イベント申込' || event.type === 'イベント当落-入金') {
+        return selectedFilters.includes(event.type);
+      }
+      // フィルター対象外のtypeは常に表示
+      return true;
     });
 
     if (filteredEvents.length > 0) {
