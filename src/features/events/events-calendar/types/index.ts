@@ -1,25 +1,12 @@
 /**
- * イベントの種類
+ * イベントの種類（APIから返される文字列）
  */
-export type EventType =
-  | 'anniversary' // 記念配信
-  | 'live'        // ライブ
-  | 'concert'     // コンサート
-  | 'meet'        // リアルイベント・ミート
-  | 'collab'      // コラボ配信
-  | 'birthday'    // 誕生日配信
-  | 'goods'       // グッズ
-  | 'voice'       // ボイス
-  | 'application' // イベント申込
-  | 'other';      // その他
+export type EventType = string;
 
 /**
- * フィルターカテゴリ
+ * フィルターカテゴリ（APIのtype値に対応）
  */
-export type FilterCategory =
-  | 'streaming'   // 配信イベント（記念配信、誕生日、コラボ）
-  | 'event'       // イベント（ライブ、コンサート、ミート、イベント申込）
-  | 'goods';      // グッズ/ボイス
+export type FilterCategory = string;
 
 /**
  * 表示モード

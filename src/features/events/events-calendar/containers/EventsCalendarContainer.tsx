@@ -20,7 +20,7 @@ const EventsCalendarContainer: React.FC = () => {
       isLoading: true,
       sidebarVisible: false,
       viewMode: 'calendar',
-      selectedFilters: [], // 初期状態ではすべて表示
+      selectedFilters: ['イベント申込', 'イベント当落-入金'], // デフォルトで全て選択
     },
     data: {
       eventsMap: {},
