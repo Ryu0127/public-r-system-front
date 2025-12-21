@@ -64,11 +64,23 @@ const transformEventsToMap = (events: HololiveEvent[]): EventsMap => {
   console.log('🔍 transformEventsToMap - すべてのイベントを表示（statusフィルタリング無効）');
 
   events.forEach((event) => {
-    const dateKey = event.date;
-    if (!eventsMap[dateKey]) {
-      eventsMap[dateKey] = [];
+    // 開始日と終了日を取得
+    const startDate = new Date(event.date);
+    const endDate = event.endDate ? new Date(event.endDate) : startDate;
+
+    // イベントの全期間にわたってマッピング
+    const currentDate = new Date(startDate);
+    while (currentDate <= endDate) {
+      const dateKey = currentDate.toISOString().split('T')[0];
+      if (!eventsMap[dateKey]) {
+        eventsMap[dateKey] = [];
+      }
+      // 同じイベントが既に追加されていないかチェック
+      if (!eventsMap[dateKey].some(e => e.id === event.id)) {
+        eventsMap[dateKey].push(event);
+      }
+      currentDate.setDate(currentDate.getDate() + 1);
     }
-    eventsMap[dateKey].push(event);
   });
 
   console.log('🔍 transformEventsToMap - 生成されたイベントマップ:', eventsMap);
