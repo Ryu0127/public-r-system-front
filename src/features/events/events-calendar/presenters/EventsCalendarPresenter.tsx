@@ -111,6 +111,8 @@ const EventsCalendarPresenter: React.FC<PresenterProps> = ({ state, actions }) =
           <EventFilter
             selectedFilters={state.config.selectedFilters}
             onToggleFilter={actions.toggleFilter}
+            onClearAllFilters={actions.clearAllFilters}
+            onSelectAllFilters={actions.selectAllFilters}
           />
         </div>
 
