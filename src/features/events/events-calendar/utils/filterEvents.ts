@@ -10,10 +10,13 @@ export const filterEventsMap = (
 ): EventsMap => {
   const filteredMap: EventsMap = {};
 
+  // フィルター対象のイベントタイプ
+  const filterableTypes = ['イベント申込', 'イベント当落-入金', 'live', 'コラボイベント', 'ポップアップストア'];
+
   Object.keys(eventsMap).forEach((dateKey) => {
     const filteredEvents = eventsMap[dateKey].filter((event) => {
       // フィルター対象のtypeの場合、selectedFiltersに含まれているかチェック
-      if (event.type === 'イベント申込' || event.type === 'イベント当落-入金') {
+      if (filterableTypes.includes(event.type)) {
         return selectedFilters.includes(event.type);
       }
       // フィルター対象外のtypeは常に表示
