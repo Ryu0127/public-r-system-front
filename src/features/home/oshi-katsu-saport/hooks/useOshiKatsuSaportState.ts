@@ -3,6 +3,7 @@ import { useOshiKatsuSaportApi } from './useOshiKatsuSaportApi';
 import { HomeFeature } from 'hooks/api/home/useHomeFeaturesGetApi';
 import { HomeChangeLog } from 'hooks/api/home/useHomeChangeLogsGetApi';
 import { HomeLimitedTimeTopic } from 'hooks/api/home/useHomeLimitedTimeTopicGetApi';
+import { HOME_FEATURES, HOME_CHANGE_LOGS } from '../data/homeData';
 
 export interface OshiKatsuSaportState {
   config: {
@@ -98,27 +99,12 @@ export const useOshiKatsuSaportState = (
         // ローディング開始
         updateStateGroup.toLoading(setState, true);
 
-        // 並列でAPIを呼び出し
-        const [featuresResult, changeLogsResult, limitedTimeTopicResult] = await Promise.all([
-          api.executeHomeFeaturesGet(),
-          api.executeHomeChangeLogsGet(),
-          api.executeHomeLimitedTimeTopicGet(),
-        ]);
+        // 期間限定トピックのみAPIから取得
+        const limitedTimeTopicResult = await api.executeHomeLimitedTimeTopicGet();
 
-        // イベントカレンダー機能を追加
-        // const eventsCalendarFeature: HomeFeature = {
-        //   id: 'events-calendar',
-        //   title: 'イベントカレンダー',
-        //   description: 'ホロライブのイベントや配信予定をカレンダー形式で確認できます。記念配信、ライブ、グッズ販売などの情報を一目で把握。',
-        //   icon: 'Calendar',
-        //   link: '/events/calendar',
-        //   color: 'purple',
-        // };
-
-        const features = [
-          ...(featuresResult.data?.features ?? []),
-          // eventsCalendarFeature,
-        ];
+        // 静的データを使用
+        const features = HOME_FEATURES;
+        const changeLogs = HOME_CHANGE_LOGS;
 
         // データ更新
         setState(prev => ({
@@ -127,7 +113,7 @@ export const useOshiKatsuSaportState = (
           ...updateState.toData(
             prev,
             features,
-            changeLogsResult.data?.changeLogs ?? [],
+            changeLogs,
             limitedTimeTopicResult.data?.limitedTimeTopic ?? null
           ),
         }));

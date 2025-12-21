@@ -8,6 +8,12 @@ const HashIcon = () => (
   </svg>
 );
 
+const SearchIcon = () => (
+  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+  </svg>
+);
+
 const TrendingUpIcon = () => (
   <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
@@ -29,6 +35,7 @@ const CalendarIcon = () => (
 // アイコンマッピング
 const iconComponents: { [key: string]: React.FC } = {
   Hash: HashIcon,
+  Search: SearchIcon,
   TrendingUp: TrendingUpIcon,
   BarChart3: BarChart3Icon,
   Calendar: CalendarIcon,
