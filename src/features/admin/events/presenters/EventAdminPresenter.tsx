@@ -35,7 +35,8 @@ const EventAdminPresenter: React.FC<EventAdminPresenterProps> = ({
   };
 
   const handleSearchHololiveX = () => {
-    const searchUrl = 'https://x.com/search?q=from:hololivetv&src=typed_query&f=live';
+    const searchQuery = 'from:hololivetv (チケット OR 特設サイト)';
+    const searchUrl = `https://x.com/search?q=${encodeURIComponent(searchQuery)}&src=typed_query&f=live`;
     window.open(searchUrl, '_blank', 'noopener,noreferrer');
   };
 
