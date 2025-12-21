@@ -18,8 +18,9 @@ export type EventType =
  */
 export type FilterCategory =
   | 'streaming'   // 配信イベント（記念配信、誕生日、コラボ）
-  | 'event'       // イベント（ライブ、コンサート、ミート、イベント申込）
-  | 'goods';      // グッズ/ボイス
+  | 'event'       // イベント（ライブ、コンサート、ミート）
+  | 'goods'       // グッズ/ボイス
+  | 'application'; // イベント申込
 
 /**
  * 表示モード
