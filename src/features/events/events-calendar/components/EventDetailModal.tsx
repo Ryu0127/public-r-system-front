@@ -30,6 +30,8 @@ const getEventTypeIcon = (type: HololiveEvent['type']): string => {
       return '🎧';
     case 'application':
       return '📝';
+    case 'lottery-payment':
+      return '💰';
     default:
       return '📅';
   }
@@ -58,6 +60,8 @@ const getEventTypeName = (type: HololiveEvent['type']): string => {
       return 'ボイス';
     case 'application':
       return 'イベント申込';
+    case 'lottery-payment':
+      return 'イベント当落-入金';
     default:
       return 'その他';
   }

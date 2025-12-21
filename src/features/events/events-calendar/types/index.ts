@@ -2,25 +2,27 @@
  * イベントの種類
  */
 export type EventType =
-  | 'anniversary' // 記念配信
-  | 'live'        // ライブ
-  | 'concert'     // コンサート
-  | 'meet'        // リアルイベント・ミート
-  | 'collab'      // コラボ配信
-  | 'birthday'    // 誕生日配信
-  | 'goods'       // グッズ
-  | 'voice'       // ボイス
-  | 'application' // イベント申込
-  | 'other';      // その他
+  | 'anniversary'      // 記念配信
+  | 'live'             // ライブ
+  | 'concert'          // コンサート
+  | 'meet'             // リアルイベント・ミート
+  | 'collab'           // コラボ配信
+  | 'birthday'         // 誕生日配信
+  | 'goods'            // グッズ
+  | 'voice'            // ボイス
+  | 'application'      // イベント申込
+  | 'lottery-payment'  // イベント当落-入金
+  | 'other';           // その他
 
 /**
  * フィルターカテゴリ
  */
 export type FilterCategory =
-  | 'streaming'   // 配信イベント（記念配信、誕生日、コラボ）
-  | 'event'       // イベント（ライブ、コンサート、ミート）
-  | 'goods'       // グッズ/ボイス
-  | 'application'; // イベント申込
+  | 'streaming'        // 配信イベント（記念配信、誕生日、コラボ）
+  | 'event'            // イベント（ライブ、コンサート、ミート）
+  | 'goods'            // グッズ/ボイス
+  | 'application'      // イベント申込
+  | 'lottery-payment'; // イベント当落-入金
 
 /**
  * 表示モード

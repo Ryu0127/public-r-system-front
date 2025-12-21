@@ -15,6 +15,8 @@ export const getEventCategory = (eventType: EventType): FilterCategory => {
       return 'event';
     case 'application': // イベント申込は個別カテゴリ
       return 'application';
+    case 'lottery-payment': // イベント当落-入金は個別カテゴリ
+      return 'lottery-payment';
     case 'goods':
     case 'voice':
       return 'goods';

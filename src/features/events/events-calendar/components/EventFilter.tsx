@@ -14,6 +14,7 @@ const EventFilter: React.FC<EventFilterProps> = ({ selectedFilters, onToggleFilt
     { value: 'streaming', label: '記念配信' },
     { value: 'event', label: 'イベント' },
     { value: 'application', label: 'イベント申込' },
+    { value: 'lottery-payment', label: 'イベント当落-入金' },
     { value: 'goods', label: '期間限定グッズ/ボイス' },
   ];
 

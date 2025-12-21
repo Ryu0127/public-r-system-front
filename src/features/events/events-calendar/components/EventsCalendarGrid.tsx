@@ -116,6 +116,8 @@ const getEventTypeIcon = (type: HololiveEvent['type']): string => {
       return '🎧';
     case 'application':
       return '📝';
+    case 'lottery-payment':
+      return '💰';
     default:
       return '📅';
   }
