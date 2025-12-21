@@ -8,7 +8,7 @@ export const HOME_FEATURES: HomeFeature[] = [
   {
     id: "talent-hashtag-support",
     title: "タレント別 ハッシュタグ投稿/検索 サポート",
-    description: "各タレントごとの応援ハッシュタグを選択して投稿/検索のサポートができます",
+    description: "タレントごとの応援ハッシュタグを選択して、ハッシュタグ投稿や検索をもっと楽しくできるようにサポートします！",
     icon: "Hash",
     link: "/talent-hashtag-support",
     color: "amber"
@@ -16,7 +16,7 @@ export const HOME_FEATURES: HomeFeature[] = [
   {
     id: "ego-search-support",
     title: "エゴサーチ サポート",
-    description: "タレントのエゴサーチをサポートします。検索ワードやアカウント情報を確認できます",
+    description: "タレントごとのエゴサワードや詳細検索を設定でき、エゴサをもっと楽しくできるようにサポートします！",
     icon: "Search",
     link: "/ego-search-support",
     color: "amber"

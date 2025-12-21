@@ -103,12 +103,14 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({ features }) => {
               </div>
 
               {/* タイトル */}
-              <h3
-                className="text-2xl font-bold text-gray-800 mb-3"
-                style={{ fontFamily: "'Playfair Display', serif" }}
-              >
-                {feature.title}
-              </h3>
+              <div className="" style={{ height: '80px' }}>
+                <h3
+                  className="text-2xl font-bold text-gray-800 mb-3"
+                  style={{ fontFamily: "'Playfair Display', serif" }}
+                >
+                  {feature.title}
+                </h3>
+              </div>
 
               {/* 説明 */}
               <p className="text-gray-600 text-sm leading-relaxed">
