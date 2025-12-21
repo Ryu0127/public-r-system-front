@@ -144,38 +144,30 @@ const calculateEventBars = (
         (d) => d.dateKey === formatDateKey(endDate)
       );
 
-      if (eventEndIndex === -1) {
-        // 終了日がカレンダー範囲外の場合、カレンダーの最後まで表示
-        const span = 7 - dayOfWeek;
+      // 終了日がカレンダー範囲外の場合、カレンダーの最後まで表示
+      const finalEndIndex = eventEndIndex === -1 ? calendarDays.length - 1 : eventEndIndex;
+
+      // 週をまたぐ場合、複数のバーに分割
+      let currentIndex = eventStartIndex;
+      let currentWeekRow = weekRow;
+
+      while (currentIndex <= finalEndIndex) {
+        const currentDayOfWeek = currentIndex % 7;
+        const weekEndIndex = Math.min(
+          currentIndex + (6 - currentDayOfWeek),
+          finalEndIndex
+        );
+        const span = weekEndIndex - currentIndex + 1;
+
         eventBars.push({
           event,
-          startCol: dayOfWeek,
+          startCol: currentDayOfWeek,
           span,
-          weekRow,
+          weekRow: currentWeekRow,
         });
-      } else {
-        // 週をまたぐ場合、複数のバーに分割
-        let currentIndex = eventStartIndex;
-        let currentWeekRow = weekRow;
 
-        while (currentIndex <= eventEndIndex) {
-          const currentDayOfWeek = currentIndex % 7;
-          const weekEndIndex = Math.min(
-            currentIndex + (6 - currentDayOfWeek),
-            eventEndIndex
-          );
-          const span = weekEndIndex - currentIndex + 1;
-
-          eventBars.push({
-            event,
-            startCol: currentDayOfWeek,
-            span,
-            weekRow: currentWeekRow,
-          });
-
-          currentIndex = weekEndIndex + 1;
-          currentWeekRow++;
-        }
+        currentIndex = weekEndIndex + 1;
+        currentWeekRow++;
       }
 
       processedEvents.add(event.id);
