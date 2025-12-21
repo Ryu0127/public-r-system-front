@@ -36,6 +36,7 @@ export interface EventsCalendarActions {
   setViewMode: (mode: ViewMode) => void;
   // フィルター変更
   toggleFilter: (category: FilterCategory) => void;
+  clearAllFilters: () => void;
   // データ取得
   fetchMonthData: (month: Date) => void;
   // イベントクリック
@@ -246,6 +247,19 @@ export const useEventsCalendarState = (
       },
       [setState]
     ),
+
+    /**
+     * すべてのフィルターを外す
+     */
+    clearAllFilters: useCallback(() => {
+      setState(prev => ({
+        ...prev,
+        config: {
+          ...prev.config,
+          selectedFilters: [],
+        },
+      }));
+    }, [setState]),
 
     /**
      * 月データ取得（APIから）

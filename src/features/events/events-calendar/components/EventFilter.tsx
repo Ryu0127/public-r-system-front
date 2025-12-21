@@ -4,12 +4,13 @@ import { FilterCategory } from '../types';
 interface EventFilterProps {
   selectedFilters: FilterCategory[];
   onToggleFilter: (category: FilterCategory) => void;
+  onClearAllFilters: () => void;
 }
 
 /**
  * イベントフィルターコンポーネント（チェックボックス形式）
  */
-const EventFilter: React.FC<EventFilterProps> = ({ selectedFilters, onToggleFilter }) => {
+const EventFilter: React.FC<EventFilterProps> = ({ selectedFilters, onToggleFilter, onClearAllFilters }) => {
   const filterOptions: { value: FilterCategory; label: string }[] = [
     { value: 'イベント申込', label: 'イベント申込' },
     { value: 'イベント当落-入金', label: 'イベント当落-入金' },
@@ -40,6 +41,12 @@ const EventFilter: React.FC<EventFilterProps> = ({ selectedFilters, onToggleFilt
           </label>
         );
       })}
+      <button
+        onClick={onClearAllFilters}
+        className="px-3 py-1 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-50 hover:text-gray-800 hover:border-gray-400 transition-colors"
+      >
+        すべて外す
+      </button>
     </div>
   );
 };
