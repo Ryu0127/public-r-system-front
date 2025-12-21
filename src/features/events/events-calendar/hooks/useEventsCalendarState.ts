@@ -37,6 +37,7 @@ export interface EventsCalendarActions {
   // フィルター変更
   toggleFilter: (category: FilterCategory) => void;
   clearAllFilters: () => void;
+  selectAllFilters: () => void;
   // データ取得
   fetchMonthData: (month: Date) => void;
   // イベントクリック
@@ -257,6 +258,26 @@ export const useEventsCalendarState = (
         config: {
           ...prev.config,
           selectedFilters: [],
+        },
+      }));
+    }, [setState]),
+
+    /**
+     * すべてのフィルターを選択
+     */
+    selectAllFilters: useCallback(() => {
+      const allFilters: FilterCategory[] = [
+        'イベント申込',
+        'イベント当落-入金',
+        'live-配信チケット',
+        'コラボイベント',
+        'ポップアップストア',
+      ];
+      setState(prev => ({
+        ...prev,
+        config: {
+          ...prev.config,
+          selectedFilters: allFilters,
         },
       }));
     }, [setState]),
