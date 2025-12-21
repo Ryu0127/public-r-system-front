@@ -1,6 +1,5 @@
 import React from 'react';
 import { HololiveEvent } from '../../../events/events-calendar/types';
-import { EVENT_TYPE_LABELS } from '../../../events/events-calendar/types/eventColors';
 
 interface EventPreviewProps {
   event: HololiveEvent;
@@ -9,7 +8,7 @@ interface EventPreviewProps {
 
 const EventPreview: React.FC<EventPreviewProps> = ({ event, onClose }) => {
   const getTypeLabel = (type: string) => {
-    return EVENT_TYPE_LABELS[type as keyof typeof EVENT_TYPE_LABELS] || type;
+    return type; // APIのtype値がそのまま表示用ラベル
   };
 
   return (

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { HololiveEvent, EventType, EventStatus } from '../../../events/events-calendar/types';
-import { getEventTypeColor, EVENT_TYPE_LABELS } from '../../../events/events-calendar/types/eventColors';
+import { getEventTypeColor } from '../../../events/events-calendar/types/eventColors';
 import TalentSelectorModal from './TalentSelectorModal';
 
 interface EventFormProps {
@@ -45,9 +45,15 @@ const EventForm: React.FC<EventFormProps> = ({ event, onSave, onCancel, onPrevie
 
   const [showTalentModal, setShowTalentModal] = useState(false);
 
-  const eventTypes: { value: EventType; label: string }[] = Object.entries(EVENT_TYPE_LABELS).map(
-    ([value, label]) => ({ value: value as EventType, label })
-  );
+  const eventTypes: { value: EventType; label: string }[] = [
+    { value: 'live', label: 'live' },
+    { value: 'ファンミーティング', label: 'ファンミーティング' },
+    { value: 'コラボイベント', label: 'コラボイベント' },
+    { value: 'ポップアップストア', label: 'ポップアップストア' },
+    { value: 'リアルイベント', label: 'リアルイベント' },
+    { value: 'イベント申込', label: 'イベント申込' },
+    { value: 'イベント当落-入金', label: 'イベント当落-入金' },
+  ];
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
