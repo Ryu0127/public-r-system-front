@@ -152,6 +152,11 @@ const calculateEventBars = (
       let currentWeekRow = weekRow;
 
       while (currentIndex <= finalEndIndex) {
+        // カレンダーの表示範囲（5週分、weekRow 0-4）を超える場合は終了
+        if (currentWeekRow >= 5) {
+          break;
+        }
+
         const currentDayOfWeek = currentIndex % 7;
         const weekEndIndex = Math.min(
           currentIndex + (6 - currentDayOfWeek),
