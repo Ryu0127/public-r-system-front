@@ -56,8 +56,9 @@ const generateCalendarDays = (currentMonth: Date): CalendarDay[] => {
     });
   }
 
-  // 次月の日付を埋める（6週分 = 42日）
-  const remainingDays = 42 - calendarDays.length;
+  // 次月の日付を埋める（週が完全に埋まるまで）
+  const remainder = calendarDays.length % 7;
+  const remainingDays = remainder === 0 ? 0 : 7 - remainder;
   for (let day = 1; day <= remainingDays; day++) {
     const date = new Date(year, month + 1, day);
     calendarDays.push({
@@ -152,11 +153,6 @@ const calculateEventBars = (
       let currentWeekRow = weekRow;
 
       while (currentIndex <= finalEndIndex) {
-        // カレンダーの表示範囲（6週分、weekRow 0-5）を超える場合は終了
-        if (currentWeekRow >= 6) {
-          break;
-        }
-
         const currentDayOfWeek = currentIndex % 7;
         const weekEndIndex = Math.min(
           currentIndex + (6 - currentDayOfWeek),
@@ -193,7 +189,7 @@ const EventsCalendarGrid: React.FC<EventsCalendarGridProps> = ({
   const calendarDays = generateCalendarDays(currentMonth);
   const eventBars = calculateEventBars(calendarDays, eventsMap);
   const weekDays = ['日', '月', '火', '水', '木', '金', '土'];
-  const weeks = 6; // 6週分表示
+  const weeks = Math.ceil(calendarDays.length / 7); // 動的に週数を計算
 
   // 週ごとのイベントバーをグループ化
   const eventBarsByWeek: { [week: number]: EventBar[] } = {};
@@ -204,13 +200,13 @@ const EventsCalendarGrid: React.FC<EventsCalendarGridProps> = ({
     eventBarsByWeek[bar.weekRow].push(bar);
   });
 
-  // 全カレンダーセル（42セル = 6週 x 7日）でイベントの行割り当てを計算
+  // 全カレンダーセルでイベントの行割り当てを計算
   const globalBarRowMapping: { [barId: string]: number } = {};
   const globalEventRowMapping: { [eventId: string]: number } = {};
 
-  // 各セル（絶対位置 0-41）での占有行を追跡
+  // 各セルでの占有行を追跡（動的に初期化）
   const cellOccupiedRows: { [cellIndex: number]: Set<number> } = {};
-  for (let i = 0; i < 42; i++) {
+  for (let i = 0; i < calendarDays.length; i++) {
     cellOccupiedRows[i] = new Set();
   }
 
