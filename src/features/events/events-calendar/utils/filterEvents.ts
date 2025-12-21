@@ -11,7 +11,7 @@ export const filterEventsMap = (
   const filteredMap: EventsMap = {};
 
   // フィルター対象のイベントタイプ
-  const filterableTypes = ['イベント申込', 'イベント当落-入金', 'live', 'コラボイベント', 'ポップアップストア'];
+  const filterableTypes = ['イベント申込', 'イベント当落-入金', 'live-配信チケット', 'コラボイベント', 'ポップアップストア'];
 
   Object.keys(eventsMap).forEach((dateKey) => {
     const filteredEvents = eventsMap[dateKey].filter((event) => {
