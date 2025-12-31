@@ -15,6 +15,9 @@ import TalentAdminContainer from 'features/admin/talents/containers/TalentAdminC
 import TalentFormContainer from 'features/admin/talent-edit/containers/TalentFormContainer';
 import AdminDashboardContainer from 'features/admin/dashboard/containers/AdminDashboardContainer';
 import LoginContainer from 'features/auth/login/containers/LoginContainer';
+import WardrobeContainer from 'features/clothing/wardrobe/containers/WardrobeContainer';
+import CoordinateContainer from 'features/clothing/coordinate/containers/CoordinateContainer';
+import CoordinateListContainer from 'features/clothing/coordinate-list/containers/CoordinateListContainer';
 import './App.css';
 
 // ページ遷移を追跡するコンポーネント
@@ -49,6 +52,10 @@ function App() {
         <Route path="/life/life-schedule-month" element={<LifeScheduleMonthContainer />} />
         {/* イベントカレンダー */}
         <Route path="/events/calendar" element={<EventsCalendarContainer />} />
+        {/* 洋服管理・コーディネート */}
+        <Route path="/clothing/wardrobe" element={<WardrobeContainer />} />
+        <Route path="/clothing/coordinate" element={<CoordinateContainer />} />
+        <Route path="/clothing/coordinate-list" element={<CoordinateListContainer />} />
         {/* 管理画面ダッシュボード */}
         <Route path="/admin/dashboard" element={<AdminDashboardContainer />} />
         {/* イベント管理画面 */}
