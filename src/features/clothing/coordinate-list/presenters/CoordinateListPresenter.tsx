@@ -22,7 +22,7 @@ export const CoordinateListPresenter: React.FC<CoordinateListPresenterProps> = (
   onModalClose,
 }) => {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
       <CoordinateListHeader />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <CoordinateGrid

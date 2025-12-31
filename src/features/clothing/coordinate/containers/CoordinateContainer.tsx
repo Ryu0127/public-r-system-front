@@ -8,6 +8,7 @@ export const CoordinateContainer: React.FC = () => {
   const {
     formData,
     selectedItems,
+    clothingItems,
     setFormData,
     selectItem,
     getItemsByCategory,
@@ -26,6 +27,7 @@ export const CoordinateContainer: React.FC = () => {
       onFormChange={setFormData}
       onSelectItem={selectItem}
       getItemsByCategory={getItemsByCategory}
+      allItems={clothingItems}
       onSave={handleSave}
     />
   );
