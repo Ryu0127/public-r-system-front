@@ -8,6 +8,7 @@ import HashtagSearchContainer from 'features/oshi-katsu-saport/hashtag-search/co
 import EgoSearchContainer from 'features/oshi-katsu-saport/ego-search/containers/EgoSearchContainer';
 import LifeScheduleDayContainer from 'features/life/life-schedule-day/containers/LifeScheduleDayContainer';
 import LifeScheduleMonthContainer from 'features/life/life-schedule-month/containers/LifeScheduleMonthContainer';
+import DashboardContainer from 'features/life/dashboard/containers/DashboardContainer';
 import EventsCalendarContainer from 'features/events/events-calendar/containers/EventsCalendarContainer';
 import EventAdminContainer from 'features/admin/events/containers/EventAdminContainer';
 import EventFormContainer from 'features/admin/event-edit/containers/EventFormContainer';
@@ -45,6 +46,7 @@ function App() {
         <Route path="/talent-hashtag-support" element={<HashtagSearchContainer />} />
         <Route path="/ego-search-support" element={<EgoSearchContainer />} />
         {/* 生活管理システム */}
+        <Route path="/life/dashboard" element={<DashboardContainer />} />
         <Route path="/life/life-schedule-day" element={<LifeScheduleDayContainer />} />
         <Route path="/life/life-schedule-month" element={<LifeScheduleMonthContainer />} />
         {/* イベントカレンダー */}
