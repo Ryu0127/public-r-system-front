@@ -46,29 +46,23 @@ const DashboardPresenter: React.FC<PresenterProps> = ({
 
             {/* メインコンテンツ */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* 左カラム：天気情報 */}
-                <div className="lg:col-span-2">
-                  <WeatherWidget
-                    currentWeather={state.data.currentWeather}
-                    weeklyWeather={state.data.weeklyWeather}
-                  />
-                </div>
+              <div className="space-y-6">
+                {/* 天気エリア */}
+                <WeatherWidget
+                  currentWeather={state.data.currentWeather}
+                  weeklyWeather={state.data.weeklyWeather}
+                />
 
-                {/* 右カラム：予定 */}
-                <div className="lg:col-span-1">
-                  <ScheduleWidget schedules={state.data.schedules} />
-                </div>
+                {/* SwitchBotエリア */}
+                <SwitchBotWidget
+                  devices={state.data.devices}
+                  onToggleDevice={actions.toggleDevice}
+                  onChangeAirconMode={actions.changeAirconMode}
+                  onChangeAirconTemp={actions.changeAirconTemp}
+                />
 
-                {/* 下部：SwitchBotデバイス */}
-                <div className="lg:col-span-3">
-                  <SwitchBotWidget
-                    devices={state.data.devices}
-                    onToggleDevice={actions.toggleDevice}
-                    onChangeAirconMode={actions.changeAirconMode}
-                    onChangeAirconTemp={actions.changeAirconTemp}
-                  />
-                </div>
+                {/* スケジュールエリア */}
+                <ScheduleWidget schedules={state.data.schedules} />
               </div>
             </div>
           </div>
