@@ -50,7 +50,7 @@ const DashboardPresenter: React.FC<PresenterProps> = ({
                 {/* 天気エリア */}
                 <WeatherWidget
                   currentWeather={state.data.currentWeather}
-                  hourlyWeather={state.data.hourlyWeather}
+                  dailyWeather={state.data.dailyWeather}
                 />
 
                 {/* SwitchBotエリア */}

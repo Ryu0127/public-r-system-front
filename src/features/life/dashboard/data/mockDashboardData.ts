@@ -2,11 +2,13 @@
  * ダッシュボード用のモックデータ
  */
 
-export interface HourlyWeather {
-  time: string;
+export interface DailyWeather {
+  date: string;
+  dayLabel: string;
   weatherIcon: string;
   weatherText: string;
-  temperature: number;
+  maxTemp: number;
+  minTemp: number;
   precipitationProbability: number;
 }
 
@@ -53,28 +55,34 @@ export const mockCurrentWeather: CurrentWeather = {
 };
 
 /**
- * 3時間ごとの天気予報
+ * 3日分の天気予報
  */
-export const mockHourlyWeather: HourlyWeather[] = [
+export const mockDailyWeather: DailyWeather[] = [
   {
-    time: '3時間後',
+    date: '2026-01-02',
+    dayLabel: '今日',
     weatherIcon: '☀️',
     weatherText: '晴れ',
-    temperature: 13,
+    maxTemp: 12,
+    minTemp: 5,
     precipitationProbability: 10,
   },
   {
-    time: '6時間後',
+    date: '2026-01-03',
+    dayLabel: '明日',
     weatherIcon: '⛅',
     weatherText: '晴れ時々曇り',
-    temperature: 11,
+    maxTemp: 13,
+    minTemp: 6,
     precipitationProbability: 20,
   },
   {
-    time: '9時間後',
+    date: '2026-01-04',
+    dayLabel: '明後日',
     weatherIcon: '☁️',
     weatherText: '曇り',
-    temperature: 9,
+    maxTemp: 11,
+    minTemp: 7,
     precipitationProbability: 30,
   },
 ];

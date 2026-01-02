@@ -16,7 +16,7 @@ const initialState: DashboardState = {
       windSpeed: 0,
       location: '',
     },
-    hourlyWeather: [],
+    dailyWeather: [],
     schedules: [],
     devices: [],
   },
