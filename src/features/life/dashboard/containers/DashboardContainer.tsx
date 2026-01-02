@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { useAuth } from 'hooks/auth/useAuth';
 import { DashboardState, useDashboardState } from '../hooks/useDashboardState';
 import DashboardPresenter from '../presenters/DashboardPresenter';
 
@@ -24,7 +23,6 @@ const initialState: DashboardState = {
 };
 
 const DashboardContainer: React.FC = () => {
-  const { isAuthenticated, isChecking } = useAuth();
   const [state, setState] = useState<DashboardState>(initialState);
   const [sidebarVisible, setSidebarVisible] = useState(false);
   const { actions } = useDashboardState(state, setState);
@@ -36,10 +34,6 @@ const DashboardContainer: React.FC = () => {
   const handleCloseSidebar = () => {
     setSidebarVisible(false);
   };
-
-  if (isChecking || !isAuthenticated) {
-    return null;
-  }
 
   return (
     <>
