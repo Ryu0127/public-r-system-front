@@ -2,13 +2,11 @@
  * ダッシュボード用のモックデータ
  */
 
-export interface WeatherData {
-  date: string;
-  dayOfWeek: string;
+export interface HourlyWeather {
+  time: string;
   weatherIcon: string;
   weatherText: string;
-  maxTemp: number;
-  minTemp: number;
+  temperature: number;
   precipitationProbability: number;
 }
 
@@ -46,7 +44,7 @@ export interface SwitchBotDevice {
  * 現在の天気情報
  */
 export const mockCurrentWeather: CurrentWeather = {
-  temperature: 24,
+  temperature: 12,
   weatherIcon: '☀️',
   weatherText: '晴れ',
   humidity: 65,
@@ -55,71 +53,29 @@ export const mockCurrentWeather: CurrentWeather = {
 };
 
 /**
- * 一週間の天気予報
+ * 3時間ごとの天気予報
  */
-export const mockWeeklyWeather: WeatherData[] = [
+export const mockHourlyWeather: HourlyWeather[] = [
   {
-    date: '2026-01-02',
-    dayOfWeek: '木',
+    time: '3時間後',
     weatherIcon: '☀️',
     weatherText: '晴れ',
-    maxTemp: 12,
-    minTemp: 5,
+    temperature: 13,
     precipitationProbability: 10,
   },
   {
-    date: '2026-01-03',
-    dayOfWeek: '金',
+    time: '6時間後',
     weatherIcon: '⛅',
     weatherText: '晴れ時々曇り',
-    maxTemp: 13,
-    minTemp: 6,
+    temperature: 11,
     precipitationProbability: 20,
   },
   {
-    date: '2026-01-04',
-    dayOfWeek: '土',
+    time: '9時間後',
     weatherIcon: '☁️',
     weatherText: '曇り',
-    maxTemp: 11,
-    minTemp: 7,
+    temperature: 9,
     precipitationProbability: 30,
-  },
-  {
-    date: '2026-01-05',
-    dayOfWeek: '日',
-    weatherIcon: '🌧️',
-    weatherText: '雨',
-    maxTemp: 10,
-    minTemp: 8,
-    precipitationProbability: 70,
-  },
-  {
-    date: '2026-01-06',
-    dayOfWeek: '月',
-    weatherIcon: '⛅',
-    weatherText: '曇り時々晴れ',
-    maxTemp: 12,
-    minTemp: 6,
-    precipitationProbability: 20,
-  },
-  {
-    date: '2026-01-07',
-    dayOfWeek: '火',
-    weatherIcon: '☀️',
-    weatherText: '晴れ',
-    maxTemp: 14,
-    minTemp: 5,
-    precipitationProbability: 10,
-  },
-  {
-    date: '2026-01-08',
-    dayOfWeek: '水',
-    weatherIcon: '☀️',
-    weatherText: '晴れ',
-    maxTemp: 15,
-    minTemp: 6,
-    precipitationProbability: 0,
   },
 ];
 
