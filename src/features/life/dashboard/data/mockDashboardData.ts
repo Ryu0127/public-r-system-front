@@ -55,12 +55,12 @@ export const mockCurrentWeather: CurrentWeather = {
 };
 
 /**
- * 3日分の天気予報
+ * 1週間分の天気予報
  */
 export const mockDailyWeather: DailyWeather[] = [
   {
-    date: '2026-01-02',
-    dayLabel: '今日',
+    date: '2026-01-03',
+    dayLabel: '1/3 (金)',
     weatherIcon: '☀️',
     weatherText: '晴れ',
     maxTemp: 12,
@@ -68,8 +68,8 @@ export const mockDailyWeather: DailyWeather[] = [
     precipitationProbability: 10,
   },
   {
-    date: '2026-01-03',
-    dayLabel: '明日',
+    date: '2026-01-04',
+    dayLabel: '1/4 (土)',
     weatherIcon: '⛅',
     weatherText: '晴れ時々曇り',
     maxTemp: 13,
@@ -77,13 +77,49 @@ export const mockDailyWeather: DailyWeather[] = [
     precipitationProbability: 20,
   },
   {
-    date: '2026-01-04',
-    dayLabel: '明後日',
+    date: '2026-01-05',
+    dayLabel: '1/5 (日)',
     weatherIcon: '☁️',
     weatherText: '曇り',
     maxTemp: 11,
     minTemp: 7,
     precipitationProbability: 30,
+  },
+  {
+    date: '2026-01-06',
+    dayLabel: '1/6 (月)',
+    weatherIcon: '🌧️',
+    weatherText: '雨',
+    maxTemp: 10,
+    minTemp: 8,
+    precipitationProbability: 70,
+  },
+  {
+    date: '2026-01-07',
+    dayLabel: '1/7 (火)',
+    weatherIcon: '⛅',
+    weatherText: '曇り時々晴れ',
+    maxTemp: 12,
+    minTemp: 6,
+    precipitationProbability: 20,
+  },
+  {
+    date: '2026-01-08',
+    dayLabel: '1/8 (水)',
+    weatherIcon: '☀️',
+    weatherText: '晴れ',
+    maxTemp: 14,
+    minTemp: 5,
+    precipitationProbability: 10,
+  },
+  {
+    date: '2026-01-09',
+    dayLabel: '1/9 (木)',
+    weatherIcon: '☀️',
+    weatherText: '晴れ',
+    maxTemp: 15,
+    minTemp: 6,
+    precipitationProbability: 0,
   },
 ];
 

@@ -34,15 +34,15 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = ({ currentWeather, dailyWeat
         </div>
       </div>
 
-      {/* 3日分の天気予報タイル */}
+      {/* 週間天気予報タイル（スクロール可能） */}
       <div className="bg-white rounded-lg shadow-md p-6">
-        <h2 className="text-xl font-bold text-gray-800 mb-4">3日間の天気</h2>
+        <h2 className="text-xl font-bold text-gray-800 mb-4">週間天気</h2>
 
-        <div className="space-y-3">
+        <div className="overflow-y-auto max-h-[400px] space-y-3 pr-2" style={{ scrollbarWidth: 'thin' }}>
           {dailyWeather.map((day, index) => (
             <div
               key={index}
-              className="bg-gray-50 rounded-lg p-4 flex items-center justify-between"
+              className="bg-gray-50 rounded-lg p-4 flex items-center justify-between flex-shrink-0"
             >
               <div className="flex items-center gap-4 flex-1">
                 <span className="text-4xl">{day.weatherIcon}</span>
