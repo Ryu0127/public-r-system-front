@@ -2,10 +2,12 @@ import { useEffect } from 'react';
 import {
   CurrentWeather,
   DailyWeather,
+  HourlyWeather,
   ScheduleItem,
   SwitchBotDevice,
   mockCurrentWeather,
   mockDailyWeather,
+  mockHourlyWeather,
   mockSchedules,
   mockSwitchBotDevices,
 } from '../data/mockDashboardData';
@@ -17,6 +19,7 @@ export interface DashboardState {
   data: {
     currentWeather: CurrentWeather;
     dailyWeather: DailyWeather[];
+    hourlyWeather: HourlyWeather[];
     schedules: ScheduleItem[];
     devices: SwitchBotDevice[];
   };
@@ -53,6 +56,7 @@ export const useDashboardState = (
           data: {
             currentWeather: mockCurrentWeather,
             dailyWeather: mockDailyWeather,
+            hourlyWeather: mockHourlyWeather,
             schedules: mockSchedules,
             devices: mockSwitchBotDevices,
           },

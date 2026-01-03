@@ -12,6 +12,13 @@ export interface DailyWeather {
   precipitationProbability: number;
 }
 
+export interface HourlyWeather {
+  time: string;
+  weatherIcon: string;
+  temperature: number;
+  precipitationProbability: number;
+}
+
 export interface CurrentWeather {
   temperature: number;
   weatherIcon: string;
@@ -53,6 +60,66 @@ export const mockCurrentWeather: CurrentWeather = {
   windSpeed: 3.2,
   location: '東京都渋谷区',
 };
+
+/**
+ * 当日の3時間ごとの天気予報
+ */
+export const mockHourlyWeather: HourlyWeather[] = [
+  {
+    time: '00:00',
+    weatherIcon: '🌙',
+    temperature: 8,
+    precipitationProbability: 10,
+  },
+  {
+    time: '03:00',
+    weatherIcon: '🌙',
+    temperature: 7,
+    precipitationProbability: 10,
+  },
+  {
+    time: '06:00',
+    weatherIcon: '🌅',
+    temperature: 6,
+    precipitationProbability: 5,
+  },
+  {
+    time: '09:00',
+    weatherIcon: '☀️',
+    temperature: 10,
+    precipitationProbability: 0,
+  },
+  {
+    time: '12:00',
+    weatherIcon: '☀️',
+    temperature: 12,
+    precipitationProbability: 0,
+  },
+  {
+    time: '15:00',
+    weatherIcon: '☀️',
+    temperature: 13,
+    precipitationProbability: 5,
+  },
+  {
+    time: '18:00',
+    weatherIcon: '🌆',
+    temperature: 10,
+    precipitationProbability: 10,
+  },
+  {
+    time: '21:00',
+    weatherIcon: '🌙',
+    temperature: 8,
+    precipitationProbability: 15,
+  },
+  {
+    time: '24:00',
+    weatherIcon: '🌙',
+    temperature: 7,
+    precipitationProbability: 20,
+  },
+];
 
 /**
  * 1週間分の天気予報

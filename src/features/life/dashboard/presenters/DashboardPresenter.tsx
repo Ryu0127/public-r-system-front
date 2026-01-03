@@ -1,6 +1,7 @@
 import React from 'react';
 import { DashboardState, DashboardActions } from '../hooks/useDashboardState';
 import WeatherWidget from '../components/WeatherWidget';
+import HourlyWeatherWidget from '../components/HourlyWeatherWidget';
 import ScheduleWidget from '../components/ScheduleWidget';
 import SwitchBotWidget from '../components/SwitchBotWidget';
 import Loading from 'components/Loading';
@@ -52,6 +53,9 @@ const DashboardPresenter: React.FC<PresenterProps> = ({
                   currentWeather={state.data.currentWeather}
                   dailyWeather={state.data.dailyWeather}
                 />
+
+                {/* 時間ごとの天気エリア */}
+                <HourlyWeatherWidget hourlyWeather={state.data.hourlyWeather} />
 
                 {/* SwitchBotエリア */}
                 <SwitchBotWidget
