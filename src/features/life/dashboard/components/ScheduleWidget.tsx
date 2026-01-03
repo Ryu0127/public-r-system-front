@@ -53,28 +53,28 @@ const ScheduleWidget: React.FC<ScheduleWidgetProps> = ({ schedules }) => {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
-      <h2 className="text-xl font-bold text-gray-800 mb-4">予定</h2>
+    <div className="bg-white rounded-lg shadow-md p-4">
+      <h2 className="text-lg font-bold text-gray-800 mb-2">予定</h2>
 
-      <div className="space-y-4">
+      <div className="space-y-3">
         {sortedDates.length === 0 ? (
-          <p className="text-gray-500 text-center py-8">予定がありません</p>
+          <p className="text-gray-500 text-center py-4">予定がありません</p>
         ) : (
           sortedDates.slice(0, 3).map((date) => (
-            <div key={date} className="border-b border-gray-200 last:border-b-0 pb-4 last:pb-0">
-              <h3 className="text-sm font-semibold text-gray-700 mb-3">{formatDate(date)}</h3>
+            <div key={date} className="border-b border-gray-200 last:border-b-0 pb-3 last:pb-0">
+              <h3 className="text-xs font-semibold text-gray-700 mb-2">{formatDate(date)}</h3>
               <div className="space-y-2">
                 {groupedSchedules[date].map((schedule) => (
                   <div
                     key={schedule.id}
-                    className="flex items-start gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
+                    className="flex items-start gap-2 p-2 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
                   >
                     <div className="flex-shrink-0">
-                      <span className="text-xl">{getCategoryIcon(schedule.category)}</span>
+                      <span className="text-lg">{getCategoryIcon(schedule.category)}</span>
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="text-sm font-medium text-gray-600">{schedule.time}</span>
+                        <span className="text-xs font-medium text-gray-600">{schedule.time}</span>
                         <span
                           className="w-2 h-2 rounded-full flex-shrink-0"
                           style={{ backgroundColor: schedule.color }}
@@ -94,7 +94,7 @@ const ScheduleWidget: React.FC<ScheduleWidgetProps> = ({ schedules }) => {
       </div>
 
       {sortedDates.length > 3 && (
-        <div className="mt-4 text-center">
+        <div className="mt-3 text-center">
           <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">
             すべての予定を見る →
           </button>

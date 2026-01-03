@@ -47,10 +47,10 @@ const SwitchBotWidget: React.FC<SwitchBotWidgetProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
-      <h2 className="text-xl font-bold text-gray-800 mb-4">SwitchBot デバイス</h2>
+    <div className="bg-white rounded-lg shadow-md p-4">
+      <h2 className="text-lg font-bold text-gray-800 mb-2">SwitchBot デバイス</h2>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {devices.map((device) => (
           <div
             key={device.id}

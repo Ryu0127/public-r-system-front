@@ -37,17 +37,17 @@ const DashboardPresenter: React.FC<PresenterProps> = ({
           <div className="min-h-screen bg-gray-100">
             {/* ヘッダー */}
             <div className="bg-white shadow-sm">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-                <h1 className="text-2xl font-bold text-gray-800">ホームダッシュボード</h1>
-                <p className="text-sm text-gray-600 mt-1">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+                <h1 className="text-xl font-bold text-gray-800">ホームダッシュボード</h1>
+                <p className="text-xs text-gray-600 mt-1">
                   今日の天気、予定、デバイスの状態を一目で確認
                 </p>
               </div>
             </div>
 
             {/* メインコンテンツ */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-              <div className="space-y-6">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+              <div className="space-y-4">
                 {/* 天気エリア */}
                 <WeatherWidget
                   currentWeather={state.data.currentWeather}
