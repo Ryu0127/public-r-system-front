@@ -25,6 +25,7 @@ export const KeywordPresetsSelector: React.FC<KeywordPresetsSelectorProps> = ({
     if (onTalentKeywordsChange) {
       onTalentKeywordsChange({});
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedTalent?.id]);
 
   // タレントが選択されている場合はそのタレントの検索ワードを使用、そうでない場合は固定プリセット
