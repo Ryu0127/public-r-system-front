@@ -9,9 +9,7 @@ import {
 } from '../types';
 import { buildTwitterSearchUrl } from '../utils/buildTwitterSearchUrl';
 import {
-  getTalentAccount,
   saveTalentAccount,
-  getAllTalentAccounts,
 } from '../utils/talentAccountsStorage';
 import {
   getExcludeWords,
@@ -149,7 +147,8 @@ export const useEgoSearchState = (
           config: { ...prev.config, isLoading: false },
         }));
       }
-    }, [talentsApi]),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [talentsApi, setState]),
 
     /**
      * Xで検索
@@ -167,7 +166,8 @@ export const useEgoSearchState = (
         ...prev,
         filters: { ...prev.filters, searchKeywords: keywords },
       }));
-    }, []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [setState]),
 
     /**
      * プリセットからキーワードを追加
@@ -190,7 +190,8 @@ export const useEgoSearchState = (
           filters: { ...prev.filters, searchKeywords: [...currentKeywords, ...keywords] },
         };
       });
-    }, []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [setState]),
 
     /**
      * タレント別検索ワード設定（カテゴリごと）
@@ -203,7 +204,8 @@ export const useEgoSearchState = (
           talentKeywords: { selectedByCategory },
         },
       }));
-    }, []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [setState]),
 
     /**
      * 日付範囲プリセット設定
@@ -216,7 +218,8 @@ export const useEgoSearchState = (
           dateRange: { preset },
         },
       }));
-    }, []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [setState]),
 
     /**
      * カスタム日付範囲設定
@@ -233,7 +236,8 @@ export const useEgoSearchState = (
           },
         },
       }));
-    }, []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [setState]),
 
     /**
      * タレントアカウントフィルタ有効/無効
@@ -246,7 +250,8 @@ export const useEgoSearchState = (
           talentAccounts: { ...prev.filters.talentAccounts, enabled },
         },
       }));
-    }, []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [setState]),
 
     /**
      * タレントアカウント選択/解除
@@ -271,7 +276,8 @@ export const useEgoSearchState = (
           },
         };
       });
-    }, []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [setState]),
 
     /**
      * タレントアカウント情報を保存
@@ -287,7 +293,8 @@ export const useEgoSearchState = (
         accounts,
       };
       saveTalentAccount(account);
-    }, []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [setState]),
 
     /**
      * 除外ワードフィルタ有効/無効
@@ -300,7 +307,8 @@ export const useEgoSearchState = (
           excludeWords: { ...prev.filters.excludeWords, enabled },
         },
       }));
-    }, []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [setState]),
 
     /**
      * 除外ワード選択/解除
@@ -323,7 +331,8 @@ export const useEgoSearchState = (
           },
         };
       });
-    }, []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [setState]),
 
     /**
      * 除外ワード追加
@@ -342,7 +351,8 @@ export const useEgoSearchState = (
           excludeWords: [...prev.data.excludeWords, newWord],
         },
       }));
-    }, []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [setState]),
 
     /**
      * 除外ワード削除
@@ -366,7 +376,8 @@ export const useEgoSearchState = (
           },
         },
       }));
-    }, []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [setState]),
 
     /**
      * リプライ除外設定
@@ -376,7 +387,8 @@ export const useEgoSearchState = (
         ...prev,
         filters: { ...prev.filters, excludeReplies: exclude },
       }));
-    }, []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [setState]),
 
     /**
      * リツイート除外設定
@@ -386,7 +398,8 @@ export const useEgoSearchState = (
         ...prev,
         filters: { ...prev.filters, excludeRetweets: exclude },
       }));
-    }, []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [setState]),
 
     /**
      * フィルタリセット
@@ -396,7 +409,8 @@ export const useEgoSearchState = (
         ...prev,
         filters: defaultEgoSearchFilters,
       }));
-    }, []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [setState]),
 
     /**
      * ヘルプモーダル開閉
@@ -406,7 +420,8 @@ export const useEgoSearchState = (
         ...prev,
         config: { ...prev.config, isHelpModalOpen: isOpen },
       }));
-    }, []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [setState]),
 
     /**
      * タレント検索クエリ設定
@@ -416,7 +431,8 @@ export const useEgoSearchState = (
         ...prev,
         ui: { ...prev.ui, talentSearchQuery: query },
       }));
-    }, []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [setState]),
 
     /**
      * ドロップダウン開閉
@@ -426,7 +442,8 @@ export const useEgoSearchState = (
         ...prev,
         ui: { ...prev.ui, isDropdownOpen: isOpen },
       }));
-    }, []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [setState]),
 
     /**
      * 検索プレビュー表示/非表示
@@ -436,7 +453,8 @@ export const useEgoSearchState = (
         ...prev,
         config: { ...prev.config, showSearchPreview: show },
       }));
-    }, []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [setState]),
   };
 
   /**

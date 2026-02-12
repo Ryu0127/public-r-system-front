@@ -183,7 +183,8 @@ export const useHashtagSearchState = (
         console.error('Failed to fetch talents:', error);
         updateStateGroup.toLoading(setState, false);
       }
-    }, [api]),
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [api, setState]),
 
     /**
      * タレント別ハッシュタグ取得
@@ -207,7 +208,8 @@ export const useHashtagSearchState = (
         console.error('Failed to fetch hashtags:', error);
         updateStateGroup.toLoading(setState, false);
       }
-    }, [api]),
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [api, setState]),
 
     /**
      * タレント選択
@@ -231,7 +233,8 @@ export const useHashtagSearchState = (
         },
       }));
       actions.fetchTalentHashtags(talent.id);
-    }, []),
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [setState]),
 
     /**
      * モード切り替え
@@ -244,7 +247,8 @@ export const useHashtagSearchState = (
           mode: mode,
         },
       }));
-    }, []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [setState]),
 
     /**
      * タグ選択/解除
@@ -259,7 +263,8 @@ export const useHashtagSearchState = (
             : [...prev.ui.selectedTags, tag],
         },
       }));
-    }, []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [setState]),
 
     /**
      * イベントハッシュタグ選択/解除
@@ -280,7 +285,8 @@ export const useHashtagSearchState = (
           },
         };
       });
-    }, []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [setState]),
 
     /**
      * 選択タグクリア
@@ -294,7 +300,8 @@ export const useHashtagSearchState = (
           selectedEventHashtags: [],
         },
       }));
-    }, []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [setState]),
 
     /**
      * 検索クエリ設定
@@ -307,7 +314,8 @@ export const useHashtagSearchState = (
           searchQuery: query,
         },
       }));
-    }, []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [setState]),
 
     /**
      * タレント検索クエリ設定
@@ -320,7 +328,8 @@ export const useHashtagSearchState = (
           talentSearchQuery: query,
         },
       }));
-    }, []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [setState]),
 
     /**
      * ドロップダウン開閉
@@ -333,7 +342,8 @@ export const useHashtagSearchState = (
           isDropdownOpen: isOpen,
         },
       }));
-    }, []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [setState]),
 
     /**
      * ヘルプモーダル開閉
@@ -346,7 +356,8 @@ export const useHashtagSearchState = (
           isHelpModalOpen: isOpen,
         },
       }));
-    }, []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [setState]),
 
     /**
      * イベントURL含める/含めない
@@ -359,7 +370,8 @@ export const useHashtagSearchState = (
           includeEventUrl: include,
         },
       }));
-    }, []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [setState]),
 
     /**
      * 選択中のハッシュタグ表示/非表示
@@ -372,7 +384,8 @@ export const useHashtagSearchState = (
           showSelectedTags: show,
         },
       }));
-    }, []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [setState]),
 
     /**
      * 検索プレビュー表示/非表示
@@ -385,7 +398,8 @@ export const useHashtagSearchState = (
           showSearchPreview: show,
         },
       }));
-    }, []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [setState]),
 
     /**
      * Xに投稿
@@ -433,7 +447,8 @@ export const useHashtagSearchState = (
           searchQuery: tag,
         },
       }));
-    }, []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [setState]),
   };
 
   /**

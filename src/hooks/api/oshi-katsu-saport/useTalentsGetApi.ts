@@ -16,16 +16,18 @@ export interface Talent {
   twitterAccounts: string[];
 }
 
-const getApiUrl = (): string => {
-  return `${process.env.REACT_APP_API_DOMAIN}/oshi-katsu-saport/talents`;
-};
+// TODO: 実際のAPIが実装されたら使用する
+// const getApiUrl = (): string => {
+//   return `${process.env.REACT_APP_API_DOMAIN}/oshi-katsu-saport/talents`;
+// };
 
 /**
  * /oshi-katsu-saport/talents
  * タレント一覧取得API
  */
 export const useTalentsGetApi = () => {
-  const { loading, error, executeFetch } = useFetchDataTs();
+  // TODO: 実際のAPIが実装されたら executeFetch も取得する
+  const { loading, error } = useFetchDataTs();
 
   // APIリクエスト処理
   const executeTalentsGet = async () => {
