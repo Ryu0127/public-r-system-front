@@ -124,7 +124,6 @@ const calculateEventBars = (
 
   calendarDays.forEach((day, dayIndex) => {
     const weekRow = Math.floor(dayIndex / 7);
-    const dayOfWeek = dayIndex % 7;
     const events = eventsMap[day.dateKey] || [];
 
     events.forEach((event) => {
