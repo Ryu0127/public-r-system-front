@@ -8,6 +8,7 @@ import HashtagSearchContainer from 'features/oshi-katsu-saport/hashtag-search/co
 import EgoSearchContainer from 'features/oshi-katsu-saport/ego-search/containers/EgoSearchContainer';
 import LifeScheduleDayContainer from 'features/life/life-schedule-day/containers/LifeScheduleDayContainer';
 import LifeScheduleMonthContainer from 'features/life/life-schedule-month/containers/LifeScheduleMonthContainer';
+import MealMenuSuggesterContainer from 'features/life/meal-menu-suggester/containers/MealMenuSuggesterContainer';
 import EventsCalendarContainer from 'features/events/events-calendar/containers/EventsCalendarContainer';
 import EventAdminContainer from 'features/admin/events/containers/EventAdminContainer';
 import EventFormContainer from 'features/admin/event-edit/containers/EventFormContainer';
@@ -47,6 +48,7 @@ function App() {
         {/* 生活管理システム */}
         <Route path="/life/life-schedule-day" element={<LifeScheduleDayContainer />} />
         <Route path="/life/life-schedule-month" element={<LifeScheduleMonthContainer />} />
+        <Route path="/life/meal-menu" element={<MealMenuSuggesterContainer />} />
         {/* イベントカレンダー */}
         <Route path="/events/calendar" element={<EventsCalendarContainer />} />
         {/* 管理画面ダッシュボード */}
