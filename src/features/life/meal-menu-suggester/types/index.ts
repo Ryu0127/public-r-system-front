@@ -1,6 +1,7 @@
 export interface MenuItem {
   id: string;
   name: string;
+  nameEn: string;
   description: string;
 }
 
@@ -8,16 +9,16 @@ export type MealTime = 'colazione' | 'pranzo' | 'cena';
 
 export interface MealTimeConfig {
   key: MealTime;
-  labelIt: string;
+  labelEn: string;
   labelJa: string;
-  icon: string;
+  time: string;
 }
 
 export interface DayMenu {
   date: Date;
-  colazione: MenuItem;
-  pranzo: MenuItem;
-  cena: MenuItem;
+  colazione: MenuItem[];
+  pranzo: MenuItem[];
+  cena: MenuItem[];
 }
 
 export interface MealMenuSuggesterState {
@@ -39,7 +40,8 @@ export interface MealMenuSuggesterActions {
     };
     selectDay: (index: number) => void;
   };
-  shuffleMeal: (dayIndex: number, mealTime: MealTime) => void;
+  shuffleMealItem: (dayIndex: number, mealTime: MealTime, itemIndex: number) => void;
+  shuffleSection: (dayIndex: number, mealTime: MealTime) => void;
   shuffleDay: (dayIndex: number) => void;
   shuffleAll: () => void;
 }

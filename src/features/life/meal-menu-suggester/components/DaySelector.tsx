@@ -7,7 +7,6 @@ interface DaySelectorProps {
   onSelectDay: (index: number) => void;
 }
 
-const dayLabels = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'];
 const dayLabelsJa = ['日', '月', '火', '水', '木', '金', '土'];
 
 const DaySelector: React.FC<DaySelectorProps> = ({
@@ -25,40 +24,42 @@ const DaySelector: React.FC<DaySelectorProps> = ({
   };
 
   return (
-    <div className="flex justify-center gap-1 md:gap-2">
+    <div className="flex justify-center gap-1">
       {weekMenus.map((dayMenu, index) => {
         const date = dayMenu.date;
         const dayOfWeek = date.getDay();
         const isSelected = index === selectedDayIndex;
         const today = isToday(date);
+        const isSunday = dayOfWeek === 0;
+        const isSaturday = dayOfWeek === 6;
 
         return (
           <button
             key={index}
             onClick={() => onSelectDay(index)}
             className={`
-              flex flex-col items-center px-2 md:px-3 py-2 transition-all duration-200 border
+              flex flex-col items-center px-2.5 md:px-3.5 py-2 transition-all duration-200
               ${isSelected
-                ? 'border-amber-800/40 bg-amber-50/60 shadow-sm'
-                : 'border-transparent hover:border-amber-800/15 hover:bg-amber-50/30'
+                ? 'bg-stone-800 text-white'
+                : 'bg-white text-stone-600 hover:bg-stone-100'
               }
-              ${today ? 'ring-1 ring-amber-600/30' : ''}
+              ${today && !isSelected ? 'ring-1 ring-stone-400' : ''}
             `}
-            style={{ fontFamily: "'Cormorant Garamond', serif", minWidth: '44px' }}
+            style={{ fontFamily: "'Playfair Display', serif", minWidth: '44px' }}
           >
-            <span className="text-[10px] text-amber-800/50 tracking-wider uppercase">
-              {dayLabels[dayOfWeek]}
+            <span className={`text-[10px] tracking-wider ${
+              isSelected ? 'text-stone-300' :
+              isSunday ? 'text-red-400' :
+              isSaturday ? 'text-blue-400' : 'text-stone-400'
+            }`}>
+              {dayLabelsJa[dayOfWeek]}
             </span>
             <span
               className={`text-lg md:text-xl leading-tight ${
-                isSelected ? 'text-amber-900' : 'text-amber-800/60'
+                isSelected ? 'text-white font-bold' : 'font-normal'
               }`}
-              style={{ fontFamily: "'Playfair Display', serif", fontWeight: isSelected ? 700 : 400 }}
             >
               {date.getDate()}
-            </span>
-            <span className="text-[10px] text-amber-800/40">
-              {dayLabelsJa[dayOfWeek]}
             </span>
           </button>
         );

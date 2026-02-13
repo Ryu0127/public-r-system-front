@@ -1,18 +1,23 @@
 import { useCallback } from 'react';
 import { MealMenuSuggesterState, MealMenuSuggesterActions, MealTime, DayMenu, MenuItem } from '../types';
-import { getMenuItemsByMealTime } from '../data/menuData';
+import { getMenuItemsByMealTime, ITEMS_PER_SECTION } from '../data/menuData';
 
-const getRandomItem = (items: MenuItem[], exclude?: MenuItem): MenuItem => {
-  const filtered = exclude ? items.filter(item => item.id !== exclude.id) : items;
+const getRandomItems = (items: MenuItem[], count: number): MenuItem[] => {
+  const shuffled = [...items].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, count);
+};
+
+const getRandomItem = (items: MenuItem[], exclude: MenuItem): MenuItem => {
+  const filtered = items.filter(item => item.id !== exclude.id);
   return filtered[Math.floor(Math.random() * filtered.length)];
 };
 
 export const generateDayMenu = (date: Date): DayMenu => {
   return {
     date,
-    colazione: getRandomItem(getMenuItemsByMealTime('colazione')),
-    pranzo: getRandomItem(getMenuItemsByMealTime('pranzo')),
-    cena: getRandomItem(getMenuItemsByMealTime('cena')),
+    colazione: getRandomItems(getMenuItemsByMealTime('colazione'), ITEMS_PER_SECTION),
+    pranzo: getRandomItems(getMenuItemsByMealTime('pranzo'), ITEMS_PER_SECTION),
+    cena: getRandomItems(getMenuItemsByMealTime('cena'), ITEMS_PER_SECTION),
   };
 };
 
@@ -38,60 +43,55 @@ export const useMealMenuSuggesterState = (
         toggle: useCallback(() => {
           setState(prev => ({
             ...prev,
-            config: {
-              ...prev.config,
-              sidebarVisible: !prev.config.sidebarVisible,
-            },
+            config: { ...prev.config, sidebarVisible: !prev.config.sidebarVisible },
           }));
         }, [setState]),
         close: useCallback(() => {
           setState(prev => ({
             ...prev,
-            config: {
-              ...prev.config,
-              sidebarVisible: false,
-            },
+            config: { ...prev.config, sidebarVisible: false },
           }));
         }, [setState]),
       },
       selectDay: useCallback((index: number) => {
         setState(prev => ({
           ...prev,
-          config: {
-            ...prev.config,
-            selectedDayIndex: index,
-          },
+          config: { ...prev.config, selectedDayIndex: index },
         }));
       }, [setState]),
     },
 
-    shuffleMeal: useCallback((dayIndex: number, mealTime: MealTime) => {
+    shuffleMealItem: useCallback((dayIndex: number, mealTime: MealTime, itemIndex: number) => {
       setState(prev => {
         const newMenus = [...prev.data.weekMenus];
-        const currentMenu = newMenus[dayIndex];
+        const currentMenu = { ...newMenus[dayIndex] };
         const items = getMenuItemsByMealTime(mealTime);
-        const currentItem = currentMenu[mealTime];
-        newMenus[dayIndex] = {
-          ...currentMenu,
-          [mealTime]: getRandomItem(items, currentItem),
-        };
+        const currentItems = [...currentMenu[mealTime]];
+        currentItems[itemIndex] = getRandomItem(items, currentItems[itemIndex]);
+        currentMenu[mealTime] = currentItems;
+        newMenus[dayIndex] = currentMenu;
         return {
           ...prev,
-          config: {
-            ...prev.config,
-            isShuffling: mealTime,
-          },
-          data: {
-            ...prev.data,
-            weekMenus: newMenus,
-          },
+          data: { ...prev.data, weekMenus: newMenus },
+        };
+      });
+    }, [setState]),
+
+    shuffleSection: useCallback((dayIndex: number, mealTime: MealTime) => {
+      setState(prev => {
+        const newMenus = [...prev.data.weekMenus];
+        const currentMenu = { ...newMenus[dayIndex] };
+        const items = getMenuItemsByMealTime(mealTime);
+        currentMenu[mealTime] = getRandomItems(items, ITEMS_PER_SECTION);
+        newMenus[dayIndex] = currentMenu;
+        return {
+          ...prev,
+          config: { ...prev.config, isShuffling: mealTime },
+          data: { ...prev.data, weekMenus: newMenus },
         };
       });
       setTimeout(() => {
-        setState(prev => ({
-          ...prev,
-          config: { ...prev.config, isShuffling: null },
-        }));
+        setState(prev => ({ ...prev, config: { ...prev.config, isShuffling: null } }));
       }, 400);
     }, [setState]),
 
@@ -102,21 +102,12 @@ export const useMealMenuSuggesterState = (
         newMenus[dayIndex] = generateDayMenu(date);
         return {
           ...prev,
-          config: {
-            ...prev.config,
-            isShuffling: 'all',
-          },
-          data: {
-            ...prev.data,
-            weekMenus: newMenus,
-          },
+          config: { ...prev.config, isShuffling: 'all' },
+          data: { ...prev.data, weekMenus: newMenus },
         };
       });
       setTimeout(() => {
-        setState(prev => ({
-          ...prev,
-          config: { ...prev.config, isShuffling: null },
-        }));
+        setState(prev => ({ ...prev, config: { ...prev.config, isShuffling: null } }));
       }, 400);
     }, [setState]),
 
@@ -125,21 +116,12 @@ export const useMealMenuSuggesterState = (
         const startDate = prev.data.weekMenus[0]?.date || new Date();
         return {
           ...prev,
-          config: {
-            ...prev.config,
-            isShuffling: 'all',
-          },
-          data: {
-            ...prev.data,
-            weekMenus: generateWeekMenus(startDate),
-          },
+          config: { ...prev.config, isShuffling: 'all' },
+          data: { ...prev.data, weekMenus: generateWeekMenus(startDate) },
         };
       });
       setTimeout(() => {
-        setState(prev => ({
-          ...prev,
-          config: { ...prev.config, isShuffling: null },
-        }));
+        setState(prev => ({ ...prev, config: { ...prev.config, isShuffling: null } }));
       }, 400);
     }, [setState]),
   };
