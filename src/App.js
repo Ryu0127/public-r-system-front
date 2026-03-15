@@ -15,6 +15,7 @@ import TalentAdminContainer from 'features/admin/talents/containers/TalentAdminC
 import TalentFormContainer from 'features/admin/talent-edit/containers/TalentFormContainer';
 import AdminDashboardContainer from 'features/admin/dashboard/containers/AdminDashboardContainer';
 import LoginContainer from 'features/auth/login/containers/LoginContainer';
+import TalentMusicContainer from 'features/talent-music/containers/TalentMusicContainer';
 import './App.css';
 
 // ページ遷移を追跡するコンポーネント
@@ -44,6 +45,8 @@ function App() {
         <Route path="/settings" element={<Settings />} />
         <Route path="/talent-hashtag-support" element={<HashtagSearchContainer />} />
         <Route path="/ego-search-support" element={<EgoSearchContainer />} />
+        {/* タレント別楽曲一覧 */}
+        <Route path="/talent-music" element={<TalentMusicContainer />} />
         {/* 生活管理システム */}
         <Route path="/life/life-schedule-day" element={<LifeScheduleDayContainer />} />
         <Route path="/life/life-schedule-month" element={<LifeScheduleMonthContainer />} />
