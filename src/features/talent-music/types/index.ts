@@ -2,11 +2,10 @@ export type MusicType = 'original' | 'cover';
 export type MusicFilterType = 'all' | 'original' | 'cover';
 
 export interface Music {
-  id: string;
+  id: number;
   title: string;
-  talentId: string;
-  talentName: string;
-  talentNameEn: string;
+  /** 楽曲に紐づくタレントID（コラボ等で複数） */
+  talentIds: number[];
   youtubeVideoId: string;
   type: MusicType;
   releaseDate: string;
@@ -14,10 +13,18 @@ export interface Music {
 }
 
 export interface MusicTalent {
-  id: string;
+  id: number;
   talentName: string;
   talentNameEn: string;
   talentNameJoin: string;
   groupName: string;
   groupId: number;
+}
+
+/** GET …/oshi-katsu-saport/talent-music?talent_ids=… のレスポンス（複数タレントの楽曲をまとめて返しうる。タレント一覧は別API） */
+export interface TalentMusicApiResponse {
+  status: boolean;
+  data: {
+    musicList: Music[];
+  };
 }

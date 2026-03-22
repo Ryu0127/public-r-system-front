@@ -13,12 +13,13 @@ interface TalentMusicPresenterProps {
 
 const TalentMusicPresenter: React.FC<TalentMusicPresenterProps> = ({ state, actions }) => {
   const { config, data, ui } = state;
+  const selectedTalent = data.selectedTalent;
 
-  // 選択中タレントの楽曲を絞り込む
+  /** API が返す楽曲（複数タレント指定時は混在しうる。現状は単一選択のため実質1タレント分） */
   const talentMusicList = useMemo(() => {
-    if (!data.selectedTalent) return [];
-    return data.musicList.filter((m) => m.talentId === data.selectedTalent!.id);
-  }, [data.musicList, data.selectedTalent]);
+    if (!selectedTalent) return [];
+    return data.musicList;
+  }, [data.musicList, selectedTalent]);
 
   // フィルター適用
   const filteredMusicList = useMemo(() => {
@@ -46,7 +47,7 @@ const TalentMusicPresenter: React.FC<TalentMusicPresenterProps> = ({ state, acti
         {/* タレント選択 */}
         <TalentSelector
           talents={data.talents}
-          selectedTalent={data.selectedTalent}
+          selectedTalent={selectedTalent}
           searchQuery={ui.talentSearchQuery}
           isDropdownOpen={config.isDropdownOpen}
           onSearchQueryChange={actions.setTalentSearchQuery}
@@ -54,17 +55,23 @@ const TalentMusicPresenter: React.FC<TalentMusicPresenterProps> = ({ state, acti
           onDropdownOpenChange={actions.setIsDropdownOpen}
         />
 
-        {/* ローディング */}
+        {/* タレント一覧取得中 */}
         {config.isLoading && (
           <div className="flex justify-center items-center py-16">
             <div className="animate-spin rounded-full h-10 w-10 border-4 border-red-400 border-t-transparent" />
           </div>
         )}
 
+        {/* タレント選択済み: 楽曲取得中 */}
+        {!config.isLoading && selectedTalent && config.isMusicLoading && (
+          <div className="flex justify-center items-center py-16">
+            <div className="animate-spin rounded-full h-10 w-10 border-4 border-red-400 border-t-transparent" />
+          </div>
+        )}
+
         {/* タレント選択済み: 楽曲一覧 */}
-        {!config.isLoading && data.selectedTalent && (
+        {!config.isLoading && selectedTalent && !config.isMusicLoading && (
           <>
-            {/* フィルタータブ */}
             <MusicFilterTabs
               activeFilter={config.activeFilter}
               totalCount={talentMusicList.length}
@@ -73,11 +80,13 @@ const TalentMusicPresenter: React.FC<TalentMusicPresenterProps> = ({ state, acti
               onFilterChange={actions.setActiveFilter}
             />
 
-            {/* 楽曲グリッド */}
             {filteredMusicList.length > 0 ? (
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 animate-fade-in">
                 {filteredMusicList.map((music) => (
-                  <MusicCard key={music.id} music={music} />
+                  <MusicCard
+                    key={`${selectedTalent.id}-${music.id}`}
+                    music={music}
+                  />
                 ))}
               </div>
             ) : (
@@ -87,7 +96,7 @@ const TalentMusicPresenter: React.FC<TalentMusicPresenterProps> = ({ state, acti
         )}
 
         {/* タレント未選択 */}
-        {!config.isLoading && !data.selectedTalent && (
+        {!config.isLoading && !selectedTalent && (
           <EmptyState hasSelectedTalent={false} />
         )}
       </div>

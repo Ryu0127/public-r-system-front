@@ -1,16 +1,22 @@
-import { useCallback, Dispatch, SetStateAction } from 'react';
+import { useCallback, useRef, Dispatch, SetStateAction } from 'react';
 import { Music, MusicTalent, MusicFilterType } from '../types';
+import { talentToMusicTalent } from '../utils/talentToMusicTalent';
 import { useTalentMusicGetApi } from 'hooks/api/talent-music/useTalentMusicGetApi';
+import { useTalentsGetApi } from 'hooks/api/oshi-katsu-saport/useTalentsGetApi';
 
 export interface TalentMusicState {
   config: {
     isLoading: boolean;
+    /** タレント選択後の楽曲一覧取得中 */
+    isMusicLoading: boolean;
     isDropdownOpen: boolean;
     activeFilter: MusicFilterType;
   };
   data: {
     talents: MusicTalent[];
+    /** 選択タレントの楽曲（将来は複数タレント選択時も同一配列にマージ） */
     musicList: Music[];
+    /** 現状は単一選択のみ（複数選択は将来拡張） */
     selectedTalent: MusicTalent | null;
   };
   ui: {
@@ -31,6 +37,9 @@ export const useTalentMusicState = (
   setState: Dispatch<SetStateAction<TalentMusicState>>
 ): { actions: TalentMusicActions } => {
   const { executeTalentMusicGet } = useTalentMusicGetApi();
+  const { executeTalentsGet } = useTalentsGetApi();
+  /** 楽曲取得の非同期競合で古いレスポンスが上書きしないようにする */
+  const musicFetchSeqRef = useRef(0);
 
   const loadData = useCallback(async () => {
     setState((prev) => ({
@@ -38,37 +47,64 @@ export const useTalentMusicState = (
       config: { ...prev.config, isLoading: true },
     }));
 
-    const { apiResponse } = await executeTalentMusicGet();
+    const talentsRes = await executeTalentsGet();
 
-    if (apiResponse?.status) {
-      setState((prev) => ({
-        ...prev,
-        config: { ...prev.config, isLoading: false },
-        data: {
-          ...prev.data,
-          talents: apiResponse.data.talents,
-          musicList: apiResponse.data.musicList,
-        },
-      }));
-    } else {
-      setState((prev) => ({
-        ...prev,
-        config: { ...prev.config, isLoading: false },
-      }));
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    const talents =
+      talentsRes.apiResponse?.status === true
+        ? talentsRes.apiResponse.data.talents.map(talentToMusicTalent)
+        : [];
+
+    setState((prev) => ({
+      ...prev,
+      config: { ...prev.config, isLoading: false },
+      data: {
+        ...prev.data,
+        talents,
+        musicList: [],
+        selectedTalent: null,
+      },
+    }));
+  }, [setState, executeTalentsGet]);
 
   const selectTalent = useCallback(
-    (talent: MusicTalent) => {
+    async (talent: MusicTalent) => {
+      const seq = ++musicFetchSeqRef.current;
       setState((prev) => ({
         ...prev,
-        config: { ...prev.config, isDropdownOpen: false },
-        data: { ...prev.data, selectedTalent: talent },
+        config: {
+          ...prev.config,
+          isDropdownOpen: false,
+          isMusicLoading: true,
+          activeFilter: 'all',
+        },
+        data: { ...prev.data, selectedTalent: talent, musicList: [] },
         ui: { ...prev.ui, talentSearchQuery: '' },
       }));
+
+      try {
+        const musicRes = await executeTalentMusicGet([talent.id]);
+        if (seq !== musicFetchSeqRef.current) {
+          return;
+        }
+        const musicList =
+          musicRes.apiResponse?.status === true ? musicRes.apiResponse.data.musicList : [];
+
+        setState((prev) => ({
+          ...prev,
+          config: { ...prev.config, isMusicLoading: false },
+          data: { ...prev.data, musicList },
+        }));
+      } catch {
+        if (seq !== musicFetchSeqRef.current) {
+          return;
+        }
+        setState((prev) => ({
+          ...prev,
+          config: { ...prev.config, isMusicLoading: false },
+        }));
+      }
     },
-    [setState]
+    [setState, executeTalentMusicGet]
   );
 
   const setIsDropdownOpen = useCallback(

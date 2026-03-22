@@ -77,8 +77,7 @@ export const TalentSelector: React.FC<TalentSelectorProps> = ({
                       : 'hover:bg-red-50 text-gray-700'
                   }`}
                 >
-                  <span className="font-medium">{talent.talentName}</span>
-                  <span className="text-xs ml-2 opacity-70">{talent.groupName}</span>
+                  <span className="font-medium">{talent.talentNameJoin}</span>
                 </div>
               ))}
             </div>

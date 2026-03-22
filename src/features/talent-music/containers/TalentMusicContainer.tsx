@@ -6,6 +6,7 @@ import TalentMusicPresenter from '../presenters/TalentMusicPresenter';
 const initialState: TalentMusicState = {
   config: {
     isLoading: true,
+    isMusicLoading: false,
     isDropdownOpen: false,
     activeFilter: 'all',
   },

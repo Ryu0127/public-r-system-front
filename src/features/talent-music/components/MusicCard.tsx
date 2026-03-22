@@ -52,21 +52,6 @@ export const MusicCard: React.FC<MusicCardProps> = ({ music }) => {
             </svg>
           </div>
         </div>
-
-        {/* 曲種別バッジ */}
-        <div className="absolute top-2 left-2">
-          {music.type === 'original' ? (
-            <span className="inline-flex items-center gap-1 px-2 py-1 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-bold rounded-lg shadow">
-              <span>⭐</span>
-              オリジナル
-            </span>
-          ) : (
-            <span className="inline-flex items-center gap-1 px-2 py-1 bg-gradient-to-r from-purple-500 to-violet-500 text-white text-xs font-bold rounded-lg shadow">
-              <span>🎤</span>
-              カバー
-            </span>
-          )}
-        </div>
       </div>
 
       {/* カード情報 */}

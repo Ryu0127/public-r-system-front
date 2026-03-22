@@ -4,13 +4,12 @@ import { MusicFilterType } from '../types';
 interface FilterTab {
   key: MusicFilterType;
   label: string;
-  icon: string;
 }
 
 const filterTabs: FilterTab[] = [
-  { key: 'all', label: 'すべて', icon: '🎵' },
-  { key: 'original', label: 'オリジナル曲', icon: '⭐' },
-  { key: 'cover', label: 'カバー曲', icon: '🎤' },
+  { key: 'all', label: 'すべて' },
+  { key: 'original', label: 'オリジナル曲' },
+  { key: 'cover', label: 'カバー曲' },
 ];
 
 interface MusicFilterTabsProps {
@@ -41,13 +40,12 @@ export const MusicFilterTabs: React.FC<MusicFilterTabsProps> = ({
           <button
             key={tab.key}
             onClick={() => onFilterChange(tab.key)}
-            className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-sm font-semibold transition-all duration-200 ${
+            className={`flex-1 flex items-center justify-center gap-1 py-2.5 px-3 rounded-xl text-sm font-semibold transition-all duration-200 ${
               activeFilter === tab.key
                 ? 'bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-md'
                 : 'text-gray-500 hover:bg-gray-100'
             }`}
           >
-            <span>{tab.icon}</span>
             <span className="hidden sm:inline">{tab.label}</span>
             <span className="inline sm:hidden">{tab.label.replace('オリジナル曲', 'オリジナル').replace('カバー曲', 'カバー')}</span>
             <span
