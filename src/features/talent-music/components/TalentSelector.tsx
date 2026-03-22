@@ -67,9 +67,9 @@ export const TalentSelector: React.FC<TalentSelectorProps> = ({
           {/* ドロップダウンリスト */}
           {isDropdownOpen && filteredTalents.length > 0 && (
             <div className="absolute z-[9999] w-full mt-2 bg-white border-2 border-gray-200 rounded-xl shadow-xl max-h-60 overflow-y-auto">
-              {filteredTalents.map((talent) => (
+              {filteredTalents.map((talent, index) => (
                 <div
-                  key={talent.id}
+                  key={`${talent.id}-${index}`}
                   onClick={() => onTalentSelect(talent)}
                   className={`px-4 py-3 cursor-pointer transition-all duration-200 ${
                     talent.id === selectedTalent?.id

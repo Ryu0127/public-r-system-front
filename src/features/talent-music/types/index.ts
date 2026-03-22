@@ -13,7 +13,8 @@ export interface Music {
 }
 
 export interface MusicTalent {
-  id: number;
+  /** 一覧APIの id（数値でも文字列でも返りうるため文字列で保持） */
+  id: string;
   talentName: string;
   talentNameEn: string;
   talentNameJoin: string;

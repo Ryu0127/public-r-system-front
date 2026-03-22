@@ -190,7 +190,7 @@ function coerceFiniteNumber(v: unknown): number | null {
 }
 
 /** クエリ talent_ids 用。有限数のみ・重複除去 */
-export function normalizeTalentIdsForMusicApi(talentIds: number[]): number[] {
+export function normalizeTalentIdsForMusicApi(talentIds: (number | string)[]): number[] {
   const seen = new Set<number>();
   const out: number[] = [];
   for (const v of talentIds) {
@@ -238,7 +238,7 @@ function normalizeMusicType(raw: unknown): MusicType {
 
 /** API の talentIds（数値配列）。旧文字列・単一 talentId も解釈 */
 function parseTalentIdsFromMusicRow(m: Record<string, unknown>): number[] {
-  const raw = m.talentIds;
+  const raw = m.talentIds ?? m.talent_ids;
   if (Array.isArray(raw)) {
     const out: number[] = [];
     for (const x of raw) {
@@ -258,28 +258,39 @@ function parseMusicId(m: Record<string, unknown>): number {
   return coerceFiniteNumber(m.id) ?? 0;
 }
 
+function asMusicListArray(raw: unknown): unknown[] {
+  if (Array.isArray(raw)) {
+    return raw;
+  }
+  if (raw && typeof raw === 'object') {
+    return Object.values(raw as Record<string, unknown>);
+  }
+  return [];
+}
+
 function normalizeTalentMusicResponse(raw: unknown): TalentMusicApiResponse | null {
   if (!raw || typeof raw !== 'object') {
     return null;
   }
   const r = raw as Record<string, unknown>;
-  if (r.status !== true || !r.data || typeof r.data !== 'object') {
+  const statusOk = r.status === true || r.status === 1;
+  if (!statusOk || !r.data || typeof r.data !== 'object') {
     return null;
   }
   const d = r.data as Record<string, unknown>;
-  if (!Array.isArray(d.musicList)) {
-    return null;
-  }
+  const musicListRaw = asMusicListArray(d.musicList);
 
-  const musicList: Music[] = d.musicList.map((item) => {
+  const musicList: Music[] = musicListRaw.map((item) => {
     const m = item as Record<string, unknown>;
+    const yt =
+      m.youtubeVideoId ?? m.youtube_video_id ?? m.youtube_video_code ?? '';
     const row: Music = {
       id: parseMusicId(m),
       title: String(m.title ?? ''),
       talentIds: parseTalentIdsFromMusicRow(m),
-      youtubeVideoId: String(m.youtubeVideoId ?? ''),
+      youtubeVideoId: String(yt),
       type: normalizeMusicType(m.type),
-      releaseDate: String(m.releaseDate ?? ''),
+      releaseDate: String(m.releaseDate ?? m.public_date ?? ''),
     };
     if (m.description != null && String(m.description).trim() !== '') {
       row.description = String(m.description);
@@ -300,7 +311,7 @@ async function requestTalentMusic(url: string): Promise<TalentMusicApiResponse |
     headers.Authorization = `Bearer ${token}`;
   }
 
-  const res = await fetch(url, { method: 'GET', headers });
+  const res = await fetch(url, { method: 'GET', headers, cache: 'no-store' });
   if (!res.ok) {
     console.error('Talent music API HTTP error:', res.status, res.statusText);
     return null;
@@ -324,7 +335,7 @@ async function requestTalentMusic(url: string): Promise<TalentMusicApiResponse |
  * - 開発時のみ相対パス（proxy 想定）。URL が組めない場合のみモック
  */
 export const useTalentMusicGetApi = () => {
-  const executeTalentMusicGet = useCallback(async (talentIds: number[]): Promise<{
+  const executeTalentMusicGet = useCallback(async (talentIds: (number | string)[]): Promise<{
     apiResponse: TalentMusicApiResponse | null;
     error: unknown;
   }> => {
