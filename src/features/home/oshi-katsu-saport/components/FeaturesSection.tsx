@@ -32,6 +32,12 @@ const CalendarIcon = () => (
   </svg>
 );
 
+const MusicIcon = () => (
+  <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+    <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
+  </svg>
+);
+
 // アイコンマッピング
 const iconComponents: { [key: string]: React.FC } = {
   Hash: HashIcon,
@@ -39,6 +45,7 @@ const iconComponents: { [key: string]: React.FC } = {
   TrendingUp: TrendingUpIcon,
   BarChart3: BarChart3Icon,
   Calendar: CalendarIcon,
+  Music: MusicIcon,
 };
 
 // カラーマッピング
@@ -62,6 +69,11 @@ const colorClasses: { [key: string]: { gradient: string; shadow: string; hover: 
     gradient: 'from-purple-400 to-purple-600',
     shadow: 'shadow-purple-500/30',
     hover: 'hover:border-purple-300',
+  },
+  rose: {
+    gradient: 'from-rose-400 to-pink-600',
+    shadow: 'shadow-rose-500/30',
+    hover: 'hover:border-rose-300',
   },
 };
 

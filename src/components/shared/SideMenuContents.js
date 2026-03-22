@@ -1,6 +1,7 @@
 import React from 'react';
 
 const sideMenus = [
+  { label: 'タレント別楽曲一覧', href: '/talent-music' },
   { label: 'youtube動画一覧', href: '/contents/youtube/live' },
   { label: '同人一覧', href: '/contents/doujins' },
   { label: '画像一覧リサイズ', href: '/contents/imgs/resize' },
