@@ -20,6 +20,13 @@ const AdminDashboardPresenter: React.FC = () => {
       color: 'bg-green-500 hover:bg-green-600',
     },
     {
+      title: '楽曲一覧管理',
+      description: '楽曲の一覧・登録・編集・削除を行います',
+      path: '/admin/talent-music',
+      icon: '🎵',
+      color: 'bg-pink-500 hover:bg-pink-600',
+    },
+    {
       title: '月次スケジュール',
       description: '月次のスケジュールを確認・管理します',
       path: '/life/life-schedule-month',
@@ -42,6 +49,7 @@ const AdminDashboardPresenter: React.FC = () => {
           {menuItems.map((item) => (
             <button
               key={item.path}
+              type="button"
               onClick={() => navigate(item.path)}
               className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 p-6 text-left border border-gray-200 hover:border-gray-300"
             >

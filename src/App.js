@@ -13,6 +13,8 @@ import EventAdminContainer from 'features/admin/events/containers/EventAdminCont
 import EventFormContainer from 'features/admin/event-edit/containers/EventFormContainer';
 import TalentAdminContainer from 'features/admin/talents/containers/TalentAdminContainer';
 import TalentFormContainer from 'features/admin/talent-edit/containers/TalentFormContainer';
+import MusicAdminContainer from 'features/admin/talent-music/containers/MusicAdminContainer';
+import MusicFormContainer from 'features/admin/talent-music-edit/containers/MusicFormContainer';
 import AdminDashboardContainer from 'features/admin/dashboard/containers/AdminDashboardContainer';
 import LoginContainer from 'features/auth/login/containers/LoginContainer';
 import TalentMusicContainer from 'features/talent-music/containers/TalentMusicContainer';
@@ -62,6 +64,10 @@ function App() {
         <Route path="/admin/talents" element={<TalentAdminContainer />} />
         <Route path="/admin/talents/new" element={<TalentFormContainer />} />
         <Route path="/admin/talents/:id/edit" element={<TalentFormContainer />} />
+        {/* 楽曲管理画面 */}
+        <Route path="/admin/talent-music" element={<MusicAdminContainer />} />
+        <Route path="/admin/talent-music/new" element={<MusicFormContainer />} />
+        <Route path="/admin/talent-music/:id/edit" element={<MusicFormContainer />} />
       </Routes>
     </Router>
   );
