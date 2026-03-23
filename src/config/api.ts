@@ -28,6 +28,14 @@ export const API_ENDPOINTS = {
     update: (id: string) => `${API_BASE_URL}/admin/talents/${id}`,
     delete: (id: string) => `${API_BASE_URL}/admin/talents/${id}`,
   },
+  // 楽曲管理（管理者用）
+  talentMusic: {
+    list: `${API_BASE_URL}/admin/talent-music`,
+    detail: (id: string) => `${API_BASE_URL}/admin/talent-music/${id}`,
+    create: `${API_BASE_URL}/admin/talent-music`,
+    update: (id: string) => `${API_BASE_URL}/admin/talent-music/${id}`,
+    delete: (id: string) => `${API_BASE_URL}/admin/talent-music/${id}`,
+  },
 };
 
 /**
