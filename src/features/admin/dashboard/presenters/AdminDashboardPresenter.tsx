@@ -20,6 +20,13 @@ const AdminDashboardPresenter: React.FC = () => {
       color: 'bg-green-500 hover:bg-green-600',
     },
     {
+      title: '楽曲管理',
+      description: 'タレント別楽曲一覧に表示する楽曲の登録・編集・削除を行います',
+      path: '/admin/talent-music',
+      icon: '🎵',
+      color: 'bg-pink-500 hover:bg-pink-600',
+    },
+    {
       title: '月次スケジュール',
       description: '月次のスケジュールを確認・管理します',
       path: '/life/life-schedule-month',
