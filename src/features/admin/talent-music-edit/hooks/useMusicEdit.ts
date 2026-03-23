@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   AdminMusic,
   MusicListResponse,
@@ -13,7 +13,7 @@ export const useMusicEdit = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const readApiErrorMessage = async (response: Response, defaultMessage: string) => {
+  const readApiErrorMessage = useCallback(async (response: Response, defaultMessage: string) => {
     try {
       const text = await response.text();
       if (!text) return defaultMessage;
@@ -30,10 +30,10 @@ export const useMusicEdit = () => {
       return defaultMessage;
     }
     return defaultMessage;
-  };
+  }, []);
 
   // 楽曲一覧を取得
-  const fetchMusicList = async () => {
+  const fetchMusicList = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -62,7 +62,7 @@ export const useMusicEdit = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [readApiErrorMessage]);
 
   // 楽曲を作成
   const createMusic = async (musicData: Partial<AdminMusic>): Promise<number | null> => {
@@ -223,7 +223,7 @@ export const useMusicEdit = () => {
   // 初期データの取得
   useEffect(() => {
     fetchMusicList();
-  }, []);
+  }, [fetchMusicList]);
 
   return {
     musicList,
