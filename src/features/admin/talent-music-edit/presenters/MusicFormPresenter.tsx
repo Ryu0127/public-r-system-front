@@ -7,8 +7,8 @@ interface MusicFormPresenterProps {
   music?: AdminMusic;
   loading: boolean;
   error: string | null;
-  onSave: (musicData: Partial<AdminMusic>) => Promise<boolean>;
-  onDelete?: () => Promise<boolean>;
+  onSave: (musicData: Partial<AdminMusic>) => Promise<number | null>;
+  onDelete?: () => Promise<number | null>;
 }
 
 const MusicFormPresenter: React.FC<MusicFormPresenterProps> = ({
@@ -21,10 +21,16 @@ const MusicFormPresenter: React.FC<MusicFormPresenterProps> = ({
   const navigate = useNavigate();
 
   const handleSave = async (musicData: Partial<AdminMusic>) => {
-    const success = await onSave(musicData);
-    if (success) {
-      alert(music ? '楽曲を更新しました' : '楽曲を登録しました');
-      navigate('/admin/talent-music');
+    const id = await onSave(musicData);
+    if (id != null) {
+      navigate('/admin/talent-music', {
+        state: {
+          lastMusicAction: {
+            message: music ? '楽曲を更新しました' : '楽曲を登録しました',
+            id,
+          },
+        },
+      });
     }
   };
 
@@ -34,10 +40,16 @@ const MusicFormPresenter: React.FC<MusicFormPresenterProps> = ({
 
   const handleDelete = async () => {
     if (onDelete) {
-      const success = await onDelete();
-      if (success) {
-        alert('楽曲を削除しました');
-        navigate('/admin/talent-music');
+      const id = await onDelete();
+      if (id != null) {
+        navigate('/admin/talent-music', {
+          state: {
+            lastMusicAction: {
+              message: '楽曲を削除しました',
+              id,
+            },
+          },
+        });
       }
     }
   };

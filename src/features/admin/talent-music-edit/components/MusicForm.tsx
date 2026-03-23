@@ -25,6 +25,20 @@ const MusicForm: React.FC<MusicFormProps> = ({ music, onSave, onCancel, onDelete
   const [talentsLoading, setTalentsLoading] = useState(false);
   const [youtubePreviewId, setYoutubePreviewId] = useState<string>(music?.youtubeVideoId || '');
 
+  // 編集対象の music が後から来る場合にフォーム内容が更新されない問題を防ぐ
+  useEffect(() => {
+    setFormData({
+      title: '',
+      talentIds: [],
+      youtubeVideoId: '',
+      type: 'original',
+      releaseDate: '',
+      description: '',
+      ...music,
+    });
+    setYoutubePreviewId(music?.youtubeVideoId || '');
+  }, [music]);
+
   // タレント一覧を取得
   useEffect(() => {
     const fetchTalents = async () => {

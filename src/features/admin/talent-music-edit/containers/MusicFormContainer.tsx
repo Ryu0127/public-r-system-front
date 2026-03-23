@@ -13,6 +13,7 @@ const MusicFormContainer: React.FC = () => {
     createMusic,
     updateMusic,
     deleteMusic,
+    fetchMusicById,
     getMusicById,
   } = useMusicEdit();
 
@@ -20,18 +21,35 @@ const MusicFormContainer: React.FC = () => {
   const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
-    if (id && !loading) {
-      const foundMusic = getMusicById(id);
-      if (foundMusic) {
-        setMusic(foundMusic);
+    if (!id) return;
+
+    const foundMusic = getMusicById(id);
+    if (foundMusic) {
+      setMusic(foundMusic);
+      setNotFound(false);
+      return;
+    }
+
+    let cancelled = false;
+    (async () => {
+      const fetched = await fetchMusicById(id);
+      if (cancelled) return;
+      if (fetched) {
+        setMusic(fetched);
         setNotFound(false);
       } else {
         setNotFound(true);
       }
-    }
-  }, [id, loading, getMusicById, musicList]);
+    })();
 
-  const handleSave = async (musicData: Partial<AdminMusic>): Promise<boolean> => {
+    return () => {
+      cancelled = true;
+    };
+  }, [id, getMusicById, fetchMusicById, musicList]);
+
+  const handleSave = async (
+    musicData: Partial<AdminMusic>
+  ): Promise<number | null> => {
     if (id) {
       return await updateMusic(id, musicData);
     } else {
@@ -39,11 +57,11 @@ const MusicFormContainer: React.FC = () => {
     }
   };
 
-  const handleDelete = async (): Promise<boolean> => {
+  const handleDelete = async (): Promise<number | null> => {
     if (id) {
       return await deleteMusic(id);
     }
-    return false;
+    return null;
   };
 
   if (notFound) {
