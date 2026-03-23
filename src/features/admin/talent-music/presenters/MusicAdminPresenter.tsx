@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AdminMusic, MUSIC_TYPE_LABELS } from '../../talent-music-edit/types';
-import { AdminTalent } from '../../talent-edit/types';
 import { MusicType } from '../../../talent-music/types';
 import MusicListTable from '../components/MusicListTable';
 import { API_ENDPOINTS, getApiHeaders } from '../../../../config/api';
@@ -20,7 +19,6 @@ const MusicAdminPresenter: React.FC<MusicAdminPresenterProps> = ({
   const navigate = useNavigate();
   const [filterType, setFilterType] = useState<MusicType | 'all'>('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [talents, setTalents] = useState<AdminTalent[]>([]);
   const [talentNameMap, setTalentNameMap] = useState<Record<number, string>>({});
 
   // タレント一覧を取得してIDと名前のマップを作成
@@ -34,8 +32,7 @@ const MusicAdminPresenter: React.FC<MusicAdminPresenterProps> = ({
         if (!response.ok) return;
         const apiResponse = await response.json();
         if (apiResponse.success) {
-          const talentData: AdminTalent[] = apiResponse.data;
-          setTalents(talentData);
+          const talentData: { id: string; talentName: string }[] = apiResponse.data;
           const map: Record<number, string> = {};
           talentData.forEach((t) => {
             map[Number(t.id)] = t.talentName;
