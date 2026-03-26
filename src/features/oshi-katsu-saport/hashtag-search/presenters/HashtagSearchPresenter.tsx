@@ -63,6 +63,7 @@ export const HashtagSearchPresenter: React.FC<HashtagSearchPresenterProps> = ({
             id: talent.id,
             talentName: talent.talentName,
             talentNameEn: talent.talentNameEn,
+            talentSlug: (talent as any).talentSlug,
             talentNameJoin: talent.talentName + '（' + talent.talentNameEn + '）',
             groupName: talent.groupName,
             groupId: talent.groupId,

@@ -50,32 +50,12 @@ export const EgoSearchPresenter: React.FC<EgoSearchPresenterProps> = ({
           enabled={state.filters.talentAccounts.enabled}
           onSearchQueryChange={actions.setTalentSearchQuery}
           onTalentSelect={(talent) => {
-            // 既存の選択を解除してから新しいタレントを選択
-            if (state.filters.talentAccounts.selectedAccounts.length > 0) {
-              actions.toggleTalentAccount(state.filters.talentAccounts.selectedAccounts[0]);
-            }
-            actions.toggleTalentAccount({
-              talentId: talent.id,
-              talentName: talent.talentName,
-              accounts: talent.twitterAccounts,
-            });
-            // 検索クエリをクリアしてドロップダウンを閉じる
-            actions.setTalentSearchQuery('');
-            actions.setIsDropdownOpen(false);
+            actions.selectTalent(talent);
           }}
           onDropdownOpenChange={actions.setIsDropdownOpen}
           onEnabledChange={actions.setTalentAccountsEnabled}
           onReset={() => {
-            // 選択を解除
-            if (state.filters.talentAccounts.selectedAccounts.length > 0) {
-              actions.toggleTalentAccount(state.filters.talentAccounts.selectedAccounts[0]);
-            }
-            // チェックボックスをオフに
-            actions.setTalentAccountsEnabled(false);
-            // 検索クエリをクリア
-            actions.setTalentSearchQuery('');
-            // ドロップダウンを閉じる
-            actions.setIsDropdownOpen(false);
+            actions.resetTalentSelection();
           }}
         />
 

@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { useSearchParams } from 'react-router-dom';
 import { EgoSearchState, useEgoSearchState } from '../hooks/useEgoSearchState';
 import { defaultEgoSearchFilters } from '../types';
 import EgoSearchPresenter from '../presenters/EgoSearchPresenter';
@@ -29,6 +30,42 @@ const EgoSearchContainer: React.FC = () => {
 
   // Actions Hook
   const { actions } = useEgoSearchState(state, setState);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const talentQuery = useMemo(() => (searchParams.get('talent') ?? '').trim(), [searchParams]);
+
+  // URLの ?talent=...（slug）がある場合、完全一致するタレントを自動選択
+  useEffect(() => {
+    if (state.config.isLoading) return;
+    if (!talentQuery) return;
+    const selected =
+      state.filters.talentAccounts.selectedAccounts.length > 0
+        ? state.filters.talentAccounts.selectedAccounts[0].talentId
+        : null;
+    const found = state.data.talents.find((t) => t.talentSlug === talentQuery);
+    if (!found) return;
+    if (selected === found.id) return;
+    actions.selectTalent(found);
+  }, [
+    state.config.isLoading,
+    state.data.talents,
+    state.filters.talentAccounts.selectedAccounts,
+    talentQuery,
+    actions,
+  ]);
+
+  const actionsWithUrl = useMemo(() => {
+    return {
+      ...actions,
+      selectTalent: (talent: any) => {
+        setSearchParams({ talent: String(talent.talentSlug ?? '').trim() });
+        actions.selectTalent(talent);
+      },
+      resetTalentSelection: () => {
+        setSearchParams({});
+        actions.resetTalentSelection();
+      },
+    };
+  }, [actions, setSearchParams]);
 
   return (
     <>
@@ -44,7 +81,7 @@ const EgoSearchContainer: React.FC = () => {
       </Helmet>
       <EgoSearchPresenter
         state={state}
-        actions={actions}
+        actions={actionsWithUrl}
       />
     </>
   );
