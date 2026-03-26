@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { TalentMusicState, useTalentMusicState } from '../hooks/useTalentMusicState';
+import { useSearchParams } from 'react-router-dom';
+import { TalentMusicState, useTalentMusicState, TalentMusicActions } from '../hooks/useTalentMusicState';
 import TalentMusicPresenter from '../presenters/TalentMusicPresenter';
 
 const initialState: TalentMusicState = {
@@ -26,11 +27,34 @@ const initialState: TalentMusicState = {
 const TalentMusicContainer: React.FC = () => {
   const [state, setState] = useState<TalentMusicState>(initialState);
   const { actions } = useTalentMusicState(state, setState);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const talentQuery = useMemo(() => (searchParams.get('talent') ?? '').trim(), [searchParams]);
 
   useEffect(() => {
     actions.loadData();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // URLの ?talent=...（slug）がある場合、完全一致するタレントを自動選択して楽曲を取得
+  useEffect(() => {
+    if (state.config.isLoading) return;
+    if (!talentQuery) return;
+    if (state.data.selectedTalent?.talentSlug === talentQuery) return;
+
+    const found = state.data.talents.find((t) => t.talentSlug === talentQuery);
+    if (!found) return;
+    actions.selectTalent(found);
+  }, [state.config.isLoading, state.data.selectedTalent, state.data.talents, talentQuery, actions]);
+
+  const actionsWithUrl: TalentMusicActions = useMemo(() => {
+    return {
+      ...actions,
+      selectTalent: (talent) => {
+        setSearchParams({ talent: String(talent.talentSlug ?? '').trim() });
+        actions.selectTalent(talent);
+      },
+    };
+  }, [actions, setSearchParams]);
 
   return (
     <>
@@ -54,7 +78,7 @@ const TalentMusicContainer: React.FC = () => {
           href="https://public-r-system-front.vercel.app/talent-music"
         />
       </Helmet>
-      <TalentMusicPresenter state={state} actions={actions} />
+      <TalentMusicPresenter state={state} actions={actionsWithUrl} />
     </>
   );
 };

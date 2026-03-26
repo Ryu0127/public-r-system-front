@@ -36,7 +36,7 @@ export const useTalentMusicState = (
   state: TalentMusicState,
   setState: Dispatch<SetStateAction<TalentMusicState>>
 ): { actions: TalentMusicActions } => {
-  const { executeTalentMusicGet } = useTalentMusicGetApi();
+  const { executeTalentMusicGetByTalentSlug } = useTalentMusicGetApi();
   const { executeTalentsGet } = useTalentsGetApi();
   /** 楽曲取得の非同期競合で古いレスポンスが上書きしないようにする */
   const musicFetchSeqRef = useRef(0);
@@ -82,7 +82,8 @@ export const useTalentMusicState = (
       }));
 
       try {
-        const musicRes = await executeTalentMusicGet([talent.id]);
+        const slug = String(talent.talentSlug ?? '').trim();
+        const musicRes = await executeTalentMusicGetByTalentSlug(slug);
         if (seq !== musicFetchSeqRef.current) {
           return;
         }
@@ -104,7 +105,7 @@ export const useTalentMusicState = (
         }));
       }
     },
-    [setState, executeTalentMusicGet]
+    [setState, executeTalentMusicGetByTalentSlug]
   );
 
   const setIsDropdownOpen = useCallback(

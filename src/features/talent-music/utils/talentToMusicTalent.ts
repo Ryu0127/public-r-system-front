@@ -9,6 +9,7 @@ export function talentToMusicTalent(t: Talent): MusicTalent {
     id: String(t.id ?? '').trim(),
     talentName: ja,
     talentNameEn: en,
+    talentSlug: t.talentSlug,
     talentNameJoin: ja && en ? `${ja}（${en}）` : ja || en,
     groupName: t.groupName ?? '',
     groupId: Number(t.groupId ?? 0),

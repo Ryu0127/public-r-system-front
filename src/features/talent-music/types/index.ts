@@ -17,6 +17,8 @@ export interface MusicTalent {
   id: string;
   talentName: string;
   talentNameEn: string;
+  /** URL 用の slug（例: tokino-sora） */
+  talentSlug?: string;
   talentNameJoin: string;
   groupName: string;
   groupId: number;
