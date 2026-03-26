@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { EgoSearchState, EgoSearchActions } from '../hooks/useEgoSearchState';
 import { EgoSearchHeader } from '../components/EgoSearchHeader';
 import { SearchKeywordInput } from '../components/SearchKeywordInput';
@@ -6,7 +6,6 @@ import { KeywordPresetsSelector } from '../components/KeywordPresetsSelector';
 import { TalentSelector } from '../components/TalentSelector';
 import { AdvancedFilters } from '../components/AdvancedFilters';
 import { HelpModal } from '../components/HelpModal';
-import { StickyFooter } from '../components/StickyFooter';
 
 interface EgoSearchPresenterProps {
   state: EgoSearchState;
@@ -17,9 +16,12 @@ export const EgoSearchPresenter: React.FC<EgoSearchPresenterProps> = ({
   state,
   actions,
 }) => {
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const handleBackToHome = () => {
     window.location.href = '/';
   };
+  const keywords = state.filters.searchKeywords.filter((k) => k.trim() !== '');
+  const canConfirm = keywords.length > 0;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-blue-50 relative pb-32">
@@ -82,14 +84,60 @@ export const EgoSearchPresenter: React.FC<EgoSearchPresenterProps> = ({
         />
       </div>
 
-      {/* 固定フッター */}
-      <StickyFooter
-        filters={state.filters}
-        showSearchPreview={state.config.showSearchPreview}
-        onSearchOnTwitter={actions.handleSearchOnTwitter}
-        onClearKeyword={() => actions.setSearchKeywords([''])}
-        onShowSearchPreviewChange={actions.setShowSearchPreview}
-      />
+      {!state.ui.isDropdownOpen && (
+        <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-t border-gray-200 shadow-2xl">
+          <div className="max-w-7xl mx-auto px-4 py-4">
+            <div className="max-w-2xl mx-auto">
+              <button
+                onClick={() => setIsConfirmModalOpen(true)}
+                disabled={!canConfirm}
+                className={`w-full py-3 rounded-xl font-semibold text-base transition-all duration-300 ${
+                  canConfirm
+                    ? 'bg-gradient-to-r from-[#1DA1F2] to-[#0d8bd9] hover:from-[#0d8bd9] hover:to-[#1DA1F2] text-white shadow-lg hover:shadow-xl'
+                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                }`}
+              >
+                検索確認
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isConfirmModalOpen && (
+        <div className="fixed inset-0 z-[10001] bg-black/50 flex items-center justify-center p-4">
+          <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-6">
+            <h3 className="text-lg font-bold text-gray-800 mb-3">検索内容の確認</h3>
+            <div className="text-sm text-gray-600 mb-5">
+              <p className="mb-2">以下のキーワードで検索画面を開きます。</p>
+              <div className="flex flex-wrap gap-2">
+                {keywords.map((keyword) => (
+                  <span key={keyword} className="px-2 py-1 rounded-full bg-blue-100 text-blue-700 text-xs">
+                    {keyword}
+                  </span>
+                ))}
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setIsConfirmModalOpen(false)}
+                className="flex-1 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50"
+              >
+                キャンセル
+              </button>
+              <button
+                onClick={() => {
+                  actions.handleSearchOnTwitter();
+                  setIsConfirmModalOpen(false);
+                }}
+                className="flex-1 py-2 rounded-lg bg-[#1DA1F2] text-white hover:bg-[#0d8bd9]"
+              >
+                Xで検索する
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ヘルプモーダル */}
       <HelpModal

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { TalentHashtagsApiEventHashtag } from 'hooks/api/oshi-katsu-saport/useTalentHashtagsGetApi';
 import { HashIcon, SearchIcon } from './Icons';
 import { SelectedTagsDisplay } from './SelectedTagsDisplay';
@@ -6,6 +6,7 @@ import { SearchPreviewDisplay } from './SearchPreviewDisplay';
 import { ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
 
 interface StickyFooterProps {
+  hideOnMobile?: boolean;
   mode: 'post' | 'search';
   // 投稿モード用
   selectedTags: string[];
@@ -25,6 +26,7 @@ interface StickyFooterProps {
 }
 
 export const StickyFooter: React.FC<StickyFooterProps> = ({
+  hideOnMobile = false,
   mode,
   selectedTags,
   selectedEventHashtags,
@@ -40,9 +42,35 @@ export const StickyFooter: React.FC<StickyFooterProps> = ({
   onSearchQueryChange,
   onShowSearchPreviewChange,
 }) => {
+  const [isFooterHidden, setIsFooterHidden] = useState(false);
+  const hiddenByDropdown = hideOnMobile;
+  const isHidden = isFooterHidden || hiddenByDropdown;
+
+  if (isHidden) {
+    return (
+      <button
+        onClick={() => setIsFooterHidden(false)}
+        className="fixed bottom-0 right-4 z-50 max-w-2xl mx-auto bg-white border border-gray-300 rounded-t-2xl rounded-b-none shadow-[0_-6px_18px_rgba(0,0,0,0.12)] px-4 py-3 flex items-center justify-between text-gray-900 hover:bg-gray-50 transition-colors"
+      >
+        <h3 className="text-sm font-semibold text-gray-700">投稿確認</h3>
+        <span className="flex items-center gap-3 text-gray-600">
+          <ChevronUpIcon className="w-5 h-5" />
+        </span>
+      </button>
+    );
+  }
+
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-gray-200 shadow-2xl z-50">
       <div className="max-w-7xl mx-auto px-4 py-4">
+        <div className="max-w-2xl mx-auto flex justify-end mb-2">
+          <button
+            onClick={() => setIsFooterHidden(true)}
+            className="px-3 py-1 text-xs font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-md transition-colors"
+          >
+            フッターを非表示
+          </button>
+        </div>
         <div className="max-w-2xl mx-auto">
           {/* 投稿モード */}
           {mode === 'post' && (
