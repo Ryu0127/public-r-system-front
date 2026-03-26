@@ -20,7 +20,11 @@ export const TalentSelector: React.FC<TalentSelectorProps> = ({
   onTalentSelect,
   onDropdownOpenChange,
 }) => {
+  const sectionRef = useRef<HTMLElement>(null);
   const comboboxRef = useRef<HTMLDivElement>(null);
+  const scrollToSelectorTop = () => {
+    sectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   // フィルタリングされたタレントリスト
   const filteredTalents = talents.filter((talent) =>
@@ -42,7 +46,7 @@ export const TalentSelector: React.FC<TalentSelectorProps> = ({
   }, [onDropdownOpenChange]);
 
   return (
-    <section className="max-w-2xl mx-auto mb-8 animate-fade-in overflow-visible relative z-[10000]" style={{ animationDelay: '0.2s' }}>
+    <section ref={sectionRef} className="max-w-2xl mx-auto mb-8 animate-fade-in overflow-visible relative z-[10000]" style={{ animationDelay: '0.2s' }}>
       <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-200 shadow-lg overflow-visible">
         <label htmlFor="talent-combobox" className="block text-sm font-semibold text-gray-700 mb-3">
           タレントを選択
@@ -52,6 +56,7 @@ export const TalentSelector: React.FC<TalentSelectorProps> = ({
             id="talent-combobox"
             type="text"
             value={isDropdownOpen ? searchQuery : selectedTalent?.talentNameJoin || ''}
+            onClick={scrollToSelectorTop}
             onChange={(e) => {
               onSearchQueryChange(e.target.value);
               onDropdownOpenChange(true);
