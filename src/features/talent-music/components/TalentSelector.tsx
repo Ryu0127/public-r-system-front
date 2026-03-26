@@ -20,7 +20,11 @@ export const TalentSelector: React.FC<TalentSelectorProps> = ({
   onTalentSelect,
   onDropdownOpenChange,
 }) => {
+  const sectionRef = useRef<HTMLElement>(null);
   const comboboxRef = useRef<HTMLDivElement>(null);
+  const scrollToSelectorTop = () => {
+    sectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   const filteredTalents = talents.filter((talent) =>
     talent.talentNameJoin.toLowerCase().includes(searchQuery.toLowerCase())
@@ -38,6 +42,7 @@ export const TalentSelector: React.FC<TalentSelectorProps> = ({
 
   return (
     <section
+      ref={sectionRef}
       className="max-w-2xl mx-auto mb-8 animate-fade-in overflow-visible relative z-[10000]"
       style={{ animationDelay: '0.1s' }}
     >
@@ -50,6 +55,7 @@ export const TalentSelector: React.FC<TalentSelectorProps> = ({
             id="talent-music-combobox"
             type="text"
             value={isDropdownOpen ? searchQuery : selectedTalent?.talentNameJoin || ''}
+            onClick={scrollToSelectorTop}
             onChange={(e) => {
               onSearchQueryChange(e.target.value);
               onDropdownOpenChange(true);

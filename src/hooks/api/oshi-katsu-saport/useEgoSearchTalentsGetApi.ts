@@ -16,6 +16,7 @@ export interface Talent {
   id: string;
   talentName: string;
   talentNameEn: string;
+  talentSlug?: string;
   groupName: string;
   groupId: number;
   twitterAccounts: string[];

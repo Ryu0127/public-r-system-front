@@ -8,6 +8,7 @@ export interface TalentsListApiRow {
   id: string | number;
   talentName: string;
   talentNameEn: string;
+  talentSlug?: string;
 }
 
 export interface TalentsApiResponse {
@@ -61,6 +62,7 @@ function normalizeTalentsResponse(raw: unknown): TalentsApiResponse | null {
       id: String(t.id ?? ''),
       talentName: String(t.talentName ?? ''),
       talentNameEn: String(t.talentNameEn ?? ''),
+      talentSlug: t.talentSlug != null ? String(t.talentSlug) : undefined,
       groupName: gn !== undefined && gn !== null ? String(gn) : '',
       groupId: gid !== undefined && gid !== null && gid !== '' ? Number(gid) : 0,
       twitterAccounts: Array.isArray(tw) ? tw.map((x) => String(x)) : [],

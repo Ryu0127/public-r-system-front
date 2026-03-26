@@ -232,6 +232,23 @@ function resolveTalentMusicApiUrl(talentIds: number[]): string | null {
   return null;
 }
 
+/** クエリ talent 用（完全一致想定）。空は null */
+function resolveTalentMusicApiUrlByTalentSlug(talentSlug: string): string | null {
+  const slug = talentSlug.trim();
+  if (!slug) {
+    return null;
+  }
+  const query = `talent=${encodeURIComponent(slug)}`;
+  const base = process.env.REACT_APP_API_DOMAIN?.trim();
+  if (base) {
+    return `${base.replace(/\/$/, '')}/oshi-katsu-saport/talent-music?${query}`;
+  }
+  if (process.env.NODE_ENV === 'development') {
+    return `/api/oshi-katsu-saport/talent-music?${query}`;
+  }
+  return null;
+}
+
 function normalizeMusicType(raw: unknown): MusicType {
   return raw === 'cover' ? 'cover' : 'original';
 }
@@ -361,5 +378,26 @@ export const useTalentMusicGetApi = () => {
     }
   }, []);
 
-  return { executeTalentMusicGet };
+  const executeTalentMusicGetByTalentSlug = useCallback(async (talentSlug: string): Promise<{
+    apiResponse: TalentMusicApiResponse | null;
+    error: unknown;
+  }> => {
+    const url = resolveTalentMusicApiUrlByTalentSlug(talentSlug);
+    if (!url) {
+      return { apiResponse: null, error: new Error('talent is required') };
+    }
+
+    try {
+      const apiResponse = await requestTalentMusic(url);
+      if (apiResponse) {
+        return { apiResponse, error: null };
+      }
+      return { apiResponse: null, error: new Error('Talent music API failed') };
+    } catch (error) {
+      console.error('Talent music API Error:', error);
+      return { apiResponse: null, error };
+    }
+  }, []);
+
+  return { executeTalentMusicGet, executeTalentMusicGetByTalentSlug };
 };

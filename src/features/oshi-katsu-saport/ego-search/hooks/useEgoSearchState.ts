@@ -24,6 +24,7 @@ export interface Talent {
   id: string;
   talentName: string;
   talentNameEn: string;
+  talentSlug?: string;
   talentNameJoin: string;
   groupName: string;
   groupId: number;
@@ -57,6 +58,8 @@ export interface EgoSearchState {
 export interface EgoSearchActions {
   // データ取得
   fetchTalents: () => void;
+  selectTalent: (talent: Talent) => void;
+  resetTalentSelection: () => void;
 
   // 検索実行
   handleSearchOnTwitter: () => void;
@@ -132,6 +135,7 @@ export const useEgoSearchState = (
               id: talent.id,
               talentName: talent.talentName,
               talentNameEn: talent.talentNameEn,
+              talentSlug: talent.talentSlug,
               talentNameJoin: talent.talentName + '（' + talent.talentNameEn + '）',
               groupName: talent.groupName,
               groupId: talent.groupId,
@@ -149,6 +153,65 @@ export const useEgoSearchState = (
       }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [talentsApi, setState]),
+
+    /**
+     * タレント選択（UIの選択操作を集約）
+     */
+    selectTalent: useCallback((talent: Talent) => {
+      setState(prev => {
+        const current = prev.filters.talentAccounts.selectedAccounts[0];
+        const alreadySame = current?.talentId === talent.id;
+        const nextSelectedAccounts = alreadySame
+          ? prev.filters.talentAccounts.selectedAccounts
+          : [
+              {
+                talentId: talent.id,
+                talentName: talent.talentName,
+                accounts: talent.twitterAccounts,
+              },
+            ];
+
+        return {
+          ...prev,
+          filters: {
+            ...prev.filters,
+            talentAccounts: {
+              ...prev.filters.talentAccounts,
+              selectedAccounts: nextSelectedAccounts,
+            },
+          },
+          ui: {
+            ...prev.ui,
+            talentSearchQuery: '',
+            isDropdownOpen: false,
+          },
+        };
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [setState]),
+
+    /**
+     * タレント選択リセット
+     */
+    resetTalentSelection: useCallback(() => {
+      setState(prev => ({
+        ...prev,
+        filters: {
+          ...prev.filters,
+          talentAccounts: {
+            ...prev.filters.talentAccounts,
+            enabled: false,
+            selectedAccounts: [],
+          },
+        },
+        ui: {
+          ...prev.ui,
+          talentSearchQuery: '',
+          isDropdownOpen: false,
+        },
+      }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [setState]),
 
     /**
      * Xで検索

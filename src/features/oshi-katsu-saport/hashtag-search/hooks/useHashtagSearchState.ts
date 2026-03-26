@@ -30,6 +30,7 @@ export interface Talent {
   id: string;
   talentName: string;
   talentNameEn: string;
+  talentSlug?: string;
   talentNameJoin: string;
   groupName: string;
   groupId: number;
@@ -104,7 +105,7 @@ const updateState = {
     data: {
       ...prev.data,
       talents: talents,
-      selectedTalent: talents.length > 0 ? talents[0] : null,
+      selectedTalent: null,
     },
   }),
 
@@ -168,17 +169,13 @@ export const useHashtagSearchState = (
             id: talent.id,
             talentName: talent.talentName,
             talentNameEn: talent.talentNameEn,
+            talentSlug: talent.talentSlug,
             talentNameJoin: talent.talentName + '（' + talent.talentNameEn + '）',
             groupName: talent.groupName,
             groupId: talent.groupId,
             twitterAccounts: talent.twitterAccounts,
           })) ?? []),
         }));
-
-        // 最初のタレントのハッシュタグを取得
-        if (result.data?.talents && result.data.talents.length > 0) {
-          actions.fetchTalentHashtags(result.data.talents[0].id);
-        }
       } catch (error) {
         console.error('Failed to fetch talents:', error);
         updateStateGroup.toLoading(setState, false);

@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { useSearchParams } from 'react-router-dom';
 import { HashtagSearchState, useHashtagSearchState } from '../hooks/useHashtagSearchState';
 import HashtagSearchPresenter from '../presenters/HashtagSearchPresenter';
 
@@ -35,6 +36,34 @@ const HashtagSearchContainer: React.FC = () => {
 
   // Actions Hook
   const { actions } = useHashtagSearchState(state, setState);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const talentQuery = useMemo(() => (searchParams.get('talent') ?? '').trim(), [searchParams]);
+
+  // URLの ?talent=...（slug）がある場合、完全一致するタレントを自動選択してハッシュタグを取得
+  useEffect(() => {
+    if (state.config.isLoading) return;
+    if (!talentQuery) return;
+    if (state.data.selectedTalent?.talentSlug === talentQuery) return;
+    const found = state.data.talents.find((t) => t.talentSlug === talentQuery);
+    if (!found) return;
+    actions.selectTalent(found);
+  }, [
+    state.config.isLoading,
+    state.data.selectedTalent,
+    state.data.talents,
+    talentQuery,
+    actions,
+  ]);
+
+  const actionsWithUrl = useMemo(() => {
+    return {
+      ...actions,
+      selectTalent: (talent: any) => {
+        setSearchParams({ talent: String(talent.talentSlug ?? '').trim() });
+        actions.selectTalent(talent);
+      },
+    };
+  }, [actions, setSearchParams]);
 
   return (
     <>
@@ -50,7 +79,7 @@ const HashtagSearchContainer: React.FC = () => {
       </Helmet>
       <HashtagSearchPresenter
         state={state}
-        actions={actions}
+        actions={actionsWithUrl}
       />
     </>
   );
