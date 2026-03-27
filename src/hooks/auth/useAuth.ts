@@ -2,12 +2,14 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { getCookie, setCookie } from 'utils/cookieUtil';
 import { useAutoLoginPostApi } from 'hooks/api/auth/useAutoLoginPostApi';
+import { useAuthSessionGetApi } from 'hooks/api/auth/useAuthSessionGetApi';
 
 /**
  * 認証チェック用カスタムフック
  *
- * - 自動ログイントークンをチェック
- * - 存在する場合は自動ログイン認証APIを実行
+ * - localStorage に認証トークンがある場合は /auth/session で有効性を検証
+ * - 無効ならトークンを破棄し、自動ログインまたはログイン画面へ
+ * - 自動ログイントークンをチェックし、存在すれば自動ログイン認証APIを実行
  * - 存在しない場合はログイン画面にリダイレクト
  * - 認証成功時は認証トークンをlocalStorageに保存
  */
@@ -15,17 +17,21 @@ export const useAuth = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { executeAutoLogin } = useAutoLoginPostApi();
+  const { executeSession } = useAuthSessionGetApi();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isChecking, setIsChecking] = useState(true);
 
   useEffect(() => {
     const checkAuth = async () => {
-      // 既に認証トークンがある場合は、自動ログイン処理をスキップ
       const existingToken = localStorage.getItem('token');
       if (existingToken) {
-        setIsAuthenticated(true);
-        setIsChecking(false);
-        return;
+        const { apiResponse, error } = await executeSession();
+        if (!error && apiResponse?.status && apiResponse.data) {
+          setIsAuthenticated(true);
+          setIsChecking(false);
+          return;
+        }
+        localStorage.removeItem('token');
       }
 
       // 自動ログイントークンを取得
