@@ -31,7 +31,7 @@ export const TalentMusicHeader: React.FC<TalentMusicHeaderProps> = ({ onBackToHo
           </svg>
         </div>
         <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
-          タレント別 楽曲一覧
+          楽曲一覧
         </h1>
         <p className="text-gray-500 text-sm md:text-base">
           オリジナル曲・カバー曲をYouTubeサムネイルで確認できます

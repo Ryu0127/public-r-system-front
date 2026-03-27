@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { initGA, logPageView } from './utils/analytics';
 import Profile from './components/Profile';
 import Settings from './components/Settings';
@@ -47,8 +47,10 @@ function App() {
         <Route path="/settings" element={<Settings />} />
         <Route path="/talent-hashtag-support" element={<HashtagSearchContainer />} />
         <Route path="/ego-search-support" element={<EgoSearchContainer />} />
-        {/* タレント別楽曲一覧 */}
-        <Route path="/talent-music" element={<TalentMusicContainer />} />
+        {/* 楽曲一覧 */}
+        <Route path="/music" element={<TalentMusicContainer />} />
+        {/* 旧URLから新URLへリダイレクト */}
+        <Route path="/talent-music" element={<Navigate to="/music" replace />} />
         {/* 生活管理システム */}
         <Route path="/life/life-schedule-day" element={<LifeScheduleDayContainer />} />
         <Route path="/life/life-schedule-month" element={<LifeScheduleMonthContainer />} />

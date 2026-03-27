@@ -22,7 +22,7 @@ const initialState: TalentMusicState = {
 };
 
 /**
- * タレント別 楽曲一覧画面
+ * 楽曲一覧画面
  */
 const TalentMusicContainer: React.FC = () => {
   const [state, setState] = useState<TalentMusicState>(initialState);
@@ -59,23 +59,23 @@ const TalentMusicContainer: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>タレント別 楽曲一覧 | ホロリスの推し活サポート</title>
+        <title>楽曲一覧 | ホロリスの推し活サポート</title>
         <meta
           name="description"
           content="ホロライブタレントのオリジナル曲・カバー曲をYouTubeサムネイルで一覧確認できます。推しの楽曲をまとめてチェックしよう。"
         />
-        <meta property="og:title" content="タレント別 楽曲一覧 | ホロリスの推し活サポート" />
+        <meta property="og:title" content="楽曲一覧 | ホロリスの推し活サポート" />
         <meta
           property="og:description"
           content="ホロライブタレントのオリジナル曲・カバー曲をYouTubeサムネイルで一覧確認。推しの楽曲をまとめてチェック。"
         />
         <meta
           property="og:url"
-          content="https://public-r-system-front.vercel.app/talent-music"
+          content="https://public-r-system-front.vercel.app/music"
         />
         <link
           rel="canonical"
-          href="https://public-r-system-front.vercel.app/talent-music"
+          href="https://public-r-system-front.vercel.app/music"
         />
       </Helmet>
       <TalentMusicPresenter state={state} actions={actionsWithUrl} />
