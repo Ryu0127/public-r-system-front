@@ -38,7 +38,7 @@ export const HOME_CHANGE_LOGS: HomeChangeLog[] = [
   {
     id: "3",
     version: "v1.2.0",
-    date: "2026-03-15",
+    date: "2026-03-25",
     changes: [
       "「楽曲一覧」機能を追加"
     ]
