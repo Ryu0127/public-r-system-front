@@ -6,6 +6,7 @@ import { KeywordPresetsSelector } from '../components/KeywordPresetsSelector';
 import { TalentSelector } from '../components/TalentSelector';
 import { AdvancedFilters } from '../components/AdvancedFilters';
 import { HelpModal } from '../components/HelpModal';
+import { buildSearchQueryPreview } from '../utils/buildTwitterSearchUrl';
 
 interface EgoSearchPresenterProps {
   state: EgoSearchState;
@@ -20,8 +21,8 @@ export const EgoSearchPresenter: React.FC<EgoSearchPresenterProps> = ({
   const handleBackToHome = () => {
     window.location.href = '/';
   };
-  const keywords = state.filters.searchKeywords.filter((k) => k.trim() !== '');
-  const canConfirm = keywords.length > 0;
+  // 検索プレビューテキスト
+  const searchQueryPreview = buildSearchQueryPreview(state.filters);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-blue-50 relative pb-32">
@@ -90,14 +91,9 @@ export const EgoSearchPresenter: React.FC<EgoSearchPresenterProps> = ({
             <div className="max-w-2xl mx-auto">
               <button
                 onClick={() => setIsConfirmModalOpen(true)}
-                disabled={!canConfirm}
-                className={`w-full py-3 rounded-xl font-semibold text-base transition-all duration-300 ${
-                  canConfirm
-                    ? 'bg-gradient-to-r from-[#1DA1F2] to-[#0d8bd9] hover:from-[#0d8bd9] hover:to-[#1DA1F2] text-white shadow-lg hover:shadow-xl'
-                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                }`}
+                className={`w-full py-3 rounded-xl font-semibold text-base transition-all duration-300 bg-gradient-to-r from-[#1DA1F2] to-[#0d8bd9] hover:from-[#0d8bd9] hover:to-[#1DA1F2] text-white shadow-lg hover:shadow-xl`}
               >
-                検索確認
+                検索内容を確認
               </button>
             </div>
           </div>
@@ -109,13 +105,12 @@ export const EgoSearchPresenter: React.FC<EgoSearchPresenterProps> = ({
           <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-6">
             <h3 className="text-lg font-bold text-gray-800 mb-3">検索内容の確認</h3>
             <div className="text-sm text-gray-600 mb-5">
-              <p className="mb-2">以下のキーワードで検索画面を開きます。</p>
-              <div className="flex flex-wrap gap-2">
-                {keywords.map((keyword) => (
-                  <span key={keyword} className="px-2 py-1 rounded-full bg-blue-100 text-blue-700 text-xs">
-                    {keyword}
-                  </span>
-                ))}
+              <p className="mb-3 text-gray-700">以下の検索クエリでXの検索画面を開きます。</p>
+              <div className="p-3 bg-gray-50 rounded-xl border border-gray-200 max-h-48 overflow-y-auto">
+                <p className="text-xs text-gray-500 mb-1">検索クエリ</p>
+                <p className="text-sm text-gray-800 font-mono break-all whitespace-pre-wrap">
+                  {searchQueryPreview || '—'}
+                </p>
               </div>
             </div>
             <div className="flex gap-3">

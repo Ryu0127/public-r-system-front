@@ -105,7 +105,7 @@ export const TalentSelector: React.FC<TalentSelectorProps> = ({
         <p className="text-xs text-gray-500 mt-2">
           選択中:{' '}
           <span className="font-semibold text-[#1DA1F2]">
-            {selectedTalent?.talentNameJoin || 'タレントを選択してください'}
+            {selectedTalent?.talentNameJoin || '未選択'}
           </span>
         </p>
       </div>

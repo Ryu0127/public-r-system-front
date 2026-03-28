@@ -192,14 +192,6 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({ state, actions
             </div>
           )}
         </div>
-
-        {/* 検索プレビュー */}
-        {previewText && (
-          <div className="mt-4 p-3 bg-blue-50 rounded border border-blue-200">
-            <p className="text-xs text-gray-600 mb-1">検索クエリプレビュー:</p>
-            <p className="text-sm text-gray-800 font-mono break-all">{previewText}</p>
-          </div>
-        )}
       </div>
     </div>
   );
