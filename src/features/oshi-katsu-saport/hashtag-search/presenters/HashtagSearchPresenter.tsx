@@ -8,6 +8,7 @@ import { HashtagPostMode } from '../components/HashtagPostMode';
 import { HashtagSearchMode } from '../components/HashtagSearchMode';
 import { HelpModal } from '../components/HelpModal';
 import { Talent } from 'hooks/api/oshi-katsu-saport/useTalentsGetApi';
+import { HashtagSearchEmptyState } from '../components/HashtagSearchEmptyState';
 
 interface HashtagSearchPresenterProps {
   state: HashtagSearchState;
@@ -86,42 +87,50 @@ export const HashtagSearchPresenter: React.FC<HashtagSearchPresenterProps> = ({
           onDropdownOpenChange={actions.setIsDropdownOpen}
         />
 
-        {/* イベントハッシュタグエリア */}
-        <EventHashtagsSection
-          eventHashtags={state.data.eventHashtags}
-          selectedTags={state.ui.selectedTags}
-          mode={state.config.mode}
-          includeEventUrl={state.config.includeEventUrl}
-          onEventHashtagToggle={actions.toggleEventHashtag}
-          onSearchQueryChange={actions.setSearchQuery}
-          onIncludeEventUrlChange={actions.setIncludeEventUrl}
-        />
-
-        {/* メイン機能エリア */}
-        <div className="max-w-2xl mx-auto">
-          {/* ハッシュタグ選択・投稿機能 */}
-          {state.config.mode === 'post' && (
-            <HashtagPostMode
-              selectedTalent={state.data.selectedTalent}
-              hashtags={state.data.hashtags}
+        {/* タレント選択済み */}
+        {state.data.selectedTalent && (
+          <>
+            {/* イベントハッシュタグエリア */}
+            <EventHashtagsSection
+              eventHashtags={state.data.eventHashtags}
               selectedTags={state.ui.selectedTags}
-              onToggleTag={actions.toggleTag}
-            />
-          )}
-
-          {/* タグ検索機能 */}
-          {state.config.mode === 'search' && (
-            <HashtagSearchMode
-              selectedTalent={state.data.selectedTalent}
-              hashtags={state.data.hashtags}
-              searchQuery={state.ui.searchQuery}
+              mode={state.config.mode}
+              includeEventUrl={state.config.includeEventUrl}
+              onEventHashtagToggle={actions.toggleEventHashtag}
               onSearchQueryChange={actions.setSearchQuery}
-              onQuickSearch={actions.handleQuickSearch}
-              onKeyPress={handleKeyPress}
+              onIncludeEventUrlChange={actions.setIncludeEventUrl}
             />
-          )}
+            {/* メイン機能エリア */}
+            <div className="max-w-2xl mx-auto">
+              {/* ハッシュタグ選択・投稿機能 */}
+              {state.config.mode === 'post' && (
+                <HashtagPostMode
+                  selectedTalent={state.data.selectedTalent}
+                  hashtags={state.data.hashtags}
+                  selectedTags={state.ui.selectedTags}
+                  onToggleTag={actions.toggleTag}
+                />
+              )}
 
-        </div>
+              {/* タグ検索機能 */}
+              {state.config.mode === 'search' && (
+                <HashtagSearchMode
+                  selectedTalent={state.data.selectedTalent}
+                  hashtags={state.data.hashtags}
+                  searchQuery={state.ui.searchQuery}
+                  onSearchQueryChange={actions.setSearchQuery}
+                  onQuickSearch={actions.handleQuickSearch}
+                  onKeyPress={handleKeyPress}
+                />
+              )}
+            </div>
+          </>
+        )}
+
+        {/* タレント未選択 */}
+        {!state.data.selectedTalent && (
+          <HashtagSearchEmptyState />
+        )}
       </div>
 
       {!state.config.isDropdownOpen && (
