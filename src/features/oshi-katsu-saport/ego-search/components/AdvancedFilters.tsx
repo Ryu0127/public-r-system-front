@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { EgoSearchState, EgoSearchActions } from '../hooks/useEgoSearchState';
-import { buildSearchQueryPreview } from '../utils/buildTwitterSearchUrl';
 
 interface AdvancedFiltersProps {
   state: EgoSearchState;
@@ -12,9 +11,6 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({ state, actions
   const [showExcludeWordInput, setShowExcludeWordInput] = useState(false);
 
   const { filters, data } = state;
-
-  // 検索プレビューテキスト
-  const previewText = buildSearchQueryPreview(filters);
 
   return (
     <div className="max-w-2xl mx-auto mb-8 animate-fade-in" style={{ animationDelay: '0.2s' }}>
