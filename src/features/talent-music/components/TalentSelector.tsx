@@ -1,100 +1,47 @@
-import React, { useRef, useEffect } from 'react';
+import React from 'react';
 import { MusicTalent } from '../types';
 
 interface TalentSelectorProps {
-  talents: MusicTalent[];
   selectedTalent: MusicTalent | null;
-  searchQuery: string;
-  isDropdownOpen: boolean;
-  onSearchQueryChange: (query: string) => void;
-  onTalentSelect: (talent: MusicTalent) => void;
-  onDropdownOpenChange: (isOpen: boolean) => void;
+  onOpenModal: () => void;
 }
 
 export const TalentSelector: React.FC<TalentSelectorProps> = ({
-  talents,
   selectedTalent,
-  searchQuery,
-  isDropdownOpen,
-  onSearchQueryChange,
-  onTalentSelect,
-  onDropdownOpenChange,
+  onOpenModal,
 }) => {
-  const sectionRef = useRef<HTMLElement>(null);
-  const comboboxRef = useRef<HTMLDivElement>(null);
-  const scrollToSelectorTop = () => {
-    sectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
-
-  const filteredTalents = talents.filter((talent) =>
-    talent.talentNameJoin.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (comboboxRef.current && !comboboxRef.current.contains(event.target as Node)) {
-        onDropdownOpenChange(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [onDropdownOpenChange]);
-
   return (
     <section
-      ref={sectionRef}
-      className="max-w-2xl mx-auto mb-8 animate-fade-in overflow-visible relative z-[10000]"
+      className="max-w-2xl mx-auto mb-8 animate-fade-in"
       style={{ animationDelay: '0.1s' }}
     >
-      <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-200 shadow-lg overflow-visible">
-        <label htmlFor="talent-music-combobox" className="block text-sm font-semibold text-gray-700 mb-3">
+      <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-200 shadow-lg">
+        <label className="block text-sm font-semibold text-gray-700 mb-3">
           タレントを選択
         </label>
-        <div className="relative" ref={comboboxRef}>
-          <input
-            id="talent-music-combobox"
-            type="text"
-            value={isDropdownOpen ? searchQuery : selectedTalent?.talentNameJoin || ''}
-            onClick={scrollToSelectorTop}
-            onChange={(e) => {
-              onSearchQueryChange(e.target.value);
-              onDropdownOpenChange(true);
-            }}
-            onFocus={() => onDropdownOpenChange(true)}
-            placeholder="タレント名を入力して検索..."
-            className="w-full px-4 py-3 pr-10 bg-white border-2 border-gray-200 focus:border-red-400 focus:outline-none rounded-xl text-gray-800 transition-all duration-200"
-          />
-          <div className="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none text-gray-400">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
+
+        <div className="flex items-center gap-3">
+          {/* 選択中タレント表示エリア */}
+          <div className="flex-1 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm truncate">
+            {selectedTalent ? (
+              <span className="font-medium text-gray-800">{selectedTalent.talentNameJoin}</span>
+            ) : (
+              <span className="text-gray-400">タレントを選択してください</span>
+            )}
           </div>
 
-          {/* ドロップダウンリスト */}
-          {isDropdownOpen && filteredTalents.length > 0 && (
-            <div className="absolute z-[9999] w-full mt-2 bg-white border-2 border-gray-200 rounded-xl shadow-xl max-h-60 overflow-y-auto">
-              {filteredTalents.map((talent, index) => (
-                <div
-                  key={`${talent.id}-${index}`}
-                  onClick={() => onTalentSelect(talent)}
-                  className={`px-4 py-3 cursor-pointer transition-all duration-200 ${
-                    talent.id === selectedTalent?.id
-                      ? 'bg-red-500 text-white'
-                      : 'hover:bg-red-50 text-gray-700'
-                  }`}
-                >
-                  <span className="font-medium">{talent.talentNameJoin}</span>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {isDropdownOpen && searchQuery && filteredTalents.length === 0 && (
-            <div className="absolute z-[9999] w-full mt-2 bg-white border-2 border-gray-200 rounded-xl shadow-xl p-4 text-center text-gray-500">
-              該当するタレントが見つかりません
-            </div>
-          )}
+          {/* モーダルを開くボタン */}
+          <button
+            onClick={onOpenModal}
+            className="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-red-500 to-pink-600 text-white rounded-xl font-medium hover:from-red-600 hover:to-pink-700 active:scale-95 transition-all duration-200 shadow-md hover:shadow-lg whitespace-nowrap"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            <span>タレント選択</span>
+          </button>
         </div>
+
         <p className="text-xs text-gray-500 mt-2">
           選択中:{' '}
           <span className="font-semibold text-red-500">

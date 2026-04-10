@@ -1,7 +1,8 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { TalentMusicState, TalentMusicActions } from '../hooks/useTalentMusicState';
 import { TalentMusicHeader } from '../components/TalentMusicHeader';
 import { TalentSelector } from '../components/TalentSelector';
+import { TalentSelectionModal } from '../components/TalentSelectionModal';
 import { MusicFilterTabs } from '../components/MusicFilterTabs';
 import { MusicCard } from '../components/MusicCard';
 import { EmptyState } from '../components/EmptyState';
@@ -30,6 +31,12 @@ const TalentMusicPresenter: React.FC<TalentMusicPresenterProps> = ({ state, acti
   const originalCount = talentMusicList.filter((m) => m.type === 'original').length;
   const coverCount = talentMusicList.filter((m) => m.type === 'cover').length;
 
+  // モーダルを閉じる際に検索クエリもクリア
+  const handleModalClose = useCallback(() => {
+    actions.setIsDropdownOpen(false);
+    actions.setTalentSearchQuery('');
+  }, [actions]);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-pink-50 relative pb-16">
       {/* 背景装飾 */}
@@ -44,15 +51,21 @@ const TalentMusicPresenter: React.FC<TalentMusicPresenterProps> = ({ state, acti
         {/* ヘッダー */}
         <TalentMusicHeader onBackToHome={() => { window.location.href = '/'; }} />
 
-        {/* タレント選択 */}
+        {/* タレント選択ボタン */}
         <TalentSelector
+          selectedTalent={selectedTalent}
+          onOpenModal={() => actions.setIsDropdownOpen(true)}
+        />
+
+        {/* タレント選択モーダル */}
+        <TalentSelectionModal
+          isOpen={config.isDropdownOpen}
           talents={data.talents}
           selectedTalent={selectedTalent}
           searchQuery={ui.talentSearchQuery}
-          isDropdownOpen={config.isDropdownOpen}
           onSearchQueryChange={actions.setTalentSearchQuery}
           onTalentSelect={actions.selectTalent}
-          onDropdownOpenChange={actions.setIsDropdownOpen}
+          onClose={handleModalClose}
         />
 
         {/* タレント一覧取得中 */}
