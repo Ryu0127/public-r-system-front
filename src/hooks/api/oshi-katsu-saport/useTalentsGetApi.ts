@@ -99,14 +99,38 @@ async function requestTalents(url: string): Promise<TalentsApiResponse | null> {
   return normalizeTalentsResponse(json);
 }
 
-/** 開発用フォールバック（実APIと同じ3項目のみ） */
+/**
+ * 開発用フォールバック
+ * groupId / groupName はAPIレスポンスへの追加が予定されているため仮データで補完する
+ */
 const buildMockTalentsResponse = (): TalentsApiResponse => {
   const raw = {
     status: true,
     data: {
       talents: [
-        { id: '1', talentName: 'ときのそら', talentNameEn: 'Tokino Sora' },
-        { id: '2', talentName: 'ロボ子さん', talentNameEn: 'Roboco-san' },
+        // 0期生
+        { id: '1',  talentName: 'ときのそら',       talentNameEn: 'Tokino Sora',       talentSlug: 'tokino-sora',    groupId: 0, groupName: '0期生' },
+        { id: '2',  talentName: 'ロボ子さん',        talentNameEn: 'Roboco-san',         talentSlug: 'roboco',         groupId: 0, groupName: '0期生' },
+        { id: '3',  talentName: 'さくらみこ',        talentNameEn: 'Sakura Miko',        talentSlug: 'sakura-miko',    groupId: 0, groupName: '0期生' },
+        { id: '4',  talentName: '星街すいせい',      talentNameEn: 'Hoshimachi Suisei',  talentSlug: 'suisei',         groupId: 0, groupName: '0期生' },
+        { id: '5',  talentName: 'AZKi',              talentNameEn: 'AZKi',               talentSlug: 'azki',           groupId: 0, groupName: '0期生' },
+        // 1期生
+        { id: '6',  talentName: '夜空メル',          talentNameEn: 'Yozora Mel',         talentSlug: 'yozora-mel',     groupId: 1, groupName: '1期生' },
+        { id: '7',  talentName: 'アキ・ローゼンタール', talentNameEn: 'Aki Rosenthal',   talentSlug: 'aki-rosenthal',  groupId: 1, groupName: '1期生' },
+        { id: '8',  talentName: '赤井はあと',        talentNameEn: 'Haachama',           talentSlug: 'haachama',       groupId: 1, groupName: '1期生' },
+        { id: '9',  talentName: '白上フブキ',        talentNameEn: 'Shirakami Fubuki',   talentSlug: 'fubuki',         groupId: 1, groupName: '1期生' },
+        { id: '10', talentName: '夏色まつり',        talentNameEn: 'Natsuiro Matsuri',   talentSlug: 'matsuri',        groupId: 1, groupName: '1期生' },
+        // 2期生
+        { id: '11', talentName: '湊あくあ',          talentNameEn: 'Minato Aqua',        talentSlug: 'aqua',           groupId: 2, groupName: '2期生' },
+        { id: '12', talentName: '紫咲シオン',        talentNameEn: 'Murasaki Shion',     talentSlug: 'shion',          groupId: 2, groupName: '2期生' },
+        { id: '13', talentName: '百鬼あやめ',        talentNameEn: 'Nakiri Ayame',       talentSlug: 'ayame',          groupId: 2, groupName: '2期生' },
+        { id: '14', talentName: '癒月ちょこ',        talentNameEn: 'Yuzuki Choco',       talentSlug: 'choco',          groupId: 2, groupName: '2期生' },
+        { id: '15', talentName: '大空スバル',        talentNameEn: 'Oozora Subaru',      talentSlug: 'subaru',         groupId: 2, groupName: '2期生' },
+        // 3期生
+        { id: '16', talentName: '兎田ぺこら',        talentNameEn: 'Usada Pekora',       talentSlug: 'pekora',         groupId: 3, groupName: '3期生' },
+        { id: '17', talentName: '不知火フレア',      talentNameEn: 'Shiranui Flare',     talentSlug: 'flare',          groupId: 3, groupName: '3期生' },
+        { id: '18', talentName: '白銀ノエル',        talentNameEn: 'Shirogane Noel',     talentSlug: 'noel',           groupId: 3, groupName: '3期生' },
+        { id: '19', talentName: '宝鐘マリン',        talentNameEn: 'Houshou Marine',     talentSlug: 'marine',         groupId: 3, groupName: '3期生' },
       ],
     },
   };

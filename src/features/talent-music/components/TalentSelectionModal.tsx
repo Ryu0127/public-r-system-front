@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useMemo } from 'react';
 import { MusicTalent } from '../types';
 
 interface TalentSelectionModalProps {
@@ -30,6 +30,33 @@ const getAvatarColor = (id: string): string => {
   return AVATAR_COLORS[idx];
 };
 
+interface TalentGroup {
+  groupId: number;
+  groupName: string;
+  talents: MusicTalent[];
+}
+
+/** groupId / groupName でグループ化して groupId 昇順で返す */
+const groupTalents = (talents: MusicTalent[]): TalentGroup[] => {
+  const map = new Map<number, TalentGroup>();
+  for (const talent of talents) {
+    const gid = talent.groupId;
+    if (!map.has(gid)) {
+      map.set(gid, {
+        groupId: gid,
+        groupName: talent.groupName || 'その他',
+        talents: [],
+      });
+    }
+    map.get(gid)!.talents.push(talent);
+  }
+  return Array.from(map.values()).sort((a, b) => a.groupId - b.groupId);
+};
+
+/** 全タレントが groupName を持つかどうか（グループヘッダー表示の判定） */
+const hasGroupInfo = (talents: MusicTalent[]): boolean =>
+  talents.length > 0 && talents.some((t) => t.groupName !== '');
+
 export const TalentSelectionModal: React.FC<TalentSelectionModalProps> = ({
   isOpen,
   talents,
@@ -41,8 +68,18 @@ export const TalentSelectionModal: React.FC<TalentSelectionModalProps> = ({
 }) => {
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  const filteredTalents = talents.filter((talent) =>
-    talent.talentNameJoin.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredTalents = useMemo(
+    () =>
+      talents.filter((talent) =>
+        talent.talentNameJoin.toLowerCase().includes(searchQuery.toLowerCase())
+      ),
+    [talents, searchQuery]
+  );
+
+  const showGroups = useMemo(() => hasGroupInfo(talents), [talents]);
+  const groups = useMemo(
+    () => (showGroups ? groupTalents(filteredTalents) : []),
+    [showGroups, filteredTalents]
   );
 
   useEffect(() => {
@@ -69,6 +106,45 @@ export const TalentSelectionModal: React.FC<TalentSelectionModalProps> = ({
   }, [isOpen, onClose]);
 
   if (!isOpen) return null;
+
+  const renderTalentCard = (talent: MusicTalent, index: number) => {
+    const isSelected = talent.id === selectedTalent?.id;
+    const avatarColor = getAvatarColor(talent.id);
+    const initial = talent.talentName.charAt(0);
+
+    return (
+      <button
+        key={`${talent.id}-${index}`}
+        onClick={() => onTalentSelect(talent)}
+        className={`flex flex-col items-center gap-2 p-4 rounded-xl transition-all duration-200 text-center group cursor-pointer
+          ${isSelected ? 'bg-red-50 ring-2 ring-red-400' : 'hover:bg-gray-50'}`}
+      >
+        {/* アバター */}
+        <div
+          className={`w-16 h-16 rounded-full bg-gradient-to-br ${avatarColor} flex items-center justify-center text-white font-bold text-2xl shadow-md group-hover:shadow-lg transition-shadow flex-shrink-0`}
+        >
+          {initial}
+        </div>
+
+        {/* 名前 */}
+        <div className="w-full">
+          <p className={`text-xs font-semibold leading-snug break-words ${isSelected ? 'text-red-600' : 'text-gray-800'}`}>
+            {talent.talentName}
+          </p>
+          <p className="text-xs text-gray-400 mt-0.5 leading-snug break-words">
+            {talent.talentNameEn}
+          </p>
+        </div>
+
+        {/* 選択中バッジ */}
+        {isSelected && (
+          <span className="text-xs bg-red-500 text-white px-2 py-0.5 rounded-full font-medium">
+            選択中
+          </span>
+        )}
+      </button>
+    );
+  };
 
   return (
     <div
@@ -111,58 +187,38 @@ export const TalentSelectionModal: React.FC<TalentSelectionModalProps> = ({
           </div>
         </div>
 
-        {/* タレント一覧グリッド */}
+        {/* タレント一覧 */}
         <div className="overflow-y-auto flex-1 p-6">
-          {filteredTalents.length > 0 ? (
-            <div className="grid grid-cols-3 sm:grid-cols-3 gap-3">
-              {filteredTalents.map((talent, index) => {
-                const isSelected = talent.id === selectedTalent?.id;
-                const avatarColor = getAvatarColor(talent.id);
-                const initial = talent.talentName.charAt(0);
-
-                return (
-                  <button
-                    key={`${talent.id}-${index}`}
-                    onClick={() => onTalentSelect(talent)}
-                    className={`flex flex-col items-center gap-2 p-4 rounded-xl transition-all duration-200 text-center group cursor-pointer
-                      ${isSelected
-                        ? 'bg-red-50 ring-2 ring-red-400'
-                        : 'hover:bg-gray-50'
-                      }`}
-                  >
-                    {/* アバター */}
-                    <div
-                      className={`w-16 h-16 rounded-full bg-gradient-to-br ${avatarColor} flex items-center justify-center text-white font-bold text-2xl shadow-md group-hover:shadow-lg transition-shadow flex-shrink-0`}
-                    >
-                      {initial}
-                    </div>
-
-                    {/* 名前 */}
-                    <div className="w-full">
-                      <p className={`text-xs font-semibold leading-snug break-words ${isSelected ? 'text-red-600' : 'text-gray-800'}`}>
-                        {talent.talentName}
-                      </p>
-                      <p className="text-xs text-gray-400 mt-0.5 leading-snug break-words">
-                        {talent.talentNameEn}
-                      </p>
-                    </div>
-
-                    {/* 選択中バッジ */}
-                    {isSelected && (
-                      <span className="text-xs bg-red-500 text-white px-2 py-0.5 rounded-full font-medium">
-                        選択中
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          ) : (
+          {filteredTalents.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 text-gray-400">
               <svg className="w-12 h-12 mb-3 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
               <p className="text-sm">該当するタレントが見つかりません</p>
+            </div>
+          ) : showGroups ? (
+            /* グループ別表示 */
+            <div className="space-y-6">
+              {groups.map((group) => (
+                <div key={group.groupId}>
+                  {/* グループヘッダー */}
+                  <div className="flex items-center gap-3 mb-3">
+                    <span className="text-sm font-bold text-gray-700">{group.groupName}</span>
+                    <div className="flex-1 h-px bg-gray-200" />
+                    <span className="text-xs text-gray-400">{group.talents.length}名</span>
+                  </div>
+
+                  {/* タレントグリッド */}
+                  <div className="grid grid-cols-3 gap-3">
+                    {group.talents.map((talent, index) => renderTalentCard(talent, index))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            /* グループ情報なし: フラットグリッド */
+            <div className="grid grid-cols-3 gap-3">
+              {filteredTalents.map((talent, index) => renderTalentCard(talent, index))}
             </div>
           )}
         </div>
