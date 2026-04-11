@@ -28,6 +28,7 @@ export interface TalentGroupTalentApiRow {
 export interface TalentGroupApiItem {
   groupId: number;
   groupName: string;
+  groupNameEn: string;
   talents: TalentGroupTalentApiRow[];
 }
 
@@ -109,6 +110,7 @@ function normalizeTalentsResponse(raw: unknown): TalentsApiResponse | null {
         return {
           groupId: Number(grp.groupId ?? 0),
           groupName: String(grp.groupName ?? ''),
+          groupNameEn: String(grp.groupNameEn ?? ''),
           talents: groupTalents,
         };
       })
@@ -174,6 +176,7 @@ const buildMockTalentsResponse = (): TalentsApiResponse => {
         {
           groupId: 0,
           groupName: '0期生',
+          groupNameEn: 'Generation 0',
           talents: [
             { id: 1, talentName: 'ときのそら',          talentNameEn: 'Tokino Sora',      talentSlug: 'tokino-sora'   },
             { id: 2, talentName: 'ロボ子さん',           talentNameEn: 'Roboco-san',        talentSlug: 'roboco'        },
@@ -185,6 +188,7 @@ const buildMockTalentsResponse = (): TalentsApiResponse => {
         {
           groupId: 1,
           groupName: '1期生',
+          groupNameEn: '1st Generation',
           talents: [
             { id: 6,  talentName: '夜空メル',             talentNameEn: 'Yozora Mel',        talentSlug: 'yozora-mel'    },
             { id: 7,  talentName: 'アキ・ローゼンタール', talentNameEn: 'Aki Rosenthal',     talentSlug: 'aki-rosenthal' },
@@ -196,6 +200,7 @@ const buildMockTalentsResponse = (): TalentsApiResponse => {
         {
           groupId: 2,
           groupName: '2期生',
+          groupNameEn: '2nd Generation',
           talents: [
             { id: 11, talentName: '湊あくあ',   talentNameEn: 'Minato Aqua',    talentSlug: 'aqua'    },
             { id: 12, talentName: '紫咲シオン', talentNameEn: 'Murasaki Shion', talentSlug: 'shion'   },
@@ -207,6 +212,7 @@ const buildMockTalentsResponse = (): TalentsApiResponse => {
         {
           groupId: 3,
           groupName: '3期生',
+          groupNameEn: '3rd Generation',
           talents: [
             { id: 16, talentName: '兎田ぺこら',   talentNameEn: 'Usada Pekora',    talentSlug: 'pekora' },
             { id: 17, talentName: '不知火フレア', talentNameEn: 'Shiranui Flare',  talentSlug: 'flare'  },

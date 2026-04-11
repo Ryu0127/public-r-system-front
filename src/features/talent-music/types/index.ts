@@ -33,6 +33,7 @@ export interface MusicTalent {
 export interface MusicTalentGroup {
   groupId: number;
   groupName: string;
+  groupNameEn: string;
   talents: MusicTalent[];
 }
 

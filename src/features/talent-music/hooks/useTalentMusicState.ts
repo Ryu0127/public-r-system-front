@@ -65,6 +65,7 @@ export const useTalentMusicState = (
         ? apiData.groups.map((g) => ({
             groupId: g.groupId,
             groupName: g.groupName,
+            groupNameEn: g.groupNameEn,
             talents: g.talents.map((t) => {
               const ja = t.talentName ?? '';
               const en = t.talentNameEn ?? '';

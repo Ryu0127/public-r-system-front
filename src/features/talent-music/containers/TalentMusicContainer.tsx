@@ -57,7 +57,7 @@ const TalentMusicContainer: React.FC = () => {
       selectGroup: (group) => {
         setSearchParams((prev) => {
           const next = new URLSearchParams(prev);
-          next.set('group', String(group.groupId));
+          next.set('group', group.groupNameEn);
           return next;
         });
         actions.setIsDropdownOpen(false);
