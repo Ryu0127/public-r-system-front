@@ -57,7 +57,11 @@ const TalentMusicContainer: React.FC = () => {
       selectGroup: (group) => {
         setSearchParams((prev) => {
           const next = new URLSearchParams(prev);
-          next.set('group', group.groupNameEn.toLowerCase().replace(/\s+/g, '-'));
+          next.set('group', group.groupNameEn
+            .toLowerCase()
+            .replace(/[^\w\s-]/g, '')  // コロン等の記号を除去
+            .trim()
+            .replace(/\s+/g, '-'));    // スペースをハイフンに変換
           return next;
         });
         actions.setIsDropdownOpen(false);
