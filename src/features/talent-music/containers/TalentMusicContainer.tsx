@@ -13,6 +13,7 @@ const initialState: TalentMusicState = {
   },
   data: {
     talents: [],
+    groups: [],
     musicList: [],
     selectedTalent: null,
   },

@@ -22,6 +22,18 @@ export interface MusicTalent {
   talentNameJoin: string;
   groupName: string;
   groupId: number;
+  /** タレントアイコン画像 URL */
+  iconImgUrl?: string;
+}
+
+/**
+ * API の data.groups[] を画面用に変換したグループ
+ * talents には groupId / groupName を注入済みの MusicTalent が入る
+ */
+export interface MusicTalentGroup {
+  groupId: number;
+  groupName: string;
+  talents: MusicTalent[];
 }
 
 /** GET …/oshi-katsu-saport/talent-music?talent_ids=… のレスポンス（複数タレントの楽曲をまとめて返しうる。タレント一覧は別API） */

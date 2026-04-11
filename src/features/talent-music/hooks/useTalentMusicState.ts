@@ -1,5 +1,5 @@
 import { useCallback, useRef, Dispatch, SetStateAction } from 'react';
-import { Music, MusicTalent, MusicFilterType } from '../types';
+import { Music, MusicTalent, MusicTalentGroup, MusicFilterType } from '../types';
 import { talentToMusicTalent } from '../utils/talentToMusicTalent';
 import { useTalentMusicGetApi } from 'hooks/api/talent-music/useTalentMusicGetApi';
 import { useTalentsGetApi } from 'hooks/api/oshi-katsu-saport/useTalentsGetApi';
@@ -14,6 +14,8 @@ export interface TalentMusicState {
   };
   data: {
     talents: MusicTalent[];
+    /** API の data.groups を変換したグループ一覧（モーダルのグループ別表示に使用） */
+    groups: MusicTalentGroup[];
     /** 選択タレントの楽曲（将来は複数タレント選択時も同一配列にマージ） */
     musicList: Music[];
     /** 現状は単一選択のみ（複数選択は将来拡張） */
@@ -48,10 +50,35 @@ export const useTalentMusicState = (
     }));
 
     const talentsRes = await executeTalentsGet();
+    const apiData = talentsRes.apiResponse?.data;
 
     const talents =
-      talentsRes.apiResponse?.status === true
-        ? talentsRes.apiResponse.data.talents.map(talentToMusicTalent)
+      apiData?.talents != null
+        ? apiData.talents.map(talentToMusicTalent)
+        : [];
+
+    // API の groups を MusicTalentGroup に変換
+    // グループ内タレントには親グループの groupId / groupName を注入する
+    const groups: MusicTalentGroup[] =
+      apiData?.groups != null
+        ? apiData.groups.map((g) => ({
+            groupId: g.groupId,
+            groupName: g.groupName,
+            talents: g.talents.map((t) => {
+              const ja = t.talentName ?? '';
+              const en = t.talentNameEn ?? '';
+              return {
+                id: String(t.id ?? ''),
+                talentName: ja,
+                talentNameEn: en,
+                talentSlug: t.talentSlug,
+                talentNameJoin: ja && en ? `${ja}（${en}）` : ja || en,
+                groupId: g.groupId,
+                groupName: g.groupName,
+                iconImgUrl: t.iconImgUrl ?? undefined,
+              };
+            }),
+          }))
         : [];
 
     setState((prev) => ({
@@ -60,6 +87,7 @@ export const useTalentMusicState = (
       data: {
         ...prev.data,
         talents,
+        groups,
         musicList: [],
         selectedTalent: null,
       },
