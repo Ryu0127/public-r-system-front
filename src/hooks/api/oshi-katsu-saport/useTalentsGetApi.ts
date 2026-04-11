@@ -10,6 +10,7 @@ export interface TalentsListApiRow {
   talentSlug?: string;
   groupId?: number;
   groupName?: string;
+  iconImgUrl?: string;
 }
 
 /**
@@ -20,6 +21,7 @@ export interface TalentGroupTalentApiRow {
   talentName: string;
   talentNameEn: string;
   talentSlug?: string;
+  iconImgUrl?: string;
 }
 
 /** data.groups[] 1件 */
@@ -45,6 +47,7 @@ export interface Talent extends TalentsListApiRow {
   groupName: string;
   groupId: number;
   twitterAccounts: string[];
+  iconImgUrl?: string;
 }
 
 function resolveTalentsApiUrl(): string | null {
@@ -84,6 +87,7 @@ function normalizeTalentsResponse(raw: unknown): TalentsApiResponse | null {
       groupName: gn !== undefined && gn !== null ? String(gn) : '',
       groupId: gid !== undefined && gid !== null && gid !== '' ? Number(gid) : 0,
       twitterAccounts: Array.isArray(tw) ? tw.map((x) => String(x)) : [],
+      iconImgUrl: t.iconImgUrl != null ? String(t.iconImgUrl) : undefined,
     };
   });
 
@@ -98,6 +102,7 @@ function normalizeTalentsResponse(raw: unknown): TalentsApiResponse | null {
                 talentName: String(talent.talentName ?? ''),
                 talentNameEn: String(talent.talentNameEn ?? ''),
                 talentSlug: talent.talentSlug != null ? String(talent.talentSlug) : undefined,
+                iconImgUrl: talent.iconImgUrl != null ? String(talent.iconImgUrl) : undefined,
               };
             })
           : [];

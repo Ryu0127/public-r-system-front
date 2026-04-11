@@ -22,6 +22,8 @@ export interface MusicTalent {
   talentNameJoin: string;
   groupName: string;
   groupId: number;
+  /** タレントアイコン画像 URL */
+  iconImgUrl?: string;
 }
 
 /**

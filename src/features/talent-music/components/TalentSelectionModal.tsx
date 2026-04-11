@@ -106,12 +106,20 @@ export const TalentSelectionModal: React.FC<TalentSelectionModalProps> = ({
         className={`flex flex-col items-center gap-2 p-4 rounded-xl transition-all duration-200 text-center group cursor-pointer
           ${isSelected ? 'bg-red-50 ring-2 ring-red-400' : 'hover:bg-gray-50'}`}
       >
-        {/* アバター */}
-        <div
-          className={`w-16 h-16 rounded-full bg-gradient-to-br ${avatarColor} flex items-center justify-center text-white font-bold text-2xl shadow-md group-hover:shadow-lg transition-shadow flex-shrink-0`}
-        >
-          {initial}
-        </div>
+        {/* アバター：iconImgUrl があれば画像、なければグラデーション＋イニシャル */}
+        {talent.iconImgUrl ? (
+          <img
+            src={talent.iconImgUrl}
+            alt={talent.talentName}
+            className="w-16 h-16 rounded-full object-cover shadow-md group-hover:shadow-lg transition-shadow flex-shrink-0"
+          />
+        ) : (
+          <div
+            className={`w-16 h-16 rounded-full bg-gradient-to-br ${avatarColor} flex items-center justify-center text-white font-bold text-2xl shadow-md group-hover:shadow-lg transition-shadow flex-shrink-0`}
+          >
+            {initial}
+          </div>
+        )}
 
         {/* 名前 */}
         <div className="w-full">

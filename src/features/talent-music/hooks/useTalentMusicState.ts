@@ -75,6 +75,7 @@ export const useTalentMusicState = (
                 talentNameJoin: ja && en ? `${ja}（${en}）` : ja || en,
                 groupId: g.groupId,
                 groupName: g.groupName,
+                iconImgUrl: t.iconImgUrl ?? undefined,
               };
             }),
           }))
