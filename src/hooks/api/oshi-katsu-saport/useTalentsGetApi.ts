@@ -217,7 +217,8 @@ const buildMockTalentsResponse = (): TalentsApiResponse => {
         { groupId: 14, groupName: 'ReGLOSS',          groupNameEn: 'ReGLOSS',             talents: [] },
         { groupId: 15, groupName: 'FLOW GLOW',        groupNameEn: 'FLOW GLOW',           talents: [] },
         { groupId: 16, groupName: 'holoAN',           groupNameEn: 'holoAN',              talents: [] },
-        { groupId: 17, groupName: '事務所スタッフ',   groupNameEn: 'Office Staff',        talents: [] },
+        { groupId: 17, groupName: '事務所スタッフ',       groupNameEn: 'Office Staff',        talents: [] },
+        { groupId: 18, groupName: 'ホロライブインドネシア', groupNameEn: 'hololive Indonesia',  talents: [] },
       ],
     },
   };
