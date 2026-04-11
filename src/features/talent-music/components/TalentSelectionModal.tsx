@@ -111,11 +111,11 @@ export const TalentSelectionModal: React.FC<TalentSelectionModalProps> = ({
           <img
             src={talent.iconImgUrl}
             alt={talent.talentName}
-            className="w-16 h-16 rounded-full object-cover shadow-md group-hover:shadow-lg transition-shadow flex-shrink-0"
+            className="w-32 h-32 rounded-full object-cover shadow-md group-hover:shadow-lg transition-shadow flex-shrink-0"
           />
         ) : (
           <div
-            className={`w-16 h-16 rounded-full bg-gradient-to-br ${avatarColor} flex items-center justify-center text-white font-bold text-2xl shadow-md group-hover:shadow-lg transition-shadow flex-shrink-0`}
+            className={`w-32 h-32 rounded-full bg-gradient-to-br ${avatarColor} flex items-center justify-center text-white font-bold text-2xl shadow-md group-hover:shadow-lg transition-shadow flex-shrink-0`}
           >
             {initial}
           </div>
