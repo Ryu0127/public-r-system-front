@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { MusicTalent, MusicTalentGroup } from '../types';
 
 interface TalentSelectionModalProps {
@@ -43,8 +43,6 @@ export const TalentSelectionModal: React.FC<TalentSelectionModalProps> = ({
   onTalentSelect,
   onClose,
 }) => {
-  const searchInputRef = useRef<HTMLInputElement>(null);
-
   // groups がある場合は groups を検索フィルタリングして使用、なければ talents をフラット表示
   const filteredGroups = useMemo(() => {
     if (groups.length === 0) return [];
@@ -71,10 +69,8 @@ export const TalentSelectionModal: React.FC<TalentSelectionModalProps> = ({
 
   useEffect(() => {
     if (isOpen) {
-      const timer = setTimeout(() => searchInputRef.current?.focus(), 100);
       document.body.style.overflow = 'hidden';
       return () => {
-        clearTimeout(timer);
         document.body.style.overflow = '';
       };
     } else {
@@ -167,7 +163,6 @@ export const TalentSelectionModal: React.FC<TalentSelectionModalProps> = ({
         <div className="flex-shrink-0 px-6 py-4 border-b border-gray-100">
           <div className="relative">
             <input
-              ref={searchInputRef}
               type="text"
               value={searchQuery}
               onChange={(e) => onSearchQueryChange(e.target.value)}
