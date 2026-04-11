@@ -13,5 +13,6 @@ export function talentToMusicTalent(t: Talent): MusicTalent {
     talentNameJoin: ja && en ? `${ja}（${en}）` : ja || en,
     groupName: t.groupName ?? '',
     groupId: Number(t.groupId ?? 0),
+    iconImgUrl: t.iconImgUrl ?? undefined,
   };
 }
