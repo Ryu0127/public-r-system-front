@@ -61,6 +61,7 @@ const TalentMusicPresenter: React.FC<TalentMusicPresenterProps> = ({ state, acti
         <TalentSelectionModal
           isOpen={config.isDropdownOpen}
           talents={data.talents}
+          groups={data.groups}
           selectedTalent={selectedTalent}
           searchQuery={ui.talentSearchQuery}
           onSearchQueryChange={actions.setTalentSearchQuery}

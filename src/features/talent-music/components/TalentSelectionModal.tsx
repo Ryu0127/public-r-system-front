@@ -1,9 +1,12 @@
 import React, { useRef, useEffect, useMemo } from 'react';
-import { MusicTalent } from '../types';
+import { MusicTalent, MusicTalentGroup } from '../types';
 
 interface TalentSelectionModalProps {
   isOpen: boolean;
+  /** グループ情報なし（APIレスポンス移行前）のフラットリスト */
   talents: MusicTalent[];
+  /** API data.groups から変換したグループ一覧。存在する場合はグループ別表示に使用 */
+  groups: MusicTalentGroup[];
   selectedTalent: MusicTalent | null;
   searchQuery: string;
   onSearchQueryChange: (query: string) => void;
@@ -30,36 +33,10 @@ const getAvatarColor = (id: string): string => {
   return AVATAR_COLORS[idx];
 };
 
-interface TalentGroup {
-  groupId: number;
-  groupName: string;
-  talents: MusicTalent[];
-}
-
-/** groupId / groupName でグループ化して groupId 昇順で返す */
-const groupTalents = (talents: MusicTalent[]): TalentGroup[] => {
-  const map = new Map<number, TalentGroup>();
-  for (const talent of talents) {
-    const gid = talent.groupId;
-    if (!map.has(gid)) {
-      map.set(gid, {
-        groupId: gid,
-        groupName: talent.groupName || 'その他',
-        talents: [],
-      });
-    }
-    map.get(gid)!.talents.push(talent);
-  }
-  return Array.from(map.values()).sort((a, b) => a.groupId - b.groupId);
-};
-
-/** 全タレントが groupName を持つかどうか（グループヘッダー表示の判定） */
-const hasGroupInfo = (talents: MusicTalent[]): boolean =>
-  talents.length > 0 && talents.some((t) => t.groupName !== '');
-
 export const TalentSelectionModal: React.FC<TalentSelectionModalProps> = ({
   isOpen,
   talents,
+  groups,
   selectedTalent,
   searchQuery,
   onSearchQueryChange,
@@ -68,19 +45,29 @@ export const TalentSelectionModal: React.FC<TalentSelectionModalProps> = ({
 }) => {
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  const filteredTalents = useMemo(
-    () =>
-      talents.filter((talent) =>
-        talent.talentNameJoin.toLowerCase().includes(searchQuery.toLowerCase())
-      ),
-    [talents, searchQuery]
-  );
+  // groups がある場合は groups を検索フィルタリングして使用、なければ talents をフラット表示
+  const filteredGroups = useMemo(() => {
+    if (groups.length === 0) return [];
+    const q = searchQuery.toLowerCase();
+    return groups
+      .map((g) => ({
+        ...g,
+        talents: g.talents.filter((t) =>
+          t.talentNameJoin.toLowerCase().includes(q)
+        ),
+      }))
+      .filter((g) => g.talents.length > 0);
+  }, [groups, searchQuery]);
 
-  const showGroups = useMemo(() => hasGroupInfo(talents), [talents]);
-  const groups = useMemo(
-    () => (showGroups ? groupTalents(filteredTalents) : []),
-    [showGroups, filteredTalents]
-  );
+  const filteredTalents = useMemo(() => {
+    if (groups.length > 0) return [];
+    return talents.filter((t) =>
+      t.talentNameJoin.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [groups.length, talents, searchQuery]);
+
+  const hasNoResults =
+    groups.length > 0 ? filteredGroups.length === 0 : filteredTalents.length === 0;
 
   useEffect(() => {
     if (isOpen) {
@@ -189,17 +176,18 @@ export const TalentSelectionModal: React.FC<TalentSelectionModalProps> = ({
 
         {/* タレント一覧 */}
         <div className="overflow-y-auto flex-1 p-6">
-          {filteredTalents.length === 0 ? (
+          {hasNoResults ? (
+            /* 検索結果なし */
             <div className="flex flex-col items-center justify-center py-12 text-gray-400">
               <svg className="w-12 h-12 mb-3 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
               <p className="text-sm">該当するタレントが見つかりません</p>
             </div>
-          ) : showGroups ? (
-            /* グループ別表示 */
+          ) : groups.length > 0 ? (
+            /* グループ別表示（API data.groups を使用） */
             <div className="space-y-6">
-              {groups.map((group) => (
+              {filteredGroups.map((group) => (
                 <div key={group.groupId}>
                   {/* グループヘッダー */}
                   <div className="flex items-center gap-3 mb-3">
@@ -207,7 +195,6 @@ export const TalentSelectionModal: React.FC<TalentSelectionModalProps> = ({
                     <div className="flex-1 h-px bg-gray-200" />
                     <span className="text-xs text-gray-400">{group.talents.length}名</span>
                   </div>
-
                   {/* タレントグリッド */}
                   <div className="grid grid-cols-3 gap-3">
                     {group.talents.map((talent, index) => renderTalentCard(talent, index))}
@@ -216,7 +203,7 @@ export const TalentSelectionModal: React.FC<TalentSelectionModalProps> = ({
               ))}
             </div>
           ) : (
-            /* グループ情報なし: フラットグリッド */
+            /* フラット表示（groups が空のとき） */
             <div className="grid grid-cols-3 gap-3">
               {filteredTalents.map((talent, index) => renderTalentCard(talent, index))}
             </div>
