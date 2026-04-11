@@ -66,6 +66,7 @@ const TalentMusicPresenter: React.FC<TalentMusicPresenterProps> = ({ state, acti
           searchQuery={ui.talentSearchQuery}
           onSearchQueryChange={actions.setTalentSearchQuery}
           onTalentSelect={actions.selectTalent}
+          onGroupSelect={actions.selectGroup}
           onClose={handleModalClose}
         />
 

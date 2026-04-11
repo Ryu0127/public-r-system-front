@@ -29,6 +29,7 @@ export interface TalentMusicState {
 export interface TalentMusicActions {
   loadData: () => void;
   selectTalent: (talent: MusicTalent) => void;
+  selectGroup: (group: MusicTalentGroup) => void;
   setIsDropdownOpen: (isOpen: boolean) => void;
   setTalentSearchQuery: (query: string) => void;
   setActiveFilter: (filter: MusicFilterType) => void;
@@ -170,6 +171,8 @@ export const useTalentMusicState = (
     actions: {
       loadData,
       selectTalent,
+      /** URL更新はコンテナ側で担うため、フック内では何もしない */
+      selectGroup: (_group: MusicTalentGroup) => {},
       setIsDropdownOpen,
       setTalentSearchQuery,
       setActiveFilter,

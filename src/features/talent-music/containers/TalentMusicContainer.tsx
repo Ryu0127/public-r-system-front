@@ -54,6 +54,15 @@ const TalentMusicContainer: React.FC = () => {
         setSearchParams({ talent: String(talent.talentSlug ?? '').trim() });
         actions.selectTalent(talent);
       },
+      selectGroup: (group) => {
+        setSearchParams((prev) => {
+          const next = new URLSearchParams(prev);
+          next.set('group', String(group.groupId));
+          return next;
+        });
+        actions.setIsDropdownOpen(false);
+        actions.setTalentSearchQuery('');
+      },
     };
   }, [actions, setSearchParams]);
 
