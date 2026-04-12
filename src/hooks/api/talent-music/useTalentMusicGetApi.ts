@@ -249,6 +249,23 @@ function resolveTalentMusicApiUrlByTalentSlug(talentSlug: string): string | null
   return null;
 }
 
+/** クエリ group 用。空は null */
+function resolveTalentMusicApiUrlByGroupSlug(groupSlug: string): string | null {
+  const slug = groupSlug.trim();
+  if (!slug) {
+    return null;
+  }
+  const query = `group=${encodeURIComponent(slug)}`;
+  const base = process.env.REACT_APP_API_DOMAIN?.trim();
+  if (base) {
+    return `${base.replace(/\/$/, '')}/oshi-katsu-saport/talent-music?${query}`;
+  }
+  if (process.env.NODE_ENV === 'development') {
+    return `/api/oshi-katsu-saport/talent-music?${query}`;
+  }
+  return null;
+}
+
 function normalizeMusicType(raw: unknown): MusicType {
   return raw === 'cover' ? 'cover' : 'original';
 }
@@ -399,5 +416,27 @@ export const useTalentMusicGetApi = () => {
     }
   }, []);
 
-  return { executeTalentMusicGet, executeTalentMusicGetByTalentSlug };
+  const executeTalentMusicGetByGroupSlug = useCallback(async (groupSlug: string): Promise<{
+    apiResponse: TalentMusicApiResponse | null;
+    error: unknown;
+  }> => {
+    const url = resolveTalentMusicApiUrlByGroupSlug(groupSlug);
+    if (!url) {
+      // モック環境ではグループ単位の楽曲データがないため空リストを返す
+      return { apiResponse: { status: true, data: { musicList: [] } }, error: null };
+    }
+
+    try {
+      const apiResponse = await requestTalentMusic(url);
+      if (apiResponse) {
+        return { apiResponse, error: null };
+      }
+      return { apiResponse: null, error: new Error('Talent music API failed') };
+    } catch (error) {
+      console.error('Talent music API Error:', error);
+      return { apiResponse: null, error };
+    }
+  }, []);
+
+  return { executeTalentMusicGet, executeTalentMusicGetByTalentSlug, executeTalentMusicGetByGroupSlug };
 };
