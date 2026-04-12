@@ -34,7 +34,7 @@ export const TalentSelector: React.FC<TalentSelectorProps> = ({
             {selectionLabel ? (
               <span className="font-medium text-gray-800">{selectionLabel}</span>
             ) : (
-              <span className="text-gray-400">タレント・グループを選択してください</span>
+              <span className="text-gray-400">タレントもしくはグループを選択してください</span>
             )}
           </div>
 

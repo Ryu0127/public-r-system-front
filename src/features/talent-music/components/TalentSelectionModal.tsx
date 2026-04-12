@@ -157,7 +157,7 @@ export const TalentSelectionModal: React.FC<TalentSelectionModalProps> = ({
       <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[85vh] flex flex-col shadow-2xl">
         {/* ヘッダー */}
         <div className="flex-shrink-0 border-b border-gray-200 px-6 py-4 flex justify-between items-center">
-          <h2 className="text-xl font-bold text-gray-900">タレントを選択</h2>
+          <h2 className="text-xl font-bold text-gray-900">タレント・グループ選択</h2>
           <button
             onClick={onClose}
             className="w-8 h-8 flex items-center justify-center rounded-full text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
@@ -176,7 +176,7 @@ export const TalentSelectionModal: React.FC<TalentSelectionModalProps> = ({
               type="text"
               value={searchQuery}
               onChange={(e) => onSearchQueryChange(e.target.value)}
-              placeholder="タレント名を入力して絞り込み..."
+              placeholder="タレント名もしくはグループ名を入力して絞り込み..."
               className="w-full px-4 py-2.5 pl-10 bg-gray-50 border border-gray-200 focus:border-red-400 focus:outline-none focus:bg-white rounded-xl text-gray-800 transition-all duration-200 text-sm"
             />
             <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
