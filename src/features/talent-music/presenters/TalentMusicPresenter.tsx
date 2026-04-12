@@ -15,12 +15,13 @@ interface TalentMusicPresenterProps {
 const TalentMusicPresenter: React.FC<TalentMusicPresenterProps> = ({ state, actions }) => {
   const { config, data, ui } = state;
   const selectedTalent = data.selectedTalent;
+  const selectedGroup  = data.selectedGroup;
+  const hasSelection   = selectedTalent !== null || selectedGroup !== null;
 
-  /** API が返す楽曲（複数タレント指定時は混在しうる。現状は単一選択のため実質1タレント分） */
   const talentMusicList = useMemo(() => {
-    if (!selectedTalent) return [];
+    if (!hasSelection) return [];
     return data.musicList;
-  }, [data.musicList, selectedTalent]);
+  }, [data.musicList, hasSelection]);
 
   // フィルター適用
   const filteredMusicList = useMemo(() => {
@@ -77,15 +78,15 @@ const TalentMusicPresenter: React.FC<TalentMusicPresenterProps> = ({ state, acti
           </div>
         )}
 
-        {/* タレント選択済み: 楽曲取得中 */}
-        {!config.isLoading && selectedTalent && config.isMusicLoading && (
+        {/* 選択済み: 楽曲取得中 */}
+        {!config.isLoading && hasSelection && config.isMusicLoading && (
           <div className="flex justify-center items-center py-16">
             <div className="animate-spin rounded-full h-10 w-10 border-4 border-red-400 border-t-transparent" />
           </div>
         )}
 
-        {/* タレント選択済み: 楽曲一覧 */}
-        {!config.isLoading && selectedTalent && !config.isMusicLoading && (
+        {/* 選択済み: 楽曲一覧 */}
+        {!config.isLoading && hasSelection && !config.isMusicLoading && (
           <>
             <MusicFilterTabs
               activeFilter={config.activeFilter}
@@ -99,7 +100,7 @@ const TalentMusicPresenter: React.FC<TalentMusicPresenterProps> = ({ state, acti
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 animate-fade-in">
                 {filteredMusicList.map((music) => (
                   <MusicCard
-                    key={`${selectedTalent.id}-${music.id}`}
+                    key={`${selectedTalent?.id ?? selectedGroup?.groupId}-${music.id}`}
                     music={music}
                   />
                 ))}
@@ -110,8 +111,8 @@ const TalentMusicPresenter: React.FC<TalentMusicPresenterProps> = ({ state, acti
           </>
         )}
 
-        {/* タレント未選択 */}
-        {!config.isLoading && !selectedTalent && (
+        {/* 未選択 */}
+        {!config.isLoading && !hasSelection && (
           <EmptyState hasSelectedTalent={false} />
         )}
       </div>
