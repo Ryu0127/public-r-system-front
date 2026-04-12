@@ -1,15 +1,23 @@
 import React from 'react';
-import { MusicTalent } from '../types';
+import { MusicTalent, MusicTalentGroup } from '../types';
 
 interface TalentSelectorProps {
   selectedTalent: MusicTalent | null;
+  selectedGroup: MusicTalentGroup | null;
   onOpenModal: () => void;
 }
 
 export const TalentSelector: React.FC<TalentSelectorProps> = ({
   selectedTalent,
+  selectedGroup,
   onOpenModal,
 }) => {
+  const selectionLabel = selectedTalent
+    ? selectedTalent.talentNameJoin
+    : selectedGroup
+    ? selectedGroup.groupName
+    : null;
+
   return (
     <section
       className="max-w-2xl mx-auto mb-8 animate-fade-in"
@@ -17,16 +25,16 @@ export const TalentSelector: React.FC<TalentSelectorProps> = ({
     >
       <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-200 shadow-lg">
         <label className="block text-sm font-semibold text-gray-700 mb-3">
-          タレントを選択
+          タレント・グループを選択
         </label>
 
         <div className="flex items-center gap-3">
-          {/* 選択中タレント表示エリア */}
+          {/* 選択中表示エリア */}
           <div className="flex-1 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm truncate">
-            {selectedTalent ? (
-              <span className="font-medium text-gray-800">{selectedTalent.talentNameJoin}</span>
+            {selectionLabel ? (
+              <span className="font-medium text-gray-800">{selectionLabel}</span>
             ) : (
-              <span className="text-gray-400">タレントを選択してください</span>
+              <span className="text-gray-400">タレント・グループを選択してください</span>
             )}
           </div>
 
@@ -38,14 +46,14 @@ export const TalentSelector: React.FC<TalentSelectorProps> = ({
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
-            <span>タレント選択</span>
+            <span>タレント・グループ選択</span>
           </button>
         </div>
 
         <p className="text-xs text-gray-500 mt-2">
           選択中:{' '}
           <span className="font-semibold text-red-500">
-            {selectedTalent?.talentNameJoin || '未選択'}
+            {selectionLabel ?? '未選択'}
           </span>
         </p>
       </div>

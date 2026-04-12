@@ -46,16 +46,24 @@ export const TalentSelectionModal: React.FC<TalentSelectionModalProps> = ({
   onClose,
 }) => {
   // groups がある場合は groups を検索フィルタリングして使用、なければ talents をフラット表示
+  // グループ名にマッチ → グループ内の全タレントを表示
+  // タレント名にマッチ → マッチしたタレントのみ表示
   const filteredGroups = useMemo(() => {
     if (groups.length === 0) return [];
     const q = searchQuery.toLowerCase();
+    if (!q) return groups;
     return groups
-      .map((g) => ({
-        ...g,
-        talents: g.talents.filter((t) =>
-          t.talentNameJoin.toLowerCase().includes(q)
-        ),
-      }))
+      .map((g) => {
+        const groupMatches =
+          g.groupName.toLowerCase().includes(q) ||
+          g.groupNameEn.toLowerCase().includes(q);
+        return {
+          ...g,
+          talents: groupMatches
+            ? g.talents
+            : g.talents.filter((t) => t.talentNameJoin.toLowerCase().includes(q)),
+        };
+      })
       .filter((g) => g.talents.length > 0);
   }, [groups, searchQuery]);
 

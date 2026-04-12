@@ -52,9 +52,10 @@ const TalentMusicPresenter: React.FC<TalentMusicPresenterProps> = ({ state, acti
         {/* ヘッダー */}
         <TalentMusicHeader onBackToHome={() => { window.location.href = '/'; }} />
 
-        {/* タレント選択ボタン */}
+        {/* タレント・グループ選択ボタン */}
         <TalentSelector
           selectedTalent={selectedTalent}
+          selectedGroup={selectedGroup}
           onOpenModal={() => actions.setIsDropdownOpen(true)}
         />
 
