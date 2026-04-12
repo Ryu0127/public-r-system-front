@@ -11,6 +11,7 @@ interface TalentSelectionModalProps {
   searchQuery: string;
   onSearchQueryChange: (query: string) => void;
   onTalentSelect: (talent: MusicTalent) => void;
+  onGroupSelect: (group: MusicTalentGroup) => void;
   onClose: () => void;
 }
 
@@ -41,6 +42,7 @@ export const TalentSelectionModal: React.FC<TalentSelectionModalProps> = ({
   searchQuery,
   onSearchQueryChange,
   onTalentSelect,
+  onGroupSelect,
   onClose,
 }) => {
   // groups がある場合は groups を検索フィルタリングして使用、なければ talents をフラット表示
@@ -196,7 +198,12 @@ export const TalentSelectionModal: React.FC<TalentSelectionModalProps> = ({
                   <div className="flex items-center gap-3 mb-3">
                     <span className="text-sm font-bold text-gray-700">{group.groupName}</span>
                     <div className="flex-1 h-px bg-gray-200" />
-                    <span className="text-xs text-gray-400">{group.talents.length}名</span>
+                    <button
+                      onClick={() => onGroupSelect(group)}
+                      className="text-xs text-red-500 hover:text-red-700 hover:underline transition-colors whitespace-nowrap"
+                    >
+                      グループを選択
+                    </button>
                   </div>
                   {/* タレントグリッド */}
                   <div className="grid grid-cols-3 gap-3">

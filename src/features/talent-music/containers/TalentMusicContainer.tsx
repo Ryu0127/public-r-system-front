@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useSearchParams } from 'react-router-dom';
 import { TalentMusicState, useTalentMusicState, TalentMusicActions } from '../hooks/useTalentMusicState';
+import { toGroupSlug } from '../utils/toGroupSlug';
 import TalentMusicPresenter from '../presenters/TalentMusicPresenter';
 
 const initialState: TalentMusicState = {
@@ -16,6 +17,7 @@ const initialState: TalentMusicState = {
     groups: [],
     musicList: [],
     selectedTalent: null,
+    selectedGroup: null,
   },
   ui: {
     talentSearchQuery: '',
@@ -30,6 +32,7 @@ const TalentMusicContainer: React.FC = () => {
   const { actions } = useTalentMusicState(state, setState);
   const [searchParams, setSearchParams] = useSearchParams();
   const talentQuery = useMemo(() => (searchParams.get('talent') ?? '').trim(), [searchParams]);
+  const groupQuery  = useMemo(() => (searchParams.get('group')  ?? '').trim(), [searchParams]);
 
   useEffect(() => {
     actions.loadData();
@@ -47,12 +50,27 @@ const TalentMusicContainer: React.FC = () => {
     actions.selectTalent(found);
   }, [state.config.isLoading, state.data.selectedTalent, state.data.talents, talentQuery, actions]);
 
+  // URLの ?group=...（slug）がある場合、一致するグループを自動選択して楽曲を取得
+  useEffect(() => {
+    if (state.config.isLoading) return;
+    if (!groupQuery) return;
+    if (toGroupSlug(state.data.selectedGroup?.groupNameEn ?? '') === groupQuery) return;
+
+    const found = state.data.groups.find((g) => toGroupSlug(g.groupNameEn) === groupQuery);
+    if (!found) return;
+    actions.selectGroup(found);
+  }, [state.config.isLoading, state.data.selectedGroup, state.data.groups, groupQuery, actions]);
+
   const actionsWithUrl: TalentMusicActions = useMemo(() => {
     return {
       ...actions,
       selectTalent: (talent) => {
         setSearchParams({ talent: String(talent.talentSlug ?? '').trim() });
         actions.selectTalent(talent);
+      },
+      selectGroup: (group) => {
+        setSearchParams({ group: toGroupSlug(group.groupNameEn) });
+        actions.selectGroup(group);
       },
     };
   }, [actions, setSearchParams]);
