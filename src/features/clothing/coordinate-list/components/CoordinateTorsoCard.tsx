@@ -37,18 +37,16 @@ export const CoordinateTorsoCard: React.FC<CoordinateTorsoCardProps> = ({
           </div>
         </div>
 
-        {/* トルソー表示エリア */}
+        {/* トルソー表示エリア - ファッションデザイン画風 */}
         <div className="relative bg-gradient-to-b from-gray-50 to-gray-100 p-6">
-          {/* 背景のトルソーシルエット */}
-          <div className="absolute inset-0 flex items-center justify-center opacity-5">
-            <svg viewBox="0 0 200 400" className="w-32 h-64">
-              <ellipse cx="100" cy="60" rx="40" ry="30" fill="currentColor" />
-              <rect x="70" y="80" width="60" height="120" rx="10" fill="currentColor" />
-              <path d="M 70 120 Q 40 140 40 180 L 40 250" stroke="currentColor" strokeWidth="20" fill="none" />
-              <path d="M 130 120 Q 160 140 160 180 L 160 250" stroke="currentColor" strokeWidth="20" fill="none" />
-              <rect x="80" y="200" width="20" height="180" rx="10" fill="currentColor" />
-              <rect x="100" y="200" width="20" height="180" rx="10" fill="currentColor" />
-            </svg>
+          {/* ファッションデザイン画風のトルソー背景 */}
+          <div className="absolute inset-0 flex items-center justify-center opacity-15 pointer-events-none">
+            <img
+              src="/images/fashion_torso_sketch_v3.png"
+              alt="Fashion Torso"
+              className="h-full w-auto object-contain"
+              style={{ maxHeight: '280px' }}
+            />
           </div>
 
           {/* アイテムの重ねて表示 */}
