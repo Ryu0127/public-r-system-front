@@ -2,11 +2,13 @@ import React, { useMemo, useCallback, useEffect, useRef } from 'react';
 import { TalentMusicState, TalentMusicActions } from '../hooks/useTalentMusicState';
 import { TalentMusicHeader } from '../components/TalentMusicHeader';
 import { TalentSelector } from '../components/TalentSelector';
-import { TalentSelectionModal } from '../components/TalentSelectionModal';
+import { TalentSelectionModal } from 'components/organisms/TalentSelectionModal';
 import { MusicFilterTabs } from '../components/MusicFilterTabs';
 import { MusicCard } from '../components/MusicCard';
 import { EmptyState } from '../components/EmptyState';
 import { ScrollToTopButton } from '../components/ScrollToTopButton';
+import Spinner from 'components/atoms/Spinner';
+import DecorativeBackground from 'components/molecules/DecorativeBackground';
 
 interface TalentMusicPresenterProps {
   state: TalentMusicState;
@@ -81,11 +83,7 @@ const TalentMusicPresenter: React.FC<TalentMusicPresenterProps> = ({ state, acti
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-pink-50 relative pb-16">
-      <div className="absolute top-16 right-16 w-40 h-40 border-4 border-red-200 rounded-full opacity-15 animate-spin-slow" />
-      <div
-        className="absolute bottom-32 left-16 w-28 h-28 border-4 border-pink-200 rounded-full opacity-15 animate-spin"
-        style={{ animationDuration: '20s' }}
-      />
+      <DecorativeBackground topBorderClass="border-red-200" bottomBorderClass="border-pink-200" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 py-8 md:py-12">
         <TalentMusicHeader onBackToHome={() => { window.location.href = '/'; }} />
@@ -111,13 +109,13 @@ const TalentMusicPresenter: React.FC<TalentMusicPresenterProps> = ({ state, acti
 
         {config.isLoading && (
           <div className="flex justify-center items-center py-16">
-            <div className="animate-spin rounded-full h-10 w-10 border-4 border-red-400 border-t-transparent" />
+            <Spinner sizeClass="h-10 w-10" borderClass="border-4 border-red-400 border-t-transparent" />
           </div>
         )}
 
         {showInitialMusicLoading && (
           <div className="flex justify-center items-center py-16">
-            <div className="animate-spin rounded-full h-10 w-10 border-4 border-red-400 border-t-transparent" />
+            <Spinner sizeClass="h-10 w-10" borderClass="border-4 border-red-400 border-t-transparent" />
           </div>
         )}
 
@@ -151,7 +149,7 @@ const TalentMusicPresenter: React.FC<TalentMusicPresenterProps> = ({ state, acti
                 <div ref={loadMoreRef} className="h-8 w-full" aria-hidden />
                 {config.isMusicLoadingMore && (
                   <div className="flex justify-center items-center py-8">
-                    <div className="animate-spin rounded-full h-8 w-8 border-4 border-red-400 border-t-transparent" />
+                    <Spinner sizeClass="h-8 w-8" borderClass="border-4 border-red-400 border-t-transparent" />
                   </div>
                 )}
               </>

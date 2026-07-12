@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { HololiveEvent } from '../../../events/events-calendar/types';
 import EventForm from '../components/EventForm';
 import EventPreview from '../components/EventPreview';
+import Spinner from 'components/atoms/Spinner';
 
 interface EventFormPresenterProps {
   event?: HololiveEvent;
@@ -74,7 +75,7 @@ const EventFormPresenter: React.FC<EventFormPresenterProps> = ({
 
       {loading ? (
         <div className="text-center py-8">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+          <Spinner sizeClass="h-8 w-8" borderClass="border-b-2 border-blue-500" className="inline-block" />
           <p className="mt-2 text-gray-600">読み込み中...</p>
         </div>
       ) : (

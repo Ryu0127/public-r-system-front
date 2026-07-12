@@ -1,20 +1,60 @@
 import React, { useEffect, useMemo } from 'react';
-import { MusicTalent, MusicTalentGroup } from '../types';
 
-interface TalentSelectionModalProps {
+/** タレント選択モーダルで扱う最小限のタレント情報 */
+export interface PickerTalent {
+  id: string;
+  talentName: string;
+  talentNameEn: string;
+  talentNameJoin: string;
+  iconImgUrl?: string;
+}
+
+/** タレント選択モーダルで扱うグループ情報 */
+export interface PickerTalentGroup<T extends PickerTalent = PickerTalent> {
+  groupId: number;
+  groupName: string;
+  groupNameEn: string;
+  talents: T[];
+}
+
+/**
+ * フラットなタレント一覧を groupId ごとのグループ一覧に変換する
+ * （グループ情報を持たないAPIレスポンスをモーダルのグループ別表示に使うためのヘルパー）
+ */
+export function buildTalentGroups<
+  T extends PickerTalent & { groupId: number; groupName: string }
+>(talents: T[]): PickerTalentGroup<T>[] {
+  const map = new Map<number, PickerTalentGroup<T>>();
+  for (const talent of talents) {
+    let group = map.get(talent.groupId);
+    if (!group) {
+      group = {
+        groupId: talent.groupId,
+        groupName: talent.groupName || 'その他',
+        groupNameEn: '',
+        talents: [],
+      };
+      map.set(talent.groupId, group);
+    }
+    group.talents.push(talent);
+  }
+  return Array.from(map.values());
+}
+
+interface TalentSelectionModalProps<T extends PickerTalent, G extends PickerTalentGroup<T>> {
   isOpen: boolean;
-  /** グループ情報なし（APIレスポンス移行前）のフラットリスト */
-  talents: MusicTalent[];
-  /** API data.groups から変換したグループ一覧。存在する場合はグループ別表示に使用 */
-  groups: MusicTalentGroup[];
-  selectedTalent: MusicTalent | null;
+  /** グループ情報なしのフラットリスト（groups が空のときに使用） */
+  talents: T[];
+  /** グループ一覧。存在する場合はグループ別表示に使用 */
+  groups: G[];
+  selectedTalent: T | null;
   searchQuery: string;
   /** モーダルタイトル（デフォルト: タレント・グループ選択） */
   title?: string;
   onSearchQueryChange: (query: string) => void;
-  onTalentSelect: (talent: MusicTalent) => void;
+  onTalentSelect: (talent: T) => void;
   /** 未指定の場合は「グループを選択」ボタンを表示しない */
-  onGroupSelect?: (group: MusicTalentGroup) => void;
+  onGroupSelect?: (group: G) => void;
   onClose: () => void;
 }
 
@@ -37,7 +77,10 @@ const getAvatarColor = (id: string): string => {
   return AVATAR_COLORS[idx];
 };
 
-export const TalentSelectionModal: React.FC<TalentSelectionModalProps> = ({
+/**
+ * タレント選択モーダル（検索絞り込み・グループ別表示・アイコングリッド）
+ */
+export function TalentSelectionModal<T extends PickerTalent, G extends PickerTalentGroup<T>>({
   isOpen,
   talents,
   groups,
@@ -48,7 +91,7 @@ export const TalentSelectionModal: React.FC<TalentSelectionModalProps> = ({
   onTalentSelect,
   onGroupSelect,
   onClose,
-}) => {
+}: TalentSelectionModalProps<T, G>) {
   // groups がある場合は groups を検索フィルタリングして使用、なければ talents をフラット表示
   // グループ名にマッチ → グループ内の全タレントを表示
   // タレント名にマッチ → マッチしたタレントのみ表示
@@ -104,7 +147,7 @@ export const TalentSelectionModal: React.FC<TalentSelectionModalProps> = ({
 
   if (!isOpen) return null;
 
-  const renderTalentCard = (talent: MusicTalent, index: number) => {
+  const renderTalentCard = (talent: T, index: number) => {
     const isSelected = talent.id === selectedTalent?.id;
     const avatarColor = getAvatarColor(talent.id);
     const initial = talent.talentName.charAt(0);
@@ -202,7 +245,7 @@ export const TalentSelectionModal: React.FC<TalentSelectionModalProps> = ({
               <p className="text-sm">該当するタレントが見つかりません</p>
             </div>
           ) : groups.length > 0 ? (
-            /* グループ別表示（API data.groups を使用） */
+            /* グループ別表示 */
             <div className="space-y-6">
               {filteredGroups.map((group) => (
                 <div key={group.groupId}>
@@ -212,7 +255,7 @@ export const TalentSelectionModal: React.FC<TalentSelectionModalProps> = ({
                     <div className="flex-1 h-px bg-gray-200" />
                     {onGroupSelect && (
                       <button
-                        onClick={() => onGroupSelect(group)}
+                        onClick={() => onGroupSelect(group as G)}
                         className="text-xs text-red-500 hover:text-red-700 hover:underline transition-colors whitespace-nowrap"
                       >
                         グループを選択
@@ -236,4 +279,4 @@ export const TalentSelectionModal: React.FC<TalentSelectionModalProps> = ({
       </div>
     </div>
   );
-};
+}

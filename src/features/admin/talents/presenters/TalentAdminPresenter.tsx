@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AdminTalent } from '../../talent-edit/types';
 import TalentListTable from '../components/TalentListTable';
+import Spinner from 'components/atoms/Spinner';
 
 interface TalentAdminPresenterProps {
   talents: AdminTalent[];
@@ -130,7 +131,7 @@ const TalentAdminPresenter: React.FC<TalentAdminPresenterProps> = ({
         {/* ローディング */}
         {loading && (
           <div className="text-center py-8">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+            <Spinner sizeClass="h-8 w-8" borderClass="border-b-2 border-blue-500" className="inline-block" />
             <p className="mt-2 text-gray-600">読み込み中...</p>
           </div>
         )}

@@ -7,6 +7,7 @@ import FeaturesSection from '../components/FeaturesSection';
 import ChangeLogsSection from '../components/ChangeLogsSection';
 import { OshiKatsuSaportState, OshiKatsuSaportActions } from '../hooks/useOshiKatsuSaportState';
 import { consumeSkipHomeLoading } from 'utils/homeTransition';
+import DecorativeBackground from 'components/molecules/DecorativeBackground';
 
 interface OshiKatsuSaportPresenterProps {
   state: OshiKatsuSaportState;
@@ -56,11 +57,7 @@ const OshiKatsuSaportPresenter: React.FC<OshiKatsuSaportPresenterProps> = ({
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-amber-50 relative overflow-hidden">
       {/* 背景装飾 */}
-      <div className="absolute top-20 right-20 w-32 h-32 border-4 border-amber-200 rounded-full opacity-20 animate-spin-slow" />
-      <div
-        className="absolute bottom-20 left-20 w-40 h-40 border-4 border-sky-200 rounded-full opacity-20 animate-spin"
-        style={{ animationDuration: '15s' }}
-      />
+      <DecorativeBackground topBorderClass="border-amber-200" bottomBorderClass="border-sky-200" />
       {/* ふんわり光るカラーブロブ */}
       <div className="absolute top-40 left-10 w-72 h-72 bg-amber-200/30 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute top-96 right-0 w-80 h-80 bg-sky-200/30 rounded-full blur-3xl pointer-events-none" />

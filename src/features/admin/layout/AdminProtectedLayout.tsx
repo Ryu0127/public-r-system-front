@@ -1,6 +1,7 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import { useAuth } from 'hooks/auth/useAuth';
+import Spinner from 'components/atoms/Spinner';
 
 /**
  * 管理画面（/admin/*）の一律認証レイアウト。
@@ -13,7 +14,7 @@ const AdminProtectedLayout: React.FC = () => {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500" />
+          <Spinner sizeClass="h-12 w-12" borderClass="border-b-2 border-blue-500" className="inline-block" />
           <p className="mt-4 text-gray-600">認証確認中...</p>
         </div>
       </div>

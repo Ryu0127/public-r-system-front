@@ -1,5 +1,5 @@
 import React from 'react';
-import PageHeader from 'components/PageHeader';
+import PageHeader from 'components/organisms/PageHeader';
 
 const MusicIcon = () => (
   <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
@@ -18,11 +18,7 @@ export const TalentMusicHeader: React.FC<TalentMusicHeaderProps> = ({ onBackToHo
       subtitle="タレントごとのオリジナル曲・カバー曲をYouTubeサムネイルで一覧できます"
       icon={<MusicIcon />}
       iconGradientClass="from-red-500 to-pink-600"
-      steps={[
-        'タレントやグループを選ぶ',
-        'オリジナル/カバーで絞り込む',
-        'サムネイルからYouTubeで再生',
-      ]}
+      steps={[]}
       onBackToHome={onBackToHome}
     />
   );
