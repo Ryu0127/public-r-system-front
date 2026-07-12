@@ -43,17 +43,17 @@ const HeroSection: React.FC<HeroSectionProps> = ({ introPhase }) => {
 
   return (
     <section className="relative text-center space-y-8">
-      {/* タイトル周りのキラキラ */}
+      {/* タイトル周りのキラキラ（狭い画面ではタイトルと被るため非表示） */}
       <div className={showSubtitle ? 'animate-fade-in' : 'opacity-0'}>
-        <span className="absolute -top-6 left-[20%] text-amber-400 text-2xl animate-star-twinkle pointer-events-none">✦</span>
+        <span className="hidden lg:block absolute -top-6 left-[20%] text-amber-400 text-2xl animate-star-twinkle pointer-events-none">✦</span>
         <span
-          className="absolute top-16 right-[15%] text-sky-400 text-xl animate-star-twinkle pointer-events-none"
+          className="hidden lg:block absolute top-16 right-[15%] text-sky-400 text-xl animate-star-twinkle pointer-events-none"
           style={{ animationDelay: '0.5s' }}
         >
           ✧
         </span>
         <span
-          className="absolute top-32 left-[10%] text-emerald-400 text-lg animate-star-twinkle pointer-events-none"
+          className="hidden lg:block absolute top-32 left-[10%] text-emerald-400 text-lg animate-star-twinkle pointer-events-none"
           style={{ animationDelay: '1s' }}
         >
           ✦

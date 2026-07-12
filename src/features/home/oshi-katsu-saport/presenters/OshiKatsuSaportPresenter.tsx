@@ -62,10 +62,10 @@ const OshiKatsuSaportPresenter: React.FC<OshiKatsuSaportPresenterProps> = ({
       <div className="absolute top-40 left-10 w-72 h-72 bg-amber-200/30 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute top-96 right-0 w-80 h-80 bg-sky-200/30 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-40 left-1/3 w-72 h-72 bg-rose-200/20 rounded-full blur-3xl pointer-events-none" />
-      {/* 漂うキラキラ */}
-      <span className="absolute top-32 left-[15%] text-amber-400 text-2xl opacity-40 animate-star-twinkle pointer-events-none">✦</span>
-      <span className="absolute top-64 right-[12%] text-sky-400 text-xl opacity-40 animate-star-twinkle pointer-events-none" style={{ animationDelay: '0.6s' }}>✧</span>
-      <span className="absolute top-[30rem] left-[8%] text-emerald-400 text-lg opacity-30 animate-star-twinkle pointer-events-none" style={{ animationDelay: '1.1s' }}>✦</span>
+      {/* 漂うキラキラ（狭い画面ではタイトルと被るため非表示） */}
+      <span className="hidden xl:block absolute top-32 left-[15%] text-amber-400 text-2xl opacity-40 animate-star-twinkle pointer-events-none">✦</span>
+      <span className="hidden xl:block absolute top-64 right-[12%] text-sky-400 text-xl opacity-40 animate-star-twinkle pointer-events-none" style={{ animationDelay: '0.6s' }}>✧</span>
+      <span className="hidden xl:block absolute top-[30rem] left-[8%] text-emerald-400 text-lg opacity-30 animate-star-twinkle pointer-events-none" style={{ animationDelay: '1.1s' }}>✦</span>
 
       {/* 期間限定トピックモーダル（イントロ演出が終わってから表示） */}
       {introPhase === 'done' && state.data.limitedTimeTopic && (
