@@ -10,7 +10,7 @@ import { buildSearchQueryPreview } from '../utils/buildTwitterSearchUrl';
 import ConfirmModal from 'components/molecules/ConfirmModal';
 import StickyActionBar from 'components/molecules/StickyActionBar';
 import DecorativeBackground from 'components/molecules/DecorativeBackground';
-import SelectedTalentFloatingBadge from 'components/molecules/SelectedTalentFloatingBadge';
+import SelectionModeFloatingBadge from 'components/molecules/SelectionModeFloatingBadge';
 
 interface EgoSearchPresenterProps {
   state: EgoSearchState;
@@ -98,7 +98,7 @@ export const EgoSearchPresenter: React.FC<EgoSearchPresenterProps> = ({
 
       {/* 選択中タレント（タレント選択モード。下部固定バーの上に表示） */}
       {selectedTalent && (
-        <SelectedTalentFloatingBadge
+        <SelectionModeFloatingBadge
           talent={selectedTalent}
           onClear={actions.resetTalentSelection}
           positionClass="bottom-24 right-4 md:right-6"

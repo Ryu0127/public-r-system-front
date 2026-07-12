@@ -3,7 +3,7 @@ import LoadingScreen from 'components/LoadingScreen';
 import LimitedTimeTopicModal from 'components/LimitedTimeTopicModal';
 import HeroSection, { IntroPhase, isPhaseReached } from '../components/HeroSection';
 import TalentShowcaseSection from '../components/TalentShowcaseSection';
-import SelectedTalentFloatingBadge from 'components/molecules/SelectedTalentFloatingBadge';
+import SelectionModeFloatingBadge from 'components/molecules/SelectionModeFloatingBadge';
 import MusicShowcaseSection from '../components/MusicShowcaseSection';
 import FeaturesSection from '../components/FeaturesSection';
 import ChangeLogsSection from '../components/ChangeLogsSection';
@@ -76,7 +76,7 @@ const OshiKatsuSaportPresenter: React.FC<OshiKatsuSaportPresenterProps> = ({
 
       {/* 選択中タレント（画面右下からスライドイン） */}
       {sectionsVisible && state.data.selectedTalent && (
-        <SelectedTalentFloatingBadge
+        <SelectionModeFloatingBadge
           talent={state.data.selectedTalent}
           onClear={actions.clearTalentSelection}
         />
