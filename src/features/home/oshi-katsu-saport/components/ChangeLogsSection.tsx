@@ -19,7 +19,7 @@ const ChangeLogsSection: React.FC<ChangeLogsSectionProps> = ({ changeLogs }) => 
       <SectionTitle en="Change history" ja="変更履歴" />
 
       {/* 更新履歴カード */}
-      <div className="bg-white/60 backdrop-blur-sm rounded-3xl p-8 md:p-12 border border-gray-200 shadow-xl space-y-8">
+      <div className="bg-white backdrop-blur-sm rounded-3xl p-8 md:p-12 border border-gray-200 shadow-xl space-y-8">
         {changeLogs.map((log, index) => (
           <div
             key={log.id}
