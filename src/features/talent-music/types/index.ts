@@ -46,12 +46,20 @@ export interface TalentMusicPagination {
   to: number | null;
 }
 
+/** 抽出条件に対する件数（ページング非依存） */
+export interface TalentMusicCounts {
+  all: number;
+  original: number;
+  cover: number;
+}
+
 /** GET …/oshi-katsu-saport/talent-music のレスポンス */
 export interface TalentMusicApiResponse {
   status: boolean;
   data: {
     musicList: Music[];
     pagination: TalentMusicPagination;
+    counts: TalentMusicCounts;
   };
 }
 

@@ -1,5 +1,5 @@
 import { useCallback, useRef, Dispatch, SetStateAction } from 'react';
-import { Music, MusicTalent, MusicTalentGroup, MusicFilterType, TalentMusicPagination } from '../types';
+import { Music, MusicTalent, MusicTalentGroup, MusicFilterType, TalentMusicPagination, TalentMusicCounts } from '../types';
 import { talentToMusicTalent } from '../utils/talentToMusicTalent';
 import { toGroupSlug } from '../utils/toGroupSlug';
 import {
@@ -22,6 +22,7 @@ export interface TalentMusicState {
     groups: MusicTalentGroup[];
     musicList: Music[];
     musicPagination: TalentMusicPagination | null;
+    musicCounts: TalentMusicCounts | null;
     selectedTalent: MusicTalent | null;
     /** グループ選択時にセット。タレント選択時はクリアされる */
     selectedGroup: MusicTalentGroup | null;
@@ -96,6 +97,7 @@ export const useTalentMusicState = (
 
         const nextList = musicRes.apiResponse.data.musicList;
         const pagination = musicRes.apiResponse.data.pagination;
+        const counts = musicRes.apiResponse.data.counts;
         const hasMore = pagination.currentPage < pagination.lastPage;
 
         setState((prev) => {
@@ -114,6 +116,7 @@ export const useTalentMusicState = (
               ...prev.data,
               musicList: mergedList,
               musicPagination: pagination,
+              musicCounts: counts,
             },
           };
         });
@@ -186,6 +189,7 @@ export const useTalentMusicState = (
         groups,
         musicList: [],
         musicPagination: null,
+        musicCounts: null,
         selectedTalent: null,
         selectedGroup: null,
       },
@@ -212,6 +216,7 @@ export const useTalentMusicState = (
         selectedGroup: null,
         musicList: [],
         musicPagination: null,
+        musicCounts: null,
       },
     }));
     await fetchMusicPage({ page: 1, append: false, seq });
@@ -240,6 +245,7 @@ export const useTalentMusicState = (
           selectedGroup: null,
           musicList: [],
           musicPagination: null,
+          musicCounts: null,
         },
         ui: { ...prev.ui, talentSearchQuery: '' },
       }));
@@ -269,6 +275,7 @@ export const useTalentMusicState = (
           selectedTalent: null,
           musicList: [],
           musicPagination: null,
+          musicCounts: null,
         },
         ui: { ...prev.ui, talentSearchQuery: '' },
       }));
