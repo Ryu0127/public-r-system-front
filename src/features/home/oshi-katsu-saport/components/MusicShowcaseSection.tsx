@@ -177,9 +177,9 @@ const MusicShowcaseSection: React.FC<MusicShowcaseSectionProps> = ({ musicList }
         onMouseLeave={() => { isHoveredRef.current = false; setIsHovered(false); }}
       >
         <div className="relative overflow-hidden py-2">
-          {/* 左右のフェード */}
-          <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-white/90 to-transparent z-10 pointer-events-none" />
-          <div className="absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-white/90 to-transparent z-10 pointer-events-none" />
+          {/* 左右のフェード（スカイブルー帯の背景に合わせる） */}
+          <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-sky-50/90 to-transparent z-10 pointer-events-none" />
+          <div className="absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-sky-50/90 to-transparent z-10 pointer-events-none" />
 
           {/* トラック（必要セット数だけ複製して無限ループに見せる） */}
           <div ref={trackRef} className="flex gap-6 w-max will-change-transform">
