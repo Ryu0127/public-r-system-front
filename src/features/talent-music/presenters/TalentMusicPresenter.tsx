@@ -6,6 +6,7 @@ import { TalentSelectionModal } from '../components/TalentSelectionModal';
 import { MusicFilterTabs } from '../components/MusicFilterTabs';
 import { MusicCard } from '../components/MusicCard';
 import { EmptyState } from '../components/EmptyState';
+import { ScrollToTopButton } from '../components/ScrollToTopButton';
 
 interface TalentMusicPresenterProps {
   state: TalentMusicState;
@@ -25,9 +26,9 @@ const TalentMusicPresenter: React.FC<TalentMusicPresenterProps> = ({ state, acti
     return talentMusicList.filter((m) => m.type === config.activeFilter);
   }, [talentMusicList, config.activeFilter]);
 
-  const originalCount = talentMusicList.filter((m) => m.type === 'original').length;
-  const coverCount = talentMusicList.filter((m) => m.type === 'cover').length;
-  const totalCount = talentMusicList.length;
+  const originalCount = data.musicCounts?.original ?? 0;
+  const coverCount = data.musicCounts?.cover ?? 0;
+  const totalCount = data.musicCounts?.all ?? 0;
 
   const handleModalClose = useCallback(() => {
     actions.setIsDropdownOpen(false);
@@ -158,6 +159,8 @@ const TalentMusicPresenter: React.FC<TalentMusicPresenterProps> = ({ state, acti
           </>
         )}
       </div>
+
+      <ScrollToTopButton />
     </div>
   );
 };

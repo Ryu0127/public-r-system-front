@@ -3,6 +3,7 @@ import type {
   Music,
   MusicType,
   TalentMusicApiResponse,
+  TalentMusicCounts,
   TalentMusicFetchParams,
   TalentMusicPagination,
 } from 'features/talent-music/types';
@@ -238,10 +239,15 @@ const buildMockResponse = (params: TalentMusicFetchParams): TalentMusicApiRespon
   const pagination = buildPagination(list.length, page, perPage);
   const start = (pagination.currentPage - 1) * perPage;
   const musicList = list.slice(start, start + perPage);
+  const counts: TalentMusicCounts = {
+    all: list.length,
+    original: list.filter((m) => m.type === 'original').length,
+    cover: list.filter((m) => m.type === 'cover').length,
+  };
 
   return {
     status: true,
-    data: { musicList, pagination },
+    data: { musicList, pagination, counts },
   };
 };
 
@@ -352,6 +358,21 @@ function normalizePagination(raw: unknown, musicListLength: number): TalentMusic
   return buildPagination(musicListLength, 1, Math.max(musicListLength, 1));
 }
 
+function normalizeCounts(
+  raw: unknown,
+  fallback: { all: number; original: number; cover: number }
+): TalentMusicCounts {
+  if (raw && typeof raw === 'object') {
+    const c = raw as Record<string, unknown>;
+    return {
+      all: coerceFiniteNumber(c.all) ?? fallback.all,
+      original: coerceFiniteNumber(c.original) ?? fallback.original,
+      cover: coerceFiniteNumber(c.cover) ?? fallback.cover,
+    };
+  }
+  return fallback;
+}
+
 function normalizeTalentMusicResponse(raw: unknown): TalentMusicApiResponse | null {
   if (!raw || typeof raw !== 'object') {
     return null;
@@ -382,11 +403,18 @@ function normalizeTalentMusicResponse(raw: unknown): TalentMusicApiResponse | nu
     return row;
   });
 
+  const fallbackCounts = {
+    all: musicList.length,
+    original: musicList.filter((m) => m.type === 'original').length,
+    cover: musicList.filter((m) => m.type === 'cover').length,
+  };
+
   return {
     status: true,
     data: {
       musicList,
       pagination: normalizePagination(d.pagination, musicList.length),
+      counts: normalizeCounts(d.counts, fallbackCounts),
     },
   };
 }
