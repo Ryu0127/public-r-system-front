@@ -62,6 +62,11 @@ const HashtagSearchContainer: React.FC = () => {
         setSearchParams({ talent: String(talent.talentSlug ?? '').trim() });
         actions.selectTalent(talent);
       },
+      clearTalentSelection: () => {
+        // URL の ?talent= を消さないと自動再選択されてしまう
+        setSearchParams({});
+        actions.clearTalentSelection();
+      },
     };
   }, [actions, setSearchParams]);
 

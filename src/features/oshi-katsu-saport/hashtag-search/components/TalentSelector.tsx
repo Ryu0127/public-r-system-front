@@ -1,15 +1,49 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useMemo } from 'react';
 import { Talent } from '../hooks/useHashtagSearchState';
+import { TalentSelectionModal } from 'features/talent-music/components/TalentSelectionModal';
+import { MusicTalent, MusicTalentGroup } from 'features/talent-music/types';
 
 interface TalentSelectorProps {
   talents: Talent[];
   selectedTalent: Talent | null;
   searchQuery: string;
+  /** タレント選択モーダルの開閉状態 */
   isDropdownOpen: boolean;
   onSearchQueryChange: (query: string) => void;
   onTalentSelect: (talent: Talent) => void;
   onDropdownOpenChange: (isOpen: boolean) => void;
+  onReset: () => void;
 }
+
+const toMusicTalent = (talent: Talent): MusicTalent => ({
+  id: talent.id,
+  talentName: talent.talentName,
+  talentNameEn: talent.talentNameEn,
+  talentSlug: talent.talentSlug,
+  talentNameJoin: talent.talentNameJoin,
+  groupName: talent.groupName,
+  groupId: talent.groupId,
+  iconImgUrl: talent.iconImgUrl,
+});
+
+/** フラットなタレント一覧をグループ別に変換（楽曲一覧モーダルの表示用） */
+const buildGroups = (talents: Talent[]): MusicTalentGroup[] => {
+  const map = new Map<number, MusicTalentGroup>();
+  for (const talent of talents) {
+    let group = map.get(talent.groupId);
+    if (!group) {
+      group = {
+        groupId: talent.groupId,
+        groupName: talent.groupName || 'その他',
+        groupNameEn: '',
+        talents: [],
+      };
+      map.set(talent.groupId, group);
+    }
+    group.talents.push(toMusicTalent(talent));
+  }
+  return Array.from(map.values());
+};
 
 export const TalentSelector: React.FC<TalentSelectorProps> = ({
   talents,
@@ -19,96 +53,81 @@ export const TalentSelector: React.FC<TalentSelectorProps> = ({
   onSearchQueryChange,
   onTalentSelect,
   onDropdownOpenChange,
+  onReset,
 }) => {
-  const sectionRef = useRef<HTMLElement>(null);
-  const comboboxRef = useRef<HTMLDivElement>(null);
-  const scrollToSelectorTop = () => {
-    sectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const groups = useMemo(() => buildGroups(talents), [talents]);
+  const modalTalents = useMemo(() => talents.map(toMusicTalent), [talents]);
+
+  const handleModalTalentSelect = (musicTalent: MusicTalent) => {
+    const talent = talents.find((t) => t.id === musicTalent.id);
+    if (talent) {
+      onTalentSelect(talent);
+    }
   };
-  const handleInputClick = () => {
-    scrollToSelectorTop();
-    onDropdownOpenChange(true);
+
+  const handleModalClose = () => {
+    onDropdownOpenChange(false);
+    onSearchQueryChange('');
   };
-
-  // フィルタリングされたタレントリスト
-  const filteredTalents = talents.filter((talent) =>
-    talent.talentNameJoin.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  // 外側クリックでドロップダウンを閉じる
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (comboboxRef.current && !comboboxRef.current.contains(event.target as Node)) {
-        onDropdownOpenChange(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [onDropdownOpenChange]);
 
   return (
-    <section ref={sectionRef} className="max-w-2xl mx-auto mb-8 animate-fade-in overflow-visible relative z-[10000]" style={{ animationDelay: '0.2s' }}>
-      <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-200 shadow-lg overflow-visible">
-        <label htmlFor="talent-combobox" className="block text-sm font-semibold text-gray-700 mb-3">
+    <section className="max-w-2xl mx-auto mb-8 animate-fade-in" style={{ animationDelay: '0.2s' }}>
+      <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-200 shadow-lg">
+        <label className="block text-sm font-semibold text-gray-700 mb-3">
           タレントを選択
         </label>
-        <div className="relative" ref={comboboxRef}>
-          <input
-            id="talent-combobox"
-            type="text"
-            value={isDropdownOpen ? searchQuery : selectedTalent?.talentNameJoin || ''}
-            onClick={handleInputClick}
-            onChange={(e) => {
-              onSearchQueryChange(e.target.value);
-              onDropdownOpenChange(true);
-            }}
-            onFocus={() => onDropdownOpenChange(true)}
-            placeholder="タレント名を入力して検索..."
-            className="w-full px-4 py-3 pr-10 bg-white border-2 border-gray-200 focus:border-[#1DA1F2] focus:outline-none rounded-xl text-gray-800 transition-all duration-200"
-          />
-          {/* 検索アイコン */}
-          <div className="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none text-gray-400">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
+
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex-1 min-w-[12rem] px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm truncate">
+            {selectedTalent ? (
+              <span className="font-medium text-gray-800">{selectedTalent.talentNameJoin}</span>
+            ) : (
+              <span className="text-gray-400">タレントを選択してください</span>
+            )}
           </div>
 
-          {/* ドロップダウンリスト */}
-          {isDropdownOpen && filteredTalents.length > 0 && (
-            <div className="absolute z-[9999] w-full mt-2 bg-white border-2 border-gray-200 rounded-xl shadow-xl max-h-60 overflow-y-auto">
-              {filteredTalents.slice(0, 10).map((talent) => (
-                <div
-                  key={talent.id}
-                  onClick={() => onTalentSelect(talent)}
-                  className={`px-4 py-3 cursor-pointer transition-all duration-200 ${
-                    talent.id === selectedTalent?.id
-                      ? 'bg-[#1DA1F2] text-white'
-                      : 'hover:bg-blue-50 text-gray-700'
-                  }`}
-                >
-                  {talent.talentNameJoin}
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* 結果が見つからない場合 */}
-          {isDropdownOpen && searchQuery && filteredTalents.length === 0 && (
-            <div className="absolute z-[9999] w-full mt-2 bg-white border-2 border-gray-200 rounded-xl shadow-xl p-4 text-center text-gray-500">
-              該当するタレントが見つかりません
-            </div>
-          )}
+          <button
+            type="button"
+            onClick={() => onDropdownOpenChange(true)}
+            className="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-[#1DA1F2] to-[#0d8bd9] text-white rounded-xl font-medium hover:from-[#0d8bd9] hover:to-[#1DA1F2] active:scale-95 transition-all duration-200 shadow-md hover:shadow-lg whitespace-nowrap"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            <span>タレント選択</span>
+          </button>
         </div>
-        <p className="text-xs text-gray-500 mt-2">
-          選択中:{' '}
-          <span className="font-semibold text-[#1DA1F2]">
-            {selectedTalent?.talentNameJoin || '未選択'}
-          </span>
-        </p>
+
+        <div className="mt-2 flex items-center justify-between gap-3">
+          <p className="text-xs text-gray-500">
+            選択中:{' '}
+            <span className="font-semibold text-gray-900">
+              {selectedTalent?.talentNameJoin ?? '未選択'}
+            </span>
+          </p>
+
+          <button
+            type="button"
+            onClick={onReset}
+            className="text-xs font-medium text-blue-600 hover:text-blue-700 hover:underline underline-offset-2 transition-colors"
+          >
+            選択をリセット
+          </button>
+        </div>
       </div>
+
+      {/* タレント選択モーダル（楽曲一覧と共通） */}
+      <TalentSelectionModal
+        isOpen={isDropdownOpen}
+        talents={modalTalents}
+        groups={groups}
+        selectedTalent={selectedTalent ? toMusicTalent(selectedTalent) : null}
+        searchQuery={searchQuery}
+        title="タレント選択"
+        onSearchQueryChange={onSearchQueryChange}
+        onTalentSelect={handleModalTalentSelect}
+        onClose={handleModalClose}
+      />
     </section>
   );
 };
