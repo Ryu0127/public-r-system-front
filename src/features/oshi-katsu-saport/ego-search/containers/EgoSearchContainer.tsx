@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import { useSearchParams } from 'react-router-dom';
 import { EgoSearchState, useEgoSearchState } from '../hooks/useEgoSearchState';
 import { defaultEgoSearchFilters } from '../types';
+import { loadTalentSelection, saveTalentSelection } from 'utils/talentSelectionStorage';
 import EgoSearchPresenter from '../presenters/EgoSearchPresenter';
 
 const initialState: EgoSearchState = {
@@ -44,6 +45,7 @@ const EgoSearchContainer: React.FC = () => {
     const found = state.data.talents.find((t) => t.talentSlug === talentQuery);
     if (!found) return;
     if (selected === found.id) return;
+    saveTalentSelection({ talentSlug: found.talentSlug ?? null, groupId: found.groupId });
     actions.selectTalent(found);
   }, [
     state.config.isLoading,
@@ -58,10 +60,12 @@ const EgoSearchContainer: React.FC = () => {
       ...actions,
       selectTalent: (talent: any) => {
         setSearchParams({ talent: String(talent.talentSlug ?? '').trim() });
+        saveTalentSelection({ talentSlug: talent.talentSlug ?? null, groupId: talent.groupId });
         actions.selectTalent(talent);
       },
       resetTalentSelection: () => {
         setSearchParams({});
+        saveTalentSelection({ talentSlug: null, groupId: loadTalentSelection().groupId });
         actions.resetTalentSelection();
       },
     };

@@ -80,9 +80,20 @@ const colorClasses: { [key: string]: { gradient: string; shadow: string; hover: 
 
 interface FeaturesSectionProps {
   features: HomeFeature[];
+  /** 選択中タレントの slug（遷移先へ ?talent= で引き継ぐ） */
+  selectedTalentSlug?: string | null;
 }
 
-const FeaturesSection: React.FC<FeaturesSectionProps> = ({ features }) => {
+/** 選択中タレントを遷移先に引き継ぐリンクを生成 */
+const buildFeatureLink = (link: string, talentSlug: string | null): string => {
+  if (!talentSlug) return link;
+  return `${link}?talent=${encodeURIComponent(talentSlug)}`;
+};
+
+const FeaturesSection: React.FC<FeaturesSectionProps> = ({
+  features,
+  selectedTalentSlug = null,
+}) => {
   return (
     <section className="space-y-6 animate-fade-in" style={{ animationDelay: '0.15s', marginTop: '60px' }}>
       {/* セクションタイトル */}
@@ -97,8 +108,8 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({ features }) => {
           return (
             <a
               key={feature.id}
-              href={feature.link}
-              className={`group block bg-white/60 backdrop-blur-sm rounded-3xl p-8 border border-gray-200 ${colors.hover} hover:bg-white/80 transition-all duration-500 hover:scale-105 hover:shadow-2xl cursor-pointer`}
+              href={buildFeatureLink(feature.link, selectedTalentSlug)}
+              className={`group block bg-white backdrop-blur-sm rounded-3xl p-8 border border-gray-200 ${colors.hover} hover:bg-white/80 transition-all duration-500 hover:scale-105 hover:shadow-2xl cursor-pointer`}
             >
               {/* アイコン背景 */}
               <div

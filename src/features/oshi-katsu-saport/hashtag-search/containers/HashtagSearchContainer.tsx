@@ -2,6 +2,7 @@ import React, { useMemo, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useSearchParams } from 'react-router-dom';
 import { HashtagSearchState, useHashtagSearchState } from '../hooks/useHashtagSearchState';
+import { loadTalentSelection, saveTalentSelection } from 'utils/talentSelectionStorage';
 import HashtagSearchPresenter from '../presenters/HashtagSearchPresenter';
 
 const initialState: HashtagSearchState = {
@@ -46,6 +47,7 @@ const HashtagSearchContainer: React.FC = () => {
     if (state.data.selectedTalent?.talentSlug === talentQuery) return;
     const found = state.data.talents.find((t) => t.talentSlug === talentQuery);
     if (!found) return;
+    saveTalentSelection({ talentSlug: found.talentSlug ?? null, groupId: found.groupId });
     actions.selectTalent(found);
   }, [
     state.config.isLoading,
@@ -60,11 +62,13 @@ const HashtagSearchContainer: React.FC = () => {
       ...actions,
       selectTalent: (talent: any) => {
         setSearchParams({ talent: String(talent.talentSlug ?? '').trim() });
+        saveTalentSelection({ talentSlug: talent.talentSlug ?? null, groupId: talent.groupId });
         actions.selectTalent(talent);
       },
       clearTalentSelection: () => {
         // URL の ?talent= を消さないと自動再選択されてしまう
         setSearchParams({});
+        saveTalentSelection({ talentSlug: null, groupId: loadTalentSelection().groupId });
         actions.clearTalentSelection();
       },
     };

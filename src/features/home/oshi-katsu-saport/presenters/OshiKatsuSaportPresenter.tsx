@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import LoadingScreen from 'components/LoadingScreen';
 import LimitedTimeTopicModal from 'components/LimitedTimeTopicModal';
 import HeroSection, { IntroPhase, isPhaseReached } from '../components/HeroSection';
+import TalentShowcaseSection from '../components/TalentShowcaseSection';
+import SelectedTalentFloatingBadge from 'components/molecules/SelectedTalentFloatingBadge';
 import MusicShowcaseSection from '../components/MusicShowcaseSection';
 import FeaturesSection from '../components/FeaturesSection';
 import ChangeLogsSection from '../components/ChangeLogsSection';
@@ -72,34 +74,67 @@ const OshiKatsuSaportPresenter: React.FC<OshiKatsuSaportPresenterProps> = ({
         <LimitedTimeTopicModal topic={state.data.limitedTimeTopic} />
       )}
 
+      {/* 選択中タレント（画面右下からスライドイン） */}
+      {sectionsVisible && state.data.selectedTalent && (
+        <SelectedTalentFloatingBadge
+          talent={state.data.selectedTalent}
+          onClear={actions.clearTalentSelection}
+        />
+      )}
+
       {/* メインコンテンツ */}
       <div className="relative z-10 max-w-6xl mx-auto px-4 py-16 space-y-32">
         {/* ヒーローセクション */}
         <HeroSection introPhase={introPhase} />
 
-        {/* 楽曲ピックアップ（自動横スクロール）: 全幅のスカイブルー帯でエリアを区切る */}
-        {state.data.musicList.length > 0 && (
+        {/* Talentエリア: 全幅のスカイブルー帯でエリアを区切る */}
+        {state.data.talentGroups.length > 0 && (
           <div className={sectionClass} style={sectionStyle('0s')}>
             <div className="relative left-1/2 -ml-[50vw] w-screen bg-sky-100/50 border-y border-sky-200/60 py-14">
               <div className="max-w-6xl mx-auto px-4">
-                <MusicShowcaseSection musicList={state.data.musicList} />
+                <TalentShowcaseSection
+                  talentGroups={state.data.talentGroups}
+                  selectedTalent={state.data.selectedTalent}
+                  selectedGroupId={state.data.selectedGroupId}
+                  onSelectTalent={actions.selectTalent}
+                  onClearSelection={actions.clearTalentSelection}
+                  onSelectGroup={actions.selectGroup}
+                />
               </div>
             </div>
           </div>
         )}
 
-        {/* 主な機能セクション（通常背景） */}
-        <div className={sectionClass} style={sectionStyle('0.2s')}>
-          <FeaturesSection features={state.data.features} />
-        </div>
+        {/* 楽曲ピックアップ（通常背景。タレント選択時はそのタレントの楽曲） */}
+        {state.data.musicList.length > 0 && (
+          <div className={sectionClass} style={sectionStyle('0.15s')}>
+            <MusicShowcaseSection
+              musicList={state.data.musicList}
+              selectedTalentName={state.data.selectedTalent?.talentName ?? null}
+              listUrl={
+                state.data.selectedTalent?.talentSlug
+                  ? `/music?talent=${encodeURIComponent(state.data.selectedTalent.talentSlug)}`
+                  : '/music'
+              }
+            />
+          </div>
+        )}
 
-        {/* 更新履歴セクション: 全幅のアンバー帯でエリアを区切る */}
-        <div className={sectionClass} style={sectionStyle('0.4s')}>
+        {/* 主な機能セクション: 全幅のアンバー帯でエリアを区切る（選択中タレントを遷移先へ引き継ぐ） */}
+        <div className={sectionClass} style={sectionStyle('0.3s')}>
           <div className="relative left-1/2 -ml-[50vw] w-screen bg-amber-100/40 border-y border-amber-200/60 py-14">
             <div className="max-w-6xl mx-auto px-4">
-              <ChangeLogsSection changeLogs={state.data.changeLogs} />
+              <FeaturesSection
+                features={state.data.features}
+                selectedTalentSlug={state.data.selectedTalent?.talentSlug ?? null}
+              />
             </div>
           </div>
+        </div>
+
+        {/* 更新履歴セクション（通常背景） */}
+        <div className={sectionClass} style={sectionStyle('0.45s')}>
+          <ChangeLogsSection changeLogs={state.data.changeLogs} />
         </div>
 
         {/* 装飾的なアイコン列 */}

@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { useSearchParams } from 'react-router-dom';
 import { OshiKatsuSaportState, useOshiKatsuSaportState } from '../hooks/useOshiKatsuSaportState';
+import { Talent } from 'hooks/api/oshi-katsu-saport/useTalentsGetApi';
 import OshiKatsuSaportPresenter from '../presenters/OshiKatsuSaportPresenter';
 
 const initialState: OshiKatsuSaportState = {
@@ -12,6 +14,9 @@ const initialState: OshiKatsuSaportState = {
     changeLogs: [],
     limitedTimeTopic: null,
     musicList: [],
+    talentGroups: [],
+    selectedTalent: null,
+    selectedGroupId: null,
   },
 };
 
@@ -24,6 +29,42 @@ const OshiKatsuSaportContainer: React.FC = () => {
 
   // Actions Hook
   const { actions } = useOshiKatsuSaportState(state, setState);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const talentQuery = useMemo(() => (searchParams.get('talent') ?? '').trim(), [searchParams]);
+
+  // URLの ?talent=...（slug）がある場合、完全一致するタレントを自動選択（他画面と同様）
+  useEffect(() => {
+    if (state.config.isLoading) return;
+    if (!talentQuery) return;
+    if (state.data.selectedTalent?.talentSlug === talentQuery) return;
+    const found = state.data.talentGroups
+      .flatMap((group) => group.talents)
+      .find((t) => t.talentSlug === talentQuery);
+    if (!found) return;
+    actions.selectTalent(found);
+  }, [
+    state.config.isLoading,
+    state.data.selectedTalent,
+    state.data.talentGroups,
+    talentQuery,
+    actions,
+  ]);
+
+  // タレント選択/解除時に URL パラメータへ反映（他画面と同様）
+  const actionsWithUrl = useMemo(() => {
+    return {
+      ...actions,
+      selectTalent: (talent: Talent) => {
+        setSearchParams({ talent: String(talent.talentSlug ?? '').trim() });
+        actions.selectTalent(talent);
+      },
+      clearTalentSelection: () => {
+        // URL の ?talent= を消さないと自動再選択されてしまう
+        setSearchParams({});
+        actions.clearTalentSelection();
+      },
+    };
+  }, [actions, setSearchParams]);
 
   return (
     <>
@@ -39,7 +80,7 @@ const OshiKatsuSaportContainer: React.FC = () => {
       </Helmet>
       <OshiKatsuSaportPresenter
         state={state}
-        actions={actions}
+        actions={actionsWithUrl}
       />
     </>
   );

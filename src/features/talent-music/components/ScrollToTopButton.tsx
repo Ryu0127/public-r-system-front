@@ -2,7 +2,14 @@ import React, { useCallback, useEffect, useState } from 'react';
 
 const SHOW_THRESHOLD_PX = 200;
 
-export const ScrollToTopButton: React.FC = () => {
+interface ScrollToTopButtonProps {
+  /** 表示位置（タレント選択モードバッジ等と重なる場合に上へずらす） */
+  positionClass?: string;
+}
+
+export const ScrollToTopButton: React.FC<ScrollToTopButtonProps> = ({
+  positionClass = 'bottom-6 right-6',
+}) => {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -45,7 +52,7 @@ export const ScrollToTopButton: React.FC = () => {
       onClick={handleClick}
       aria-label="ページ上部へ戻る"
       title="ページ上部へ戻る"
-      className="fixed bottom-6 right-6 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-gray-500 text-white shadow-lg hover:bg-gray-600 active:scale-95 transition-all duration-200"
+      className={`fixed ${positionClass} z-40 flex h-12 w-12 items-center justify-center rounded-full bg-gray-500 text-white shadow-lg hover:bg-gray-600 active:scale-95 transition-all duration-200`}
     >
       <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
         <path

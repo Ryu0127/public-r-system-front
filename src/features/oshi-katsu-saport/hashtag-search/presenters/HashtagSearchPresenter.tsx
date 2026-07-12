@@ -11,6 +11,7 @@ import { HashtagSearchEmptyState } from '../components/HashtagSearchEmptyState';
 import ConfirmModal from 'components/molecules/ConfirmModal';
 import StickyActionBar from 'components/molecules/StickyActionBar';
 import DecorativeBackground from 'components/molecules/DecorativeBackground';
+import SelectedTalentFloatingBadge from 'components/molecules/SelectedTalentFloatingBadge';
 
 interface HashtagSearchPresenterProps {
   state: HashtagSearchState;
@@ -128,6 +129,15 @@ export const HashtagSearchPresenter: React.FC<HashtagSearchPresenterProps> = ({
           label={isPostMode ? '投稿確認' : '検索確認'}
           disabled={!canConfirm}
           onClick={() => setIsConfirmModalOpen(true)}
+        />
+      )}
+
+      {/* 選択中タレント（タレント選択モード。下部固定バーの上に表示） */}
+      {state.data.selectedTalent && (
+        <SelectedTalentFloatingBadge
+          talent={state.data.selectedTalent}
+          onClear={actions.clearTalentSelection}
+          positionClass="bottom-24 right-4 md:right-6"
         />
       )}
 

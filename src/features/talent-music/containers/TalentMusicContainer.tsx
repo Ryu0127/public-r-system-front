@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import { useSearchParams } from 'react-router-dom';
 import { TalentMusicState, useTalentMusicState, TalentMusicActions } from '../hooks/useTalentMusicState';
 import { toGroupSlug } from '../utils/toGroupSlug';
+import { saveTalentSelection } from 'utils/talentSelectionStorage';
 import TalentMusicPresenter from '../presenters/TalentMusicPresenter';
 
 const initialState: TalentMusicState = {
@@ -53,6 +54,7 @@ const TalentMusicContainer: React.FC = () => {
       const found = state.data.talents.find((t) => t.talentSlug === talentQuery);
       if (!found) return;
       urlSelectionAppliedRef.current = true;
+      saveTalentSelection({ talentSlug: found.talentSlug ?? null, groupId: found.groupId });
       actions.selectTalent(found);
       return;
     }
@@ -61,6 +63,7 @@ const TalentMusicContainer: React.FC = () => {
       const found = state.data.groups.find((g) => toGroupSlug(g.groupNameEn) === groupQuery);
       if (!found) return;
       urlSelectionAppliedRef.current = true;
+      saveTalentSelection({ talentSlug: null, groupId: found.groupId });
       actions.selectGroup(found);
       return;
     }
@@ -80,14 +83,17 @@ const TalentMusicContainer: React.FC = () => {
       ...actions,
       selectTalent: (talent) => {
         setSearchParams({ talent: String(talent.talentSlug ?? '').trim() });
+        saveTalentSelection({ talentSlug: talent.talentSlug ?? null, groupId: talent.groupId });
         actions.selectTalent(talent);
       },
       selectGroup: (group) => {
         setSearchParams({ group: toGroupSlug(group.groupNameEn) });
+        saveTalentSelection({ talentSlug: null, groupId: group.groupId });
         actions.selectGroup(group);
       },
       clearSelection: () => {
         setSearchParams({});
+        saveTalentSelection({ talentSlug: null, groupId: null });
         actions.clearSelection();
       },
     };

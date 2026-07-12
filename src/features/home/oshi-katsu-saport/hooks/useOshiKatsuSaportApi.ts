@@ -3,6 +3,7 @@ import { useHomeFeaturesGetApi } from "hooks/api/home/useHomeFeaturesGetApi";
 import { useHomeChangeLogsGetApi } from "hooks/api/home/useHomeChangeLogsGetApi";
 import { useHomeLimitedTimeTopicGetApi } from "hooks/api/home/useHomeLimitedTimeTopicGetApi";
 import { useTalentMusicGetApi } from "hooks/api/talent-music/useTalentMusicGetApi";
+import { useTalentsGetApi } from "hooks/api/oshi-katsu-saport/useTalentsGetApi";
 
 /** ホーム画面の楽曲ショーケースで表示する件数 */
 export const HOME_MUSIC_SHOWCASE_COUNT = 10;
@@ -17,6 +18,7 @@ export const useOshiKatsuSaportApi = () => {
   const { executeHomeChangeLogsGet } = useHomeChangeLogsGetApi();
   const { executeHomeLimitedTimeTopicGet } = useHomeLimitedTimeTopicGetApi();
   const { executeTalentMusicGetByParams } = useTalentMusicGetApi();
+  const { executeTalentsGet } = useTalentsGetApi();
 
   return {
     // 機能一覧取得
@@ -47,8 +49,10 @@ export const useOshiKatsuSaportApi = () => {
     }, [executeHomeLimitedTimeTopicGet]),
 
     // 楽曲ショーケース用の先頭数件取得（楽曲一覧と同じAPIを再利用）
-    executeHomeMusicGet: useCallback(async () => {
+    // talentSlug 指定時はそのタレントの楽曲のみ取得
+    executeHomeMusicGet: useCallback(async (talentSlug?: string) => {
       const result = await executeTalentMusicGetByParams({
+        talentSlug,
         page: 1,
         perPage: HOME_MUSIC_SHOWCASE_COUNT,
       });
@@ -57,5 +61,14 @@ export const useOshiKatsuSaportApi = () => {
         data: result.apiResponse?.data
       };
     }, [executeTalentMusicGetByParams]),
+
+    // タレント一覧取得（Talentエリア用）
+    executeTalentsGet: useCallback(async () => {
+      const result = await executeTalentsGet();
+      return {
+        success: result.apiResponse?.status ?? false,
+        data: result.apiResponse?.data
+      };
+    }, [executeTalentsGet]),
   };
 };
