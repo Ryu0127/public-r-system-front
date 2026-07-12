@@ -10,6 +10,7 @@ import { buildSearchQueryPreview } from '../utils/buildTwitterSearchUrl';
 import ConfirmModal from 'components/molecules/ConfirmModal';
 import StickyActionBar from 'components/molecules/StickyActionBar';
 import DecorativeBackground from 'components/molecules/DecorativeBackground';
+import SelectedTalentFloatingBadge from 'components/molecules/SelectedTalentFloatingBadge';
 
 interface EgoSearchPresenterProps {
   state: EgoSearchState;
@@ -26,6 +27,13 @@ export const EgoSearchPresenter: React.FC<EgoSearchPresenterProps> = ({
   };
   // 検索プレビューテキスト
   const searchQueryPreview = buildSearchQueryPreview(state.filters);
+  // 選択中タレント（selectedAccounts の先頭タレント）
+  const selectedTalent =
+    state.filters.talentAccounts.selectedAccounts.length > 0
+      ? state.data.talents.find(
+          (t) => t.id === state.filters.talentAccounts.selectedAccounts[0].talentId
+        ) ?? null
+      : null;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-blue-50 relative pb-32">
@@ -43,10 +51,7 @@ export const EgoSearchPresenter: React.FC<EgoSearchPresenterProps> = ({
         {/* タレント選択 */}
         <TalentSelector
           talents={state.data.talents}
-          selectedTalent={state.filters.talentAccounts.selectedAccounts.length > 0
-            ? state.data.talents.find(t => t.id === state.filters.talentAccounts.selectedAccounts[0].talentId) || null
-            : null
-          }
+          selectedTalent={selectedTalent}
           searchQuery={state.ui.talentSearchQuery}
           isDropdownOpen={state.ui.isDropdownOpen}
           enabled={state.filters.talentAccounts.enabled}
@@ -88,6 +93,15 @@ export const EgoSearchPresenter: React.FC<EgoSearchPresenterProps> = ({
         <StickyActionBar
           label="検索内容を確認"
           onClick={() => setIsConfirmModalOpen(true)}
+        />
+      )}
+
+      {/* 選択中タレント（タレント選択モード。下部固定バーの上に表示） */}
+      {selectedTalent && (
+        <SelectedTalentFloatingBadge
+          talent={selectedTalent}
+          onClear={actions.resetTalentSelection}
+          positionClass="bottom-24 right-4 md:right-6"
         />
       )}
 

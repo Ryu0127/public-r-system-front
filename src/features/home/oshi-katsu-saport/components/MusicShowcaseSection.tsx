@@ -76,9 +76,17 @@ const ShowcaseCard: React.FC<{ music: Music; ariaHidden?: boolean }> = ({
 
 interface MusicShowcaseSectionProps {
   musicList: Music[];
+  /** タレント選択モード時のタレント名（表示中ラベルに使用） */
+  selectedTalentName?: string | null;
+  /** 「楽曲一覧をもっと見る」の遷移先（選択タレントの引き継ぎ用） */
+  listUrl?: string;
 }
 
-const MusicShowcaseSection: React.FC<MusicShowcaseSectionProps> = ({ musicList }) => {
+const MusicShowcaseSection: React.FC<MusicShowcaseSectionProps> = ({
+  musicList,
+  selectedTalentName = null,
+  listUrl = MUSIC_LIST_PATH,
+}) => {
   const trackRef = useRef<HTMLDivElement>(null);
   /** 現在のスクロール位置 (px) */
   const positionRef = useRef(0);
@@ -170,6 +178,19 @@ const MusicShowcaseSection: React.FC<MusicShowcaseSectionProps> = ({ musicList }
       {/* セクションタイトル */}
       <SectionTitle en="Music" ja="楽曲ピックアップ" />
 
+      {/* タレント選択モードの表示 */}
+      {selectedTalentName && (
+        <p className="text-center text-sm text-gray-600">
+          <span className="inline-flex items-center gap-2 px-4 py-1.5 bg-amber-50/90 border border-amber-300 rounded-full shadow-sm">
+            <span className="text-amber-500">✦</span>
+            <span className="font-bold text-amber-700 text-xs">タレント選択モード</span>
+            <span className="text-gray-400">|</span>
+            <span className="font-semibold text-gray-900">{selectedTalentName}</span>
+            の楽曲を表示中
+          </span>
+        </p>
+      )}
+
       {/* 自動横スクロールカルーセル（画面幅いっぱいに表示） */}
       <div
         className="relative left-1/2 -ml-[50vw] w-screen"
@@ -177,9 +198,9 @@ const MusicShowcaseSection: React.FC<MusicShowcaseSectionProps> = ({ musicList }
         onMouseLeave={() => { isHoveredRef.current = false; setIsHovered(false); }}
       >
         <div className="relative overflow-hidden py-2">
-          {/* 左右のフェード（スカイブルー帯の背景に合わせる） */}
-          <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-sky-50/90 to-transparent z-10 pointer-events-none" />
-          <div className="absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-sky-50/90 to-transparent z-10 pointer-events-none" />
+          {/* 左右のフェード */}
+          <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-white/90 to-transparent z-10 pointer-events-none" />
+          <div className="absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-white/90 to-transparent z-10 pointer-events-none" />
 
           {/* トラック（必要セット数だけ複製して無限ループに見せる） */}
           <div ref={trackRef} className="flex gap-6 w-max will-change-transform">
@@ -225,7 +246,7 @@ const MusicShowcaseSection: React.FC<MusicShowcaseSectionProps> = ({ musicList }
       {/* 楽曲一覧への導線 */}
       <div className="text-center">
         <a
-          href={MUSIC_LIST_PATH}
+          href={listUrl}
           className="group inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-rose-400 to-pink-500 text-white font-semibold rounded-full shadow-lg shadow-rose-500/30 hover:shadow-xl hover:shadow-rose-500/40 hover:scale-105 transition-all duration-300"
         >
           <span className="text-xl">♪</span>

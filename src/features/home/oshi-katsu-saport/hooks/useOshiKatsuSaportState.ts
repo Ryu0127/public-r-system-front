@@ -1,10 +1,63 @@
-import { useCallback, useEffect, Dispatch, SetStateAction } from 'react';
+import { useCallback, useEffect, useRef, Dispatch, SetStateAction } from 'react';
 import { useOshiKatsuSaportApi } from './useOshiKatsuSaportApi';
 import { HomeFeature } from 'hooks/api/home/useHomeFeaturesGetApi';
 import { HomeChangeLog } from 'hooks/api/home/useHomeChangeLogsGetApi';
 import { HomeLimitedTimeTopic } from 'hooks/api/home/useHomeLimitedTimeTopicGetApi';
+import { Talent, TalentsApiResponse } from 'hooks/api/oshi-katsu-saport/useTalentsGetApi';
 import { Music } from 'features/talent-music/types';
+import { loadTalentSelection, saveTalentSelection } from 'utils/talentSelectionStorage';
 import { HOME_FEATURES, HOME_CHANGE_LOGS } from '../data/homeData';
+
+/** Talentエリアで表示するグループ */
+export interface HomeTalentGroup {
+  groupId: number;
+  groupName: string;
+  talents: Talent[];
+}
+
+/**
+ * タレント一覧APIのレスポンスから Talentエリア用のグループ一覧を組み立てる
+ * （data.groups を優先し、無い場合はフラット一覧を groupId ごとにまとめる）
+ */
+const buildTalentGroups = (
+  apiData: TalentsApiResponse['data'] | undefined
+): HomeTalentGroup[] => {
+  const groups = apiData?.groups ?? [];
+  if (groups.length > 0) {
+    return groups
+      .filter((group) => group.talents.length > 0)
+      .map((group) => ({
+        groupId: group.groupId,
+        groupName: group.groupName,
+        talents: group.talents.map((talent) => ({
+          id: String(talent.id),
+          talentName: talent.talentName,
+          talentNameEn: talent.talentNameEn,
+          talentSlug: talent.talentSlug,
+          iconImgUrl: talent.iconImgUrl,
+          groupId: group.groupId,
+          groupName: group.groupName,
+          twitterAccounts: [],
+        })),
+      }));
+  }
+
+  // フォールバック: フラット一覧を groupId ごとにまとめる
+  const map = new Map<number, HomeTalentGroup>();
+  for (const talent of apiData?.talents ?? []) {
+    let group = map.get(talent.groupId);
+    if (!group) {
+      group = {
+        groupId: talent.groupId,
+        groupName: talent.groupName || 'その他',
+        talents: [],
+      };
+      map.set(talent.groupId, group);
+    }
+    group.talents.push(talent);
+  }
+  return Array.from(map.values());
+};
 
 export interface OshiKatsuSaportState {
   config: {
@@ -16,67 +69,23 @@ export interface OshiKatsuSaportState {
     limitedTimeTopic: HomeLimitedTimeTopic | null;
     /** 楽曲ショーケース用の先頭数件 */
     musicList: Music[];
+    /** Talentエリア用のグループ別タレント一覧 */
+    talentGroups: HomeTalentGroup[];
+    /** 選択中タレント（タレント選択モード） */
+    selectedTalent: Talent | null;
+    /** Talentエリアで表示中のグループID */
+    selectedGroupId: number | null;
   };
 }
 
 export interface OshiKatsuSaportActions {
   // データ取得アクション
   fetchHomeData: () => void;
+  // タレント選択
+  selectTalent: (talent: Talent) => void;
+  clearTalentSelection: () => void;
+  selectGroup: (groupId: number) => void;
 }
-
-/**
- * 状態管理値のグループ更新
- */
-const updateStateGroup = {
-  /**
-   * ローディング状態の更新
-   */
-  toLoading: (
-    setState: Dispatch<SetStateAction<OshiKatsuSaportState>>,
-    isLoading: boolean
-  ) => {
-    setState(prev => ({
-      ...prev,
-      config: {
-        ...prev.config,
-        isLoading: isLoading,
-      },
-    }));
-  },
-};
-
-/**
- * 状態管理値の更新
- */
-const updateState = {
-  /**
-   * データの更新
-   */
-  toData: (
-    prev: OshiKatsuSaportState,
-    features: HomeFeature[],
-    changeLogs: HomeChangeLog[],
-    limitedTimeTopic: HomeLimitedTimeTopic | null,
-    musicList: Music[]
-  ) => ({
-    data: {
-      features: features,
-      changeLogs: changeLogs,
-      limitedTimeTopic: limitedTimeTopic,
-      musicList: musicList,
-    },
-  }),
-
-  /**
-   * ローディング状態の更新
-   */
-  toLoading: (prev: OshiKatsuSaportState, isLoading: boolean) => ({
-    config: {
-      ...prev.config,
-      isLoading: isLoading,
-    },
-  }),
-};
 
 /**
  * 推し活サポートホーム画面 State Hooks
@@ -93,6 +102,24 @@ export const useOshiKatsuSaportState = (
 } => {
   // API Hooks
   const api = useOshiKatsuSaportApi();
+  // 楽曲取得の競合防止（後勝ち）
+  const musicFetchSeqRef = useRef(0);
+
+  /**
+   * 楽曲ショーケースの取得（talentSlug 指定時はそのタレントの楽曲）
+   */
+  const fetchShowcaseMusic = useCallback(async (talentSlug?: string) => {
+    const seq = ++musicFetchSeqRef.current;
+    const musicResult = await api.executeHomeMusicGet(talentSlug);
+    if (seq !== musicFetchSeqRef.current) return;
+    setState(prev => ({
+      ...prev,
+      data: {
+        ...prev.data,
+        musicList: musicResult.data?.musicList ?? [],
+      },
+    }));
+  }, [api, setState]);
 
   // アクション実装
   const actions: OshiKatsuSaportActions = {
@@ -102,13 +129,33 @@ export const useOshiKatsuSaportState = (
     fetchHomeData: useCallback(async () => {
       try {
         // ローディング開始
-        updateStateGroup.toLoading(setState, true);
+        setState(prev => ({
+          ...prev,
+          config: { ...prev.config, isLoading: true },
+        }));
 
-        // 期間限定トピックと楽曲ショーケースをAPIから並列取得
-        const [limitedTimeTopicResult, musicResult] = await Promise.all([
+        // 期間限定トピックとタレント一覧を並列取得
+        const [limitedTimeTopicResult, talentsResult] = await Promise.all([
           api.executeHomeLimitedTimeTopicGet(),
-          api.executeHomeMusicGet(),
+          api.executeTalentsGet(),
         ]);
+
+        const talentGroups = buildTalentGroups(talentsResult.data);
+        const allTalents = talentGroups.flatMap(group => group.talents);
+
+        // 前回のタレント/グループ選択を復元（他画面での選択も共有）
+        const stored = loadTalentSelection();
+        const selectedTalent = stored.talentSlug
+          ? allTalents.find(t => (t.talentSlug ?? '') === stored.talentSlug) ?? null
+          : null;
+        const selectedGroupId =
+          stored.groupId ?? selectedTalent?.groupId ?? null;
+
+        // 楽曲ショーケース取得（選択タレントがあればそのタレントの楽曲）
+        const seq = ++musicFetchSeqRef.current;
+        const musicResult = await api.executeHomeMusicGet(
+          selectedTalent?.talentSlug ?? undefined
+        );
 
         // 静的データを使用
         const features = HOME_FEATURES;
@@ -117,21 +164,79 @@ export const useOshiKatsuSaportState = (
         // データ更新
         setState(prev => ({
           ...prev,
-          ...updateState.toLoading(prev, false),
-          ...updateState.toData(
-            prev,
+          config: { ...prev.config, isLoading: false },
+          data: {
+            ...prev.data,
             features,
             changeLogs,
-            limitedTimeTopicResult.data?.limitedTimeTopic ?? null,
-            musicResult.data?.musicList ?? []
-          ),
+            limitedTimeTopic:
+              limitedTimeTopicResult.data?.limitedTimeTopic ?? null,
+            musicList:
+              seq === musicFetchSeqRef.current
+                ? musicResult.data?.musicList ?? []
+                : prev.data.musicList,
+            talentGroups,
+            selectedTalent,
+            selectedGroupId,
+          },
         }));
       } catch (error) {
         console.error('Failed to fetch home data:', error);
         // エラー時もローディングを終了
-        updateStateGroup.toLoading(setState, false);
+        setState(prev => ({
+          ...prev,
+          config: { ...prev.config, isLoading: false },
+        }));
       }
     }, [api, setState]),
+
+    /**
+     * タレント選択（楽曲ショーケースも選択タレントのものに切り替え）
+     */
+    selectTalent: useCallback((talent: Talent) => {
+      saveTalentSelection({
+        talentSlug: talent.talentSlug ?? null,
+        groupId: talent.groupId,
+      });
+      setState(prev => ({
+        ...prev,
+        data: {
+          ...prev.data,
+          selectedTalent: talent,
+          selectedGroupId: talent.groupId,
+        },
+      }));
+      void fetchShowcaseMusic(talent.talentSlug ?? undefined);
+    }, [setState, fetchShowcaseMusic]),
+
+    /**
+     * タレント選択の解除（楽曲ショーケースを全体表示に戻す）
+     */
+    clearTalentSelection: useCallback(() => {
+      saveTalentSelection({
+        talentSlug: null,
+        groupId: state.data.selectedGroupId,
+      });
+      setState(prev => ({
+        ...prev,
+        data: { ...prev.data, selectedTalent: null },
+      }));
+      void fetchShowcaseMusic();
+    }, [setState, fetchShowcaseMusic, state.data.selectedGroupId]),
+
+    /**
+     * Talentエリアの表示グループ切り替え
+     */
+    selectGroup: useCallback((groupId: number) => {
+      saveTalentSelection({
+        talentSlug: state.data.selectedTalent?.talentSlug ?? null,
+        groupId,
+      });
+      setState(prev => ({
+        ...prev,
+        data: { ...prev.data, selectedGroupId: groupId },
+      }));
+    }, [setState, state.data.selectedTalent]),
   };
 
   /**

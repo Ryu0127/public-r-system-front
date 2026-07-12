@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo } from 'react';
+import TalentAvatar from 'components/atoms/TalentAvatar';
 
 /** タレント選択モーダルで扱う最小限のタレント情報 */
 export interface PickerTalent {
@@ -57,25 +58,6 @@ interface TalentSelectionModalProps<T extends PickerTalent, G extends PickerTale
   onGroupSelect?: (group: G) => void;
   onClose: () => void;
 }
-
-const AVATAR_COLORS = [
-  'from-red-400 to-pink-500',
-  'from-purple-400 to-indigo-500',
-  'from-blue-400 to-cyan-500',
-  'from-green-400 to-teal-500',
-  'from-yellow-400 to-orange-500',
-  'from-pink-400 to-rose-500',
-  'from-indigo-400 to-violet-500',
-  'from-teal-400 to-emerald-500',
-  'from-orange-400 to-amber-500',
-  'from-cyan-400 to-sky-500',
-];
-
-const getAvatarColor = (id: string): string => {
-  const num = parseInt(id, 10);
-  const idx = isNaN(num) ? 0 : num % AVATAR_COLORS.length;
-  return AVATAR_COLORS[idx];
-};
 
 /**
  * タレント選択モーダル（検索絞り込み・グループ別表示・アイコングリッド）
@@ -149,8 +131,6 @@ export function TalentSelectionModal<T extends PickerTalent, G extends PickerTal
 
   const renderTalentCard = (talent: T, index: number) => {
     const isSelected = talent.id === selectedTalent?.id;
-    const avatarColor = getAvatarColor(talent.id);
-    const initial = talent.talentName.charAt(0);
 
     return (
       <button
@@ -159,20 +139,13 @@ export function TalentSelectionModal<T extends PickerTalent, G extends PickerTal
         className={`flex flex-col items-center gap-2 p-4 rounded-xl transition-all duration-200 text-center group cursor-pointer
           ${isSelected ? 'bg-red-50 ring-2 ring-red-400' : 'hover:bg-gray-50'}`}
       >
-        {/* アバター：iconImgUrl があれば画像、なければグラデーション＋イニシャル */}
-        {talent.iconImgUrl ? (
-          <img
-            src={talent.iconImgUrl}
-            alt={talent.talentName}
-            className="w-28 h-28 rounded-full object-cover shadow-md group-hover:shadow-lg transition-shadow flex-shrink-0"
-          />
-        ) : (
-          <div
-            className={`w-28 h-28 rounded-full bg-gradient-to-br ${avatarColor} flex items-center justify-center text-white font-bold text-2xl shadow-md group-hover:shadow-lg transition-shadow flex-shrink-0`}
-          >
-            {initial}
-          </div>
-        )}
+        <TalentAvatar
+          id={talent.id}
+          name={talent.talentName}
+          iconImgUrl={talent.iconImgUrl}
+          sizeClass="w-28 h-28"
+          initialTextClass="text-2xl"
+        />
 
         {/* 名前 */}
         <div className="w-full">

@@ -9,6 +9,7 @@ import { EmptyState } from '../components/EmptyState';
 import { ScrollToTopButton } from '../components/ScrollToTopButton';
 import Spinner from 'components/atoms/Spinner';
 import DecorativeBackground from 'components/molecules/DecorativeBackground';
+import SelectedTalentFloatingBadge from 'components/molecules/SelectedTalentFloatingBadge';
 
 interface TalentMusicPresenterProps {
   state: TalentMusicState;
@@ -158,7 +159,18 @@ const TalentMusicPresenter: React.FC<TalentMusicPresenterProps> = ({ state, acti
         )}
       </div>
 
-      <ScrollToTopButton />
+      {/* ページ上部へ戻るボタン（タレント選択モードバッジの上に表示） */}
+      <ScrollToTopButton
+        positionClass={selectedTalent ? 'bottom-28 right-6' : 'bottom-6 right-6'}
+      />
+
+      {/* 選択中タレント（タレント選択モード） */}
+      {selectedTalent && (
+        <SelectedTalentFloatingBadge
+          talent={selectedTalent}
+          onClear={actions.clearSelection}
+        />
+      )}
     </div>
   );
 };

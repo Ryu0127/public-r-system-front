@@ -54,10 +54,10 @@ export interface Talent extends TalentsListApiRow {
 function resolveTalentsApiUrl(): string | null {
   const base = process.env.REACT_APP_API_DOMAIN?.trim();
   if (base) {
-    return `${base.replace(/\/$/, '')}/oshi-katsu-saport/talent-music/talents`;
+    return `${base.replace(/\/$/, '')}/oshi-katsu-saport/talents`;
   }
   if (process.env.NODE_ENV === 'development') {
-    return '/api/oshi-katsu-saport/talent-music/talents';
+    return '/api/oshi-katsu-saport/talents';
   }
   return null;
 }
@@ -116,7 +116,29 @@ function normalizeTalentsResponse(raw: unknown): TalentsApiResponse | null {
       })
     : [];
 
-  return { status: true, data: { talents, groups } };
+  // フラット一覧のタレント行にグループ情報が無い場合は groups から補完
+  // （API はグループ所属を data.groups 側で表現しているため）
+  const groupInfoByTalentId = new Map<string, { groupId: number; groupName: string }>();
+  for (const group of groups) {
+    for (const member of group.talents) {
+      const memberId = String(member.id);
+      if (!groupInfoByTalentId.has(memberId)) {
+        groupInfoByTalentId.set(memberId, {
+          groupId: group.groupId,
+          groupName: group.groupName,
+        });
+      }
+    }
+  }
+  const enrichedTalents = talents.map((talent) => {
+    if (talent.groupName !== '' || talent.groupId !== 0) {
+      return talent;
+    }
+    const info = groupInfoByTalentId.get(talent.id);
+    return info ? { ...talent, ...info } : talent;
+  });
+
+  return { status: true, data: { talents: enrichedTalents, groups } };
 }
 
 async function requestTalents(url: string): Promise<TalentsApiResponse | null> {

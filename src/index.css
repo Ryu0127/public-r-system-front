@@ -182,6 +182,18 @@ code {
   }
 }
 
+/* 画面右下からスライドして出現（選択タレントの固定表示用） */
+@keyframes slide-in-corner {
+  0% {
+    transform: translateY(120%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
 /* クラス定義 */
 .animate-float-elegant {
   animation: float-elegant ease-in-out infinite;
@@ -239,4 +251,8 @@ code {
 
 .animate-slide-up-fade-in {
   animation: slide-up-fade-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-slide-in-corner {
+  animation: slide-in-corner 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
