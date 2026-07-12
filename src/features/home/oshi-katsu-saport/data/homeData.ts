@@ -36,6 +36,15 @@ export const HOME_FEATURES: HomeFeature[] = [
  */
 export const HOME_CHANGE_LOGS: HomeChangeLog[] = [
   {
+    id: "4",
+    version: "v2.0.0",
+    date: "2026-07-13",
+    changes: [
+      "サイトリニューアル",
+      "タレント選択モードを追加"
+    ]
+  },
+  {
     id: "3",
     version: "v1.2.0",
     date: "2026-03-25",
