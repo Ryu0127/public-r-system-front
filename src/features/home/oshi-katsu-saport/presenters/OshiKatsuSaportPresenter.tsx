@@ -77,19 +77,29 @@ const OshiKatsuSaportPresenter: React.FC<OshiKatsuSaportPresenterProps> = ({
         {/* ヒーローセクション */}
         <HeroSection introPhase={introPhase} />
 
-        {/* 楽曲ピックアップ（自動横スクロール） */}
-        <div className={sectionClass} style={sectionStyle('0s')}>
-          <MusicShowcaseSection musicList={state.data.musicList} />
-        </div>
+        {/* 楽曲ピックアップ（自動横スクロール）: 全幅のスカイブルー帯でエリアを区切る */}
+        {state.data.musicList.length > 0 && (
+          <div className={sectionClass} style={sectionStyle('0s')}>
+            <div className="relative left-1/2 -ml-[50vw] w-screen bg-sky-100/50 border-y border-sky-200/60 py-14">
+              <div className="max-w-6xl mx-auto px-4">
+                <MusicShowcaseSection musicList={state.data.musicList} />
+              </div>
+            </div>
+          </div>
+        )}
 
-        {/* 主な機能セクション */}
+        {/* 主な機能セクション（通常背景） */}
         <div className={sectionClass} style={sectionStyle('0.2s')}>
           <FeaturesSection features={state.data.features} />
         </div>
 
-        {/* 更新履歴セクション */}
+        {/* 更新履歴セクション: 全幅のアンバー帯でエリアを区切る */}
         <div className={sectionClass} style={sectionStyle('0.4s')}>
-          <ChangeLogsSection changeLogs={state.data.changeLogs} />
+          <div className="relative left-1/2 -ml-[50vw] w-screen bg-amber-100/40 border-y border-amber-200/60 py-14">
+            <div className="max-w-6xl mx-auto px-4">
+              <ChangeLogsSection changeLogs={state.data.changeLogs} />
+            </div>
+          </div>
         </div>
 
         {/* 装飾的なアイコン列 */}
