@@ -1,5 +1,6 @@
 import React from 'react';
 import { MusicTalent, MusicTalentGroup } from '../types';
+import SectionCard from 'components/atoms/SectionCard';
 
 interface TalentSelectorProps {
   selectedTalent: MusicTalent | null;
@@ -25,7 +26,7 @@ export const TalentSelector: React.FC<TalentSelectorProps> = ({
       className="max-w-2xl mx-auto mb-8 animate-fade-in"
       style={{ animationDelay: '0.1s' }}
     >
-      <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-200 shadow-lg">
+      <SectionCard className="p-6">
         <label className="block text-sm font-semibold text-gray-700 mb-3">
           タレント・グループを選択
         </label>
@@ -67,7 +68,7 @@ export const TalentSelector: React.FC<TalentSelectorProps> = ({
             選択をリセット
           </button>
         </div>
-      </div>
+      </SectionCard>
     </section>
   );
 };

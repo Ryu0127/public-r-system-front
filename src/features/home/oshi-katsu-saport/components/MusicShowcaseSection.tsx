@@ -1,5 +1,6 @@
 import React from 'react';
 import { Music } from 'features/talent-music/types';
+import SectionTitle from 'components/molecules/SectionTitle';
 
 const YOUTUBE_THUMBNAIL_URL = (videoId: string) =>
   `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
@@ -80,15 +81,7 @@ const MusicShowcaseSection: React.FC<MusicShowcaseSectionProps> = ({ musicList }
   return (
     <section className="space-y-10 animate-fade-in" style={{ animationDelay: '0.1s' }}>
       {/* セクションタイトル */}
-      <div className="text-center space-y-4">
-        <h2
-          className="text-4xl md:text-5xl font-bold text-gray-800"
-          style={{ fontFamily: "'Playfair Display', serif" }}
-        >
-          ✦Music
-        </h2>
-        <span className="text-gray-600 text-lg font-light">楽曲ピックアップ</span>
-      </div>
+      <SectionTitle en="Music" ja="楽曲ピックアップ" />
 
       {/* 自動横スクロールマーキー */}
       <div className="marquee-container relative overflow-hidden py-2">

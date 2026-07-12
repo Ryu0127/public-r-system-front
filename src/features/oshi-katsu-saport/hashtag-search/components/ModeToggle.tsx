@@ -1,5 +1,6 @@
 import React from 'react';
 import { HashIcon, SearchIcon } from './Icons';
+import SectionCard from 'components/atoms/SectionCard';
 
 interface ModeToggleProps {
   mode: 'post' | 'search';
@@ -9,7 +10,7 @@ interface ModeToggleProps {
 export const ModeToggle: React.FC<ModeToggleProps> = ({ mode, onModeChange }) => {
   return (
     <section className="max-w-2xl mx-auto mb-8 animate-fade-in" style={{ animationDelay: '0.15s' }}>
-      <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-2 border border-gray-200 shadow-lg inline-flex gap-2 w-full">
+      <SectionCard className="p-2 inline-flex gap-2 w-full">
         <button
           onClick={() => onModeChange('post')}
           className={`flex-1 py-4 px-6 rounded-xl font-semibold text-lg transition-all duration-300 flex items-center justify-center gap-2 ${
@@ -32,7 +33,7 @@ export const ModeToggle: React.FC<ModeToggleProps> = ({ mode, onModeChange }) =>
           <SearchIcon />
           タグ検索
         </button>
-      </div>
+      </SectionCard>
     </section>
   );
 };

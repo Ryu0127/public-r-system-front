@@ -1,5 +1,6 @@
 import React from 'react';
 import { HomeFeature } from 'hooks/api/home/useHomeFeaturesGetApi';
+import SectionTitle from 'components/molecules/SectionTitle';
 
 // アイコンコンポーネント
 const HashIcon = () => (
@@ -85,15 +86,7 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({ features }) => {
   return (
     <section className="space-y-6 animate-fade-in" style={{ animationDelay: '0.15s', marginTop: '60px' }}>
       {/* セクションタイトル */}
-      <div className="text-center space-y-4">
-        <h2
-          className="text-4xl md:text-5xl font-bold text-gray-800"
-          style={{ fontFamily: "'Playfair Display', serif" }}
-        >
-          ✦Key Features
-        </h2>
-        <span className="text-gray-600 text-lg font-light">主な機能</span>
-      </div>
+      <SectionTitle en="Key Features" ja="主な機能" />
 
       {/* 機能カード */}
       <div className="grid md:grid-cols-3 gap-8">

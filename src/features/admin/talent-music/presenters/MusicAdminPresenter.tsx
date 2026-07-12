@@ -4,6 +4,7 @@ import { AdminMusic, MUSIC_TYPE_LABELS } from '../../talent-music-edit/types';
 import { MusicType } from '../../../talent-music/types';
 import MusicListTable from '../components/MusicListTable';
 import { API_ENDPOINTS, getApiHeaders } from '../../../../config/api';
+import Spinner from 'components/atoms/Spinner';
 
 interface MusicAdminPresenterProps {
   musicList: AdminMusic[];
@@ -181,7 +182,7 @@ const MusicAdminPresenter: React.FC<MusicAdminPresenterProps> = ({
         {/* ローディング */}
         {loading && (
           <div className="text-center py-8">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+            <Spinner sizeClass="h-8 w-8" borderClass="border-b-2 border-blue-500" className="inline-block" />
             <p className="mt-2 text-gray-600">読み込み中...</p>
           </div>
         )}

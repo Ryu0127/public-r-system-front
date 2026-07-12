@@ -1,5 +1,6 @@
 import React from 'react';
 import { HomeChangeLog } from 'hooks/api/home/useHomeChangeLogsGetApi';
+import SectionTitle from 'components/molecules/SectionTitle';
 
 // 日付フォーマット
 const formatDate = (dateString: string) => {
@@ -15,15 +16,7 @@ const ChangeLogsSection: React.FC<ChangeLogsSectionProps> = ({ changeLogs }) => 
   return (
     <section className="space-y-12 animate-fade-in" style={{ animationDelay: '0.3s' }}>
       {/* セクションタイトル */}
-      <div className="text-center">
-        <h2
-          className="text-4xl md:text-5xl font-bold text-gray-800"
-          style={{ fontFamily: "'Playfair Display', serif" }}
-        >
-          ✦Change history
-        </h2>
-        <span className="text-gray-600 text-lg font-light">変更履歴</span>
-      </div>
+      <SectionTitle en="Change history" ja="変更履歴" />
 
       {/* 更新履歴カード */}
       <div className="bg-white/60 backdrop-blur-sm rounded-3xl p-8 md:p-12 border border-gray-200 shadow-xl space-y-8">

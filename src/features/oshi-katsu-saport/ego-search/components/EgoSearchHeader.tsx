@@ -1,5 +1,5 @@
 import React from 'react';
-import PageHeader from 'components/PageHeader';
+import PageHeader from 'components/organisms/PageHeader';
 
 const SearchBadgeIcon = () => (
   <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
