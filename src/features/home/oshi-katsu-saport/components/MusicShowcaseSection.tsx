@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Music } from 'features/talent-music/types';
 import SectionTitle from 'components/molecules/SectionTitle';
 
@@ -9,6 +9,11 @@ const YOUTUBE_VIDEO_URL = (videoId: string) =>
   `https://www.youtube.com/watch?v=${videoId}`;
 
 const MUSIC_LIST_PATH = '/music';
+
+/** 1枚分のスライド量: カード幅 w-64 (256px) + gap-6 (24px) */
+const CARD_STEP = 280;
+/** 自動スクロール速度 (px/秒) */
+const AUTO_SCROLL_SPEED = 70;
 
 // 楽曲タイプバッジのスタイル
 const typeBadgeClasses: { [key: string]: string } = {
@@ -74,30 +79,147 @@ interface MusicShowcaseSectionProps {
 }
 
 const MusicShowcaseSection: React.FC<MusicShowcaseSectionProps> = ({ musicList }) => {
+  const trackRef = useRef<HTMLDivElement>(null);
+  /** 現在のスクロール位置 (px) */
+  const positionRef = useRef(0);
+  /** ボタン押下によるスライドの残り移動量 (px) */
+  const tweenRemainingRef = useRef(0);
+  /** ホバー中は自動スクロールを一時停止 */
+  const isHoveredRef = useRef(false);
+  /** スライドボタンの表示制御（カード側の group-hover と干渉しないよう state で管理） */
+  const [isHovered, setIsHovered] = useState(false);
+  /**
+   * リストの複製数。曲数が少なくても「画面幅 + 1セット分」を覆えるように
+   * 画面幅から計算する（足りないとループの巻き戻しで空白が見えてしまう）
+   */
+  const [repeatCount, setRepeatCount] = useState(2);
+  const repeatCountRef = useRef(repeatCount);
+  repeatCountRef.current = repeatCount;
+
+  // 1セット分の幅を測り、必要な複製数を計算（リサイズ時も再計算）
+  useEffect(() => {
+    if (musicList.length === 0) return;
+
+    const compute = () => {
+      const track = trackRef.current;
+      if (!track || track.children.length <= musicList.length) return;
+      const first = track.children[0] as HTMLElement;
+      const secondSetStart = track.children[musicList.length] as HTMLElement;
+      const setWidth = secondSetStart.offsetLeft - first.offsetLeft;
+      if (setWidth <= 0) return;
+      const needed = Math.max(2, Math.ceil(window.innerWidth / setWidth) + 1);
+      setRepeatCount((prev) => (prev === needed ? prev : needed));
+    };
+
+    compute();
+    window.addEventListener('resize', compute);
+    return () => window.removeEventListener('resize', compute);
+  }, [musicList.length]);
+
+  // 自動スクロール + ボタンスライドを requestAnimationFrame で駆動
+  // （リストを複数セット並べ、1セット分を超えたら巻き戻して無限ループに見せる）
+  useEffect(() => {
+    if (musicList.length === 0) return;
+
+    let rafId: number;
+    let lastTime = performance.now();
+
+    const step = (now: number) => {
+      const dt = Math.min((now - lastTime) / 1000, 0.1);
+      lastTime = now;
+
+      const track = trackRef.current;
+      if (track) {
+        const setWidth = track.scrollWidth / repeatCountRef.current;
+        if (setWidth > 0) {
+          if (tweenRemainingRef.current !== 0) {
+            // ボタン押下分をイージングしながら消化
+            let delta = tweenRemainingRef.current * Math.min(1, dt * 8);
+            if (Math.abs(tweenRemainingRef.current) < 1) {
+              delta = tweenRemainingRef.current;
+            }
+            positionRef.current += delta;
+            tweenRemainingRef.current -= delta;
+          } else if (!isHoveredRef.current) {
+            positionRef.current += AUTO_SCROLL_SPEED * dt;
+          }
+
+          // 1セット分でループ（負方向へのスライドにも対応）
+          positionRef.current =
+            ((positionRef.current % setWidth) + setWidth) % setWidth;
+          track.style.transform = `translateX(${-positionRef.current}px)`;
+        }
+      }
+      rafId = requestAnimationFrame(step);
+    };
+
+    rafId = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(rafId);
+  }, [musicList.length]);
+
   if (musicList.length === 0) {
     return null;
   }
+
+  const slide = (direction: 1 | -1) => {
+    tweenRemainingRef.current += direction * CARD_STEP;
+  };
 
   return (
     <section className="space-y-10 animate-fade-in" style={{ animationDelay: '0.1s' }}>
       {/* セクションタイトル */}
       <SectionTitle en="Music" ja="楽曲ピックアップ" />
 
-      {/* 自動横スクロールマーキー */}
-      <div className="marquee-container relative overflow-hidden py-2">
-        {/* 左右のフェード */}
-        <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-white/90 to-transparent z-10 pointer-events-none" />
-        <div className="absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-white/90 to-transparent z-10 pointer-events-none" />
+      {/* 自動横スクロールカルーセル（画面幅いっぱいに表示） */}
+      <div
+        className="relative left-1/2 -ml-[50vw] w-screen"
+        onMouseEnter={() => { isHoveredRef.current = true; setIsHovered(true); }}
+        onMouseLeave={() => { isHoveredRef.current = false; setIsHovered(false); }}
+      >
+        <div className="relative overflow-hidden py-2">
+          {/* 左右のフェード */}
+          <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-white/90 to-transparent z-10 pointer-events-none" />
+          <div className="absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-white/90 to-transparent z-10 pointer-events-none" />
 
-        {/* トラック（2セット並べて半分だけ移動し、無限ループに見せる） */}
-        <div className="animate-marquee flex gap-6 w-max">
-          {musicList.map((music) => (
-            <ShowcaseCard key={`first-${music.id}`} music={music} />
-          ))}
-          {musicList.map((music) => (
-            <ShowcaseCard key={`second-${music.id}`} music={music} ariaHidden />
-          ))}
+          {/* トラック（必要セット数だけ複製して無限ループに見せる） */}
+          <div ref={trackRef} className="flex gap-6 w-max will-change-transform">
+            {Array.from({ length: repeatCount }, (_, setIndex) =>
+              musicList.map((music) => (
+                <ShowcaseCard
+                  key={`${setIndex}-${music.id}`}
+                  music={music}
+                  ariaHidden={setIndex > 0}
+                />
+              ))
+            )}
+          </div>
         </div>
+
+        {/* 左右スライドボタン（ホバー時に表示。タッチ端末では常時表示） */}
+        <button
+          type="button"
+          aria-label="前の楽曲へスライド"
+          onClick={() => slide(-1)}
+          className={`absolute left-4 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-white/90 backdrop-blur-sm border border-gray-200 shadow-lg flex items-center justify-center text-gray-700 hover:bg-white hover:text-gray-900 hover:scale-110 active:scale-95 transition-all duration-200 opacity-100 md:focus-visible:opacity-100 ${
+            isHovered ? 'md:opacity-100' : 'md:opacity-0'
+          }`}
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        <button
+          type="button"
+          aria-label="次の楽曲へスライド"
+          onClick={() => slide(1)}
+          className={`absolute right-4 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-white/90 backdrop-blur-sm border border-gray-200 shadow-lg flex items-center justify-center text-gray-700 hover:bg-white hover:text-gray-900 hover:scale-110 active:scale-95 transition-all duration-200 opacity-100 md:focus-visible:opacity-100 ${
+            isHovered ? 'md:opacity-100' : 'md:opacity-0'
+          }`}
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
       </div>
 
       {/* 楽曲一覧への導線 */}
