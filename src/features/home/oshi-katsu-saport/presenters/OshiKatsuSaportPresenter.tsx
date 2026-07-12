@@ -6,6 +6,7 @@ import MusicShowcaseSection from '../components/MusicShowcaseSection';
 import FeaturesSection from '../components/FeaturesSection';
 import ChangeLogsSection from '../components/ChangeLogsSection';
 import { OshiKatsuSaportState, OshiKatsuSaportActions } from '../hooks/useOshiKatsuSaportState';
+import { consumeSkipHomeLoading } from 'utils/homeTransition';
 
 interface OshiKatsuSaportPresenterProps {
   state: OshiKatsuSaportState;
@@ -24,7 +25,10 @@ const OshiKatsuSaportPresenter: React.FC<OshiKatsuSaportPresenterProps> = ({
   state,
   actions,
 }) => {
-  const [introPhase, setIntroPhase] = useState<'loading' | IntroPhase>('loading');
+  // サイト内の「ホームに戻る」からの遷移時はロード画面・イントロ演出をスキップ
+  const [introPhase, setIntroPhase] = useState<'loading' | IntroPhase>(() =>
+    consumeSkipHomeLoading() ? 'done' : 'loading'
+  );
 
   // イントロ演出のフェーズを順番に進める
   useEffect(() => {

@@ -9,9 +9,12 @@ interface TalentSelectionModalProps {
   groups: MusicTalentGroup[];
   selectedTalent: MusicTalent | null;
   searchQuery: string;
+  /** モーダルタイトル（デフォルト: タレント・グループ選択） */
+  title?: string;
   onSearchQueryChange: (query: string) => void;
   onTalentSelect: (talent: MusicTalent) => void;
-  onGroupSelect: (group: MusicTalentGroup) => void;
+  /** 未指定の場合は「グループを選択」ボタンを表示しない */
+  onGroupSelect?: (group: MusicTalentGroup) => void;
   onClose: () => void;
 }
 
@@ -40,6 +43,7 @@ export const TalentSelectionModal: React.FC<TalentSelectionModalProps> = ({
   groups,
   selectedTalent,
   searchQuery,
+  title = 'タレント・グループ選択',
   onSearchQueryChange,
   onTalentSelect,
   onGroupSelect,
@@ -157,7 +161,7 @@ export const TalentSelectionModal: React.FC<TalentSelectionModalProps> = ({
       <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[85vh] flex flex-col shadow-2xl">
         {/* ヘッダー */}
         <div className="flex-shrink-0 border-b border-gray-200 px-6 py-4 flex justify-between items-center">
-          <h2 className="text-xl font-bold text-gray-900">タレント・グループ選択</h2>
+          <h2 className="text-xl font-bold text-gray-900">{title}</h2>
           <button
             onClick={onClose}
             className="w-8 h-8 flex items-center justify-center rounded-full text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
@@ -206,12 +210,14 @@ export const TalentSelectionModal: React.FC<TalentSelectionModalProps> = ({
                   <div className="flex items-center gap-3 mb-3">
                     <span className="text-sm font-bold text-gray-700">{group.groupName}</span>
                     <div className="flex-1 h-px bg-gray-200" />
-                    <button
-                      onClick={() => onGroupSelect(group)}
-                      className="text-xs text-red-500 hover:text-red-700 hover:underline transition-colors whitespace-nowrap"
-                    >
-                      グループを選択
-                    </button>
+                    {onGroupSelect && (
+                      <button
+                        onClick={() => onGroupSelect(group)}
+                        className="text-xs text-red-500 hover:text-red-700 hover:underline transition-colors whitespace-nowrap"
+                      >
+                        グループを選択
+                      </button>
+                    )}
                   </div>
                   {/* タレントグリッド */}
                   <div className="grid grid-cols-3 gap-3">

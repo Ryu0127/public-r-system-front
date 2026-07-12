@@ -7,7 +7,6 @@ import { EventHashtagsSection } from '../components/EventHashtagsSection';
 import { HashtagPostMode } from '../components/HashtagPostMode';
 import { HashtagSearchMode } from '../components/HashtagSearchMode';
 import { HelpModal } from '../components/HelpModal';
-import { Talent } from 'hooks/api/oshi-katsu-saport/useTalentsGetApi';
 import { HashtagSearchEmptyState } from '../components/HashtagSearchEmptyState';
 
 interface HashtagSearchPresenterProps {
@@ -67,24 +66,16 @@ export const HashtagSearchPresenter: React.FC<HashtagSearchPresenterProps> = ({
           onModeChange={actions.setMode}
         />
 
-        {/* タレント選択コンボボックス */}
+        {/* タレント選択（楽曲一覧と共通のモーダル選択） */}
         <TalentSelector
           talents={state.data.talents}
           selectedTalent={state.data.selectedTalent}
           searchQuery={state.ui.talentSearchQuery}
           isDropdownOpen={state.config.isDropdownOpen}
           onSearchQueryChange={actions.setTalentSearchQuery}
-          onTalentSelect={(talent: Talent) => actions.selectTalent({
-            id: talent.id,
-            talentName: talent.talentName,
-            talentNameEn: talent.talentNameEn,
-            talentSlug: (talent as any).talentSlug,
-            talentNameJoin: talent.talentName + '（' + talent.talentNameEn + '）',
-            groupName: talent.groupName,
-            groupId: talent.groupId,
-            twitterAccounts: talent.twitterAccounts,
-          })}
+          onTalentSelect={actions.selectTalent}
           onDropdownOpenChange={actions.setIsDropdownOpen}
+          onReset={actions.clearTalentSelection}
         />
 
         {/* タレント選択済み */}

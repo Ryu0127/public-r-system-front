@@ -35,6 +35,7 @@ export interface Talent {
   groupName: string;
   groupId: number;
   twitterAccounts: string[];
+  iconImgUrl?: string;
 }
 
 export interface HashtagSearchActions {
@@ -44,6 +45,7 @@ export interface HashtagSearchActions {
 
   // タレント選択
   selectTalent: (talent: Talent) => void;
+  clearTalentSelection: () => void;
 
   // モード切り替え
   setMode: (mode: 'post' | 'search') => void;
@@ -174,6 +176,7 @@ export const useHashtagSearchState = (
             groupName: talent.groupName,
             groupId: talent.groupId,
             twitterAccounts: talent.twitterAccounts,
+            iconImgUrl: talent.iconImgUrl,
           })) ?? []),
         }));
       } catch (error) {
@@ -231,6 +234,33 @@ export const useHashtagSearchState = (
       }));
       actions.fetchTalentHashtags(talent.id);
       // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [setState]),
+
+    /**
+     * タレント選択のリセット
+     */
+    clearTalentSelection: useCallback(() => {
+      setState(prev => ({
+        ...prev,
+        data: {
+          ...prev.data,
+          selectedTalent: null,
+          hashtags: [],
+          eventHashtags: [],
+        },
+        ui: {
+          ...prev.ui,
+          selectedTags: [],
+          selectedEventHashtags: [],
+          searchQuery: '',
+          talentSearchQuery: '',
+        },
+        config: {
+          ...prev.config,
+          isDropdownOpen: false,
+        },
+      }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [setState]),
 
     /**
