@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useSearchParams } from 'react-router-dom';
 import { TalentMusicState, useTalentMusicState, TalentMusicActions } from '../hooks/useTalentMusicState';
@@ -9,13 +9,16 @@ const initialState: TalentMusicState = {
   config: {
     isLoading: true,
     isMusicLoading: false,
+    isMusicLoadingMore: false,
     isDropdownOpen: false,
     activeFilter: 'all',
+    hasMoreMusic: false,
   },
   data: {
     talents: [],
     groups: [],
     musicList: [],
+    musicPagination: null,
     selectedTalent: null,
     selectedGroup: null,
   },
@@ -32,34 +35,44 @@ const TalentMusicContainer: React.FC = () => {
   const { actions } = useTalentMusicState(state, setState);
   const [searchParams, setSearchParams] = useSearchParams();
   const talentQuery = useMemo(() => (searchParams.get('talent') ?? '').trim(), [searchParams]);
-  const groupQuery  = useMemo(() => (searchParams.get('group')  ?? '').trim(), [searchParams]);
+  const groupQuery = useMemo(() => (searchParams.get('group') ?? '').trim(), [searchParams]);
+  const urlSelectionAppliedRef = useRef(false);
 
   useEffect(() => {
     actions.loadData();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // URLの ?talent=...（slug）がある場合、完全一致するタレントを自動選択して楽曲を取得
+  // URL に talent/group がある場合のみ、一覧取得後に選択を適用（未指定時は loadData 内で全件取得済み）
   useEffect(() => {
     if (state.config.isLoading) return;
-    if (!talentQuery) return;
-    if (state.data.selectedTalent?.talentSlug === talentQuery) return;
+    if (urlSelectionAppliedRef.current) return;
 
-    const found = state.data.talents.find((t) => t.talentSlug === talentQuery);
-    if (!found) return;
-    actions.selectTalent(found);
-  }, [state.config.isLoading, state.data.selectedTalent, state.data.talents, talentQuery, actions]);
+    if (talentQuery) {
+      const found = state.data.talents.find((t) => t.talentSlug === talentQuery);
+      if (!found) return;
+      urlSelectionAppliedRef.current = true;
+      actions.selectTalent(found);
+      return;
+    }
 
-  // URLの ?group=...（slug）がある場合、一致するグループを自動選択して楽曲を取得
-  useEffect(() => {
-    if (state.config.isLoading) return;
-    if (!groupQuery) return;
-    if (toGroupSlug(state.data.selectedGroup?.groupNameEn ?? '') === groupQuery) return;
+    if (groupQuery) {
+      const found = state.data.groups.find((g) => toGroupSlug(g.groupNameEn) === groupQuery);
+      if (!found) return;
+      urlSelectionAppliedRef.current = true;
+      actions.selectGroup(found);
+      return;
+    }
 
-    const found = state.data.groups.find((g) => toGroupSlug(g.groupNameEn) === groupQuery);
-    if (!found) return;
-    actions.selectGroup(found);
-  }, [state.config.isLoading, state.data.selectedGroup, state.data.groups, groupQuery, actions]);
+    urlSelectionAppliedRef.current = true;
+  }, [
+    state.config.isLoading,
+    state.data.talents,
+    state.data.groups,
+    talentQuery,
+    groupQuery,
+    actions,
+  ]);
 
   const actionsWithUrl: TalentMusicActions = useMemo(() => {
     return {
@@ -71,6 +84,10 @@ const TalentMusicContainer: React.FC = () => {
       selectGroup: (group) => {
         setSearchParams({ group: toGroupSlug(group.groupNameEn) });
         actions.selectGroup(group);
+      },
+      clearSelection: () => {
+        setSearchParams({});
+        actions.clearSelection();
       },
     };
   }, [actions, setSearchParams]);

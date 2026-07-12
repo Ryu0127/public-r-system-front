@@ -1,12 +1,18 @@
 import { useCallback } from 'react';
-import type { Music, MusicType, TalentMusicApiResponse } from 'features/talent-music/types';
+import type {
+  Music,
+  MusicType,
+  TalentMusicApiResponse,
+  TalentMusicFetchParams,
+  TalentMusicPagination,
+} from 'features/talent-music/types';
 
 export type { TalentMusicApiResponse } from 'features/talent-music/types';
 
+export const TALENT_MUSIC_DEFAULT_PER_PAGE = 20;
+
 // モックデータ: 楽曲一覧（API URL 未設定時のみ）
-// ※ YouTubeのビデオIDはサンプルです。実際のAPIが実装されたら差し替えてください。
 const mockMusicList: Music[] = [
-  // ときのそら
   {
     id: 101,
     title: 'Watashi wa Idol!!!',
@@ -52,7 +58,6 @@ const mockMusicList: Music[] = [
     releaseDate: '2025-01-01',
     description: '複数 talentIds のサンプル',
   },
-  // ロボ子さん
   {
     id: 201,
     title: 'ロボ子さんのうた',
@@ -71,7 +76,6 @@ const mockMusicList: Music[] = [
     releaseDate: '2022-02-14',
     description: 'カバー曲',
   },
-  // さくらみこ
   {
     id: 301,
     title: 'だいすき！ (オリジナル曲)',
@@ -99,7 +103,6 @@ const mockMusicList: Music[] = [
     releaseDate: '2023-04-01',
     description: 'さくらみこ 2ndオリジナル曲',
   },
-  // 白上フブキ
   {
     id: 401,
     title: 'Say！ダーリン！！',
@@ -127,7 +130,6 @@ const mockMusicList: Music[] = [
     releaseDate: '2022-06-10',
     description: '白上フブキ オリジナル曲',
   },
-  // 湊あくあ
   {
     id: 501,
     title: 'Dreamy Night',
@@ -146,7 +148,6 @@ const mockMusicList: Music[] = [
     releaseDate: '2021-11-20',
     description: 'カバー曲',
   },
-  // 宝鐘マリン
   {
     id: 601,
     title: 'AHOY!! 我ら宝鐘海賊団☆',
@@ -203,74 +204,100 @@ export function normalizeTalentIdsForMusicApi(talentIds: (number | string)[]): n
   return out;
 }
 
-const buildMockResponse = (talentIds: number[]): TalentMusicApiResponse => {
-  const idSet = new Set(normalizeTalentIdsForMusicApi(talentIds));
-  const musicList = mockMusicList
-    .filter((m) => m.talentIds.some((tid) => idSet.has(tid)))
-    .slice()
-    .sort((a, b) => b.releaseDate.localeCompare(a.releaseDate));
+function buildPagination(
+  total: number,
+  page: number,
+  perPage: number
+): TalentMusicPagination {
+  const lastPage = Math.max(1, Math.ceil(total / perPage) || 1);
+  const currentPage = Math.min(Math.max(page, 1), lastPage);
+  const from = total > 0 ? (currentPage - 1) * perPage + 1 : null;
+  const to = total > 0 ? Math.min(currentPage * perPage, total) : null;
+  return {
+    total,
+    perPage,
+    currentPage,
+    lastPage,
+    from,
+    to,
+  };
+}
+
+const buildMockResponse = (params: TalentMusicFetchParams): TalentMusicApiResponse => {
+  const page = Math.max(1, params.page ?? 1);
+  const perPage = Math.max(1, params.perPage ?? TALENT_MUSIC_DEFAULT_PER_PAGE);
+  const talentSlug = params.talentSlug?.trim() ?? '';
+  const groupSlug = params.groupSlug?.trim() ?? '';
+
+  // モックでは slug フィルタの実データがないため、talent/group 指定時は空、未指定時は全件をページング
+  let list = mockMusicList.slice().sort((a, b) => b.releaseDate.localeCompare(a.releaseDate));
+  if (talentSlug || groupSlug) {
+    list = [];
+  }
+
+  const pagination = buildPagination(list.length, page, perPage);
+  const start = (pagination.currentPage - 1) * perPage;
+  const musicList = list.slice(start, start + perPage);
+
   return {
     status: true,
-    data: { musicList },
+    data: { musicList, pagination },
   };
 };
 
-/** 本番・明示設定: REACT_APP_API_DOMAIN（例: https://example.com/api）。開発: package.json の proxy 経由で相対パス */
-function resolveTalentMusicApiUrl(talentIds: number[]): string | null {
+function resolveTalentMusicBaseUrl(): string | null {
+  const base = process.env.REACT_APP_API_DOMAIN?.trim();
+  if (base) {
+    return `${base.replace(/\/$/, '')}/oshi-katsu-saport/talent-music`;
+  }
+  if (process.env.NODE_ENV === 'development') {
+    return `/api/oshi-katsu-saport/talent-music`;
+  }
+  return null;
+}
+
+function resolveTalentMusicApiUrl(params: TalentMusicFetchParams): string | null {
+  const baseUrl = resolveTalentMusicBaseUrl();
+  if (!baseUrl) {
+    return null;
+  }
+
+  const query = new URLSearchParams();
+  const talentSlug = params.talentSlug?.trim() ?? '';
+  const groupSlug = params.groupSlug?.trim() ?? '';
+  const page = Math.max(1, params.page ?? 1);
+  const perPage = Math.max(1, params.perPage ?? TALENT_MUSIC_DEFAULT_PER_PAGE);
+
+  if (talentSlug) {
+    query.set('talent', talentSlug);
+  }
+  if (groupSlug) {
+    query.set('group', groupSlug);
+  }
+  query.set('page', String(page));
+  query.set('perPage', String(perPage));
+
+  return `${baseUrl}?${query.toString()}`;
+}
+
+/** 後方互換: talent_ids クエリ URL */
+function resolveTalentMusicApiUrlByTalentIds(talentIds: number[]): string | null {
   const ids = normalizeTalentIdsForMusicApi(talentIds);
   if (!ids.length) {
     return null;
   }
+  const baseUrl = resolveTalentMusicBaseUrl();
+  if (!baseUrl) {
+    return null;
+  }
   const query = `talent_ids=${encodeURIComponent(ids.map(String).join(','))}`;
-  const base = process.env.REACT_APP_API_DOMAIN?.trim();
-  if (base) {
-    return `${base.replace(/\/$/, '')}/oshi-katsu-saport/talent-music?${query}`;
-  }
-  if (process.env.NODE_ENV === 'development') {
-    return `/api/oshi-katsu-saport/talent-music?${query}`;
-  }
-  return null;
-}
-
-/** クエリ talent 用（完全一致想定）。空は null */
-function resolveTalentMusicApiUrlByTalentSlug(talentSlug: string): string | null {
-  const slug = talentSlug.trim();
-  if (!slug) {
-    return null;
-  }
-  const query = `talent=${encodeURIComponent(slug)}`;
-  const base = process.env.REACT_APP_API_DOMAIN?.trim();
-  if (base) {
-    return `${base.replace(/\/$/, '')}/oshi-katsu-saport/talent-music?${query}`;
-  }
-  if (process.env.NODE_ENV === 'development') {
-    return `/api/oshi-katsu-saport/talent-music?${query}`;
-  }
-  return null;
-}
-
-/** クエリ group 用。空は null */
-function resolveTalentMusicApiUrlByGroupSlug(groupSlug: string): string | null {
-  const slug = groupSlug.trim();
-  if (!slug) {
-    return null;
-  }
-  const query = `group=${encodeURIComponent(slug)}`;
-  const base = process.env.REACT_APP_API_DOMAIN?.trim();
-  if (base) {
-    return `${base.replace(/\/$/, '')}/oshi-katsu-saport/talent-music?${query}`;
-  }
-  if (process.env.NODE_ENV === 'development') {
-    return `/api/oshi-katsu-saport/talent-music?${query}`;
-  }
-  return null;
+  return `${baseUrl}?${query}`;
 }
 
 function normalizeMusicType(raw: unknown): MusicType {
   return raw === 'cover' ? 'cover' : 'original';
 }
 
-/** API の talentIds（数値配列）。旧文字列・単一 talentId も解釈 */
 function parseTalentIdsFromMusicRow(m: Record<string, unknown>): number[] {
   const raw = m.talentIds ?? m.talent_ids;
   if (Array.isArray(raw)) {
@@ -300,6 +327,29 @@ function asMusicListArray(raw: unknown): unknown[] {
     return Object.values(raw as Record<string, unknown>);
   }
   return [];
+}
+
+function normalizePagination(raw: unknown, musicListLength: number): TalentMusicPagination {
+  if (raw && typeof raw === 'object') {
+    const p = raw as Record<string, unknown>;
+    const total = coerceFiniteNumber(p.total) ?? musicListLength;
+    const perPage = coerceFiniteNumber(p.perPage) ?? Math.max(musicListLength, 1);
+    const currentPage = coerceFiniteNumber(p.currentPage) ?? 1;
+    const lastPage = coerceFiniteNumber(p.lastPage) ?? 1;
+    const from = coerceFiniteNumber(p.from);
+    const to = coerceFiniteNumber(p.to);
+    return {
+      total,
+      perPage,
+      currentPage,
+      lastPage,
+      from,
+      to,
+    };
+  }
+
+  // ページネーション未対応の旧レスポンス互換
+  return buildPagination(musicListLength, 1, Math.max(musicListLength, 1));
 }
 
 function normalizeTalentMusicResponse(raw: unknown): TalentMusicApiResponse | null {
@@ -332,7 +382,13 @@ function normalizeTalentMusicResponse(raw: unknown): TalentMusicApiResponse | nu
     return row;
   });
 
-  return { status: true, data: { musicList } };
+  return {
+    status: true,
+    data: {
+      musicList,
+      pagination: normalizePagination(d.pagination, musicList.length),
+    },
+  };
 }
 
 async function requestTalentMusic(url: string): Promise<TalentMusicApiResponse | null> {
@@ -363,12 +419,32 @@ async function requestTalentMusic(url: string): Promise<TalentMusicApiResponse |
 }
 
 /**
- * GET …/oshi-katsu-saport/talent-music?talent_ids=1,2,…
- * - 複数タレント ID を渡せる（現状 UI は単一選択のため呼び出し側は1要素の配列でよい）
- * - REACT_APP_API_DOMAIN がある場合は絶対URLで取得
- * - 開発時のみ相対パス（proxy 想定）。URL が組めない場合のみモック
+ * GET …/oshi-katsu-saport/talent-music
+ * - talent / group は任意（未指定で全件）
+ * - page / perPage でページネーション
  */
 export const useTalentMusicGetApi = () => {
+  const executeTalentMusicGetByParams = useCallback(async (params: TalentMusicFetchParams = {}): Promise<{
+    apiResponse: TalentMusicApiResponse | null;
+    error: unknown;
+  }> => {
+    const url = resolveTalentMusicApiUrl(params);
+    if (!url) {
+      return { apiResponse: buildMockResponse(params), error: null };
+    }
+
+    try {
+      const apiResponse = await requestTalentMusic(url);
+      if (apiResponse) {
+        return { apiResponse, error: null };
+      }
+      return { apiResponse: null, error: new Error('Talent music API failed') };
+    } catch (error) {
+      console.error('Talent music API Error:', error);
+      return { apiResponse: null, error };
+    }
+  }, []);
+
   const executeTalentMusicGet = useCallback(async (talentIds: (number | string)[]): Promise<{
     apiResponse: TalentMusicApiResponse | null;
     error: unknown;
@@ -378,9 +454,12 @@ export const useTalentMusicGetApi = () => {
       return { apiResponse: null, error: new Error('At least one talentId is required') };
     }
 
-    const url = resolveTalentMusicApiUrl(ids);
+    const url = resolveTalentMusicApiUrlByTalentIds(ids);
     if (!url) {
-      return { apiResponse: buildMockResponse(ids), error: null };
+      return {
+        apiResponse: buildMockResponse({ page: 1, perPage: TALENT_MUSIC_DEFAULT_PER_PAGE }),
+        error: null,
+      };
     }
 
     try {
@@ -395,48 +474,46 @@ export const useTalentMusicGetApi = () => {
     }
   }, []);
 
-  const executeTalentMusicGetByTalentSlug = useCallback(async (talentSlug: string): Promise<{
+  const executeTalentMusicGetByTalentSlug = useCallback(async (
+    talentSlug: string,
+    options?: { page?: number; perPage?: number }
+  ): Promise<{
     apiResponse: TalentMusicApiResponse | null;
     error: unknown;
   }> => {
-    const url = resolveTalentMusicApiUrlByTalentSlug(talentSlug);
-    if (!url) {
+    const slug = talentSlug.trim();
+    if (!slug) {
       return { apiResponse: null, error: new Error('talent is required') };
     }
+    return executeTalentMusicGetByParams({
+      talentSlug: slug,
+      page: options?.page,
+      perPage: options?.perPage,
+    });
+  }, [executeTalentMusicGetByParams]);
 
-    try {
-      const apiResponse = await requestTalentMusic(url);
-      if (apiResponse) {
-        return { apiResponse, error: null };
-      }
-      return { apiResponse: null, error: new Error('Talent music API failed') };
-    } catch (error) {
-      console.error('Talent music API Error:', error);
-      return { apiResponse: null, error };
-    }
-  }, []);
-
-  const executeTalentMusicGetByGroupSlug = useCallback(async (groupSlug: string): Promise<{
+  const executeTalentMusicGetByGroupSlug = useCallback(async (
+    groupSlug: string,
+    options?: { page?: number; perPage?: number }
+  ): Promise<{
     apiResponse: TalentMusicApiResponse | null;
     error: unknown;
   }> => {
-    const url = resolveTalentMusicApiUrlByGroupSlug(groupSlug);
-    if (!url) {
-      // モック環境ではグループ単位の楽曲データがないため空リストを返す
-      return { apiResponse: { status: true, data: { musicList: [] } }, error: null };
+    const slug = groupSlug.trim();
+    if (!slug) {
+      return { apiResponse: null, error: new Error('group is required') };
     }
+    return executeTalentMusicGetByParams({
+      groupSlug: slug,
+      page: options?.page,
+      perPage: options?.perPage,
+    });
+  }, [executeTalentMusicGetByParams]);
 
-    try {
-      const apiResponse = await requestTalentMusic(url);
-      if (apiResponse) {
-        return { apiResponse, error: null };
-      }
-      return { apiResponse: null, error: new Error('Talent music API failed') };
-    } catch (error) {
-      console.error('Talent music API Error:', error);
-      return { apiResponse: null, error };
-    }
-  }, []);
-
-  return { executeTalentMusicGet, executeTalentMusicGetByTalentSlug, executeTalentMusicGetByGroupSlug };
+  return {
+    executeTalentMusicGet,
+    executeTalentMusicGetByParams,
+    executeTalentMusicGetByTalentSlug,
+    executeTalentMusicGetByGroupSlug,
+  };
 };

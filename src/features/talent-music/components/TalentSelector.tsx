@@ -5,12 +5,14 @@ interface TalentSelectorProps {
   selectedTalent: MusicTalent | null;
   selectedGroup: MusicTalentGroup | null;
   onOpenModal: () => void;
+  onReset: () => void;
 }
 
 export const TalentSelector: React.FC<TalentSelectorProps> = ({
   selectedTalent,
   selectedGroup,
   onOpenModal,
+  onReset,
 }) => {
   const selectionLabel = selectedTalent
     ? selectedTalent.talentNameJoin
@@ -28,9 +30,8 @@ export const TalentSelector: React.FC<TalentSelectorProps> = ({
           タレント・グループを選択
         </label>
 
-        <div className="flex items-center gap-3">
-          {/* 選択中表示エリア */}
-          <div className="flex-1 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm truncate">
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex-1 min-w-[12rem] px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm truncate">
             {selectionLabel ? (
               <span className="font-medium text-gray-800">{selectionLabel}</span>
             ) : (
@@ -38,8 +39,8 @@ export const TalentSelector: React.FC<TalentSelectorProps> = ({
             )}
           </div>
 
-          {/* モーダルを開くボタン */}
           <button
+            type="button"
             onClick={onOpenModal}
             className="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-red-500 to-pink-600 text-white rounded-xl font-medium hover:from-red-600 hover:to-pink-700 active:scale-95 transition-all duration-200 shadow-md hover:shadow-lg whitespace-nowrap"
           >
@@ -50,12 +51,22 @@ export const TalentSelector: React.FC<TalentSelectorProps> = ({
           </button>
         </div>
 
-        <p className="text-xs text-gray-500 mt-2">
-          選択中:{' '}
-          <span className="font-semibold text-red-500">
-            {selectionLabel ?? '未選択'}
-          </span>
-        </p>
+        <div className="mt-2 flex items-center justify-between gap-3">
+          <p className="text-xs text-gray-500">
+            選択中:{' '}
+            <span className="font-semibold text-gray-900">
+              {selectionLabel ?? '未選択'}
+            </span>
+          </p>
+
+          <button
+            type="button"
+            onClick={onReset}
+            className="text-xs font-medium text-blue-600 hover:text-blue-700 hover:underline underline-offset-2 transition-colors"
+          >
+            選択をリセット
+          </button>
+        </div>
       </div>
     </section>
   );
