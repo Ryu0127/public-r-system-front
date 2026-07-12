@@ -37,10 +37,27 @@ export interface MusicTalentGroup {
   talents: MusicTalent[];
 }
 
-/** GET …/oshi-katsu-saport/talent-music?talent_ids=… のレスポンス（複数タレントの楽曲をまとめて返しうる。タレント一覧は別API） */
+export interface TalentMusicPagination {
+  total: number;
+  perPage: number;
+  currentPage: number;
+  lastPage: number;
+  from: number | null;
+  to: number | null;
+}
+
+/** GET …/oshi-katsu-saport/talent-music のレスポンス */
 export interface TalentMusicApiResponse {
   status: boolean;
   data: {
     musicList: Music[];
+    pagination: TalentMusicPagination;
   };
+}
+
+export interface TalentMusicFetchParams {
+  talentSlug?: string;
+  groupSlug?: string;
+  page?: number;
+  perPage?: number;
 }
