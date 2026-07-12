@@ -1,6 +1,7 @@
 import React, { useLayoutEffect, useRef, useState } from 'react';
 
-const APP_TITLE = 'ホロリスの推し活サポート';
+/** タイトルの改行はこの区切り単位でのみ行う */
+const APP_TITLE_SEGMENTS = ['ホロリスの', '推し活', 'サポート'];
 
 /** イントロ演出のフェーズ（ロード完了後に順番に進行） */
 export type IntroPhase =
@@ -89,7 +90,11 @@ const HeroSection: React.FC<HeroSectionProps> = ({ introPhase }) => {
           willChange: 'transform',
         }}
       >
-        {APP_TITLE}
+        {APP_TITLE_SEGMENTS.map((segment) => (
+          <span key={segment} className="inline-block">
+            {segment}
+          </span>
+        ))}
       </h1>
 
       {/* サブタイトル（左から右に展開） */}
