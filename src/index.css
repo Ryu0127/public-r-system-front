@@ -72,6 +72,126 @@ code {
   }
 }
 
+/* ペンライトを左右に振る（ライブ会場風） */
+@keyframes penlight-wave {
+  0%, 100% {
+    transform: rotate(-22deg);
+  }
+  50% {
+    transform: rotate(22deg);
+  }
+}
+
+/* キラキラがゆっくり舞い上がる */
+@keyframes sparkle-rise {
+  0% {
+    transform: translateY(0) scale(0.8);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.7;
+  }
+  80% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateY(-120px) scale(1.1);
+    opacity: 0;
+  }
+}
+
+/* ふわっと弾んで登場 */
+@keyframes bounce-in {
+  0% {
+    transform: translateY(8px) scale(0.9);
+    opacity: 0;
+  }
+  60% {
+    transform: translateY(-3px) scale(1.03);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+/* 星がくるっと回りながら明滅 */
+@keyframes star-twinkle {
+  0%, 100% {
+    transform: rotate(0deg) scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: rotate(180deg) scale(1.25);
+    opacity: 1;
+  }
+}
+
+/* 横方向無限ループスクロール（トラックを2セット並べて半分だけ移動） */
+@keyframes marquee-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* グラデーション文字がゆっくり流れる */
+@keyframes gradient-shift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* ゆったり上下に浮遊 */
+@keyframes float-soft {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+/* 中央から左右に開くように出現（イントロ演出用） */
+@keyframes reveal-center-x {
+  0% {
+    clip-path: inset(0 50% 0 50%);
+  }
+  100% {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+/* 左から右に開くように出現（イントロ演出用） */
+@keyframes reveal-left-to-right {
+  0% {
+    clip-path: inset(0 100% 0 0);
+    opacity: 0.4;
+  }
+  100% {
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+  }
+}
+
+/* 下からせり上がりながら出現（イントロ演出用） */
+@keyframes slide-up-fade-in {
+  0% {
+    transform: translateY(60px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
 /* クラス定義 */
 .animate-float-elegant {
   animation: float-elegant ease-in-out infinite;
@@ -91,4 +211,51 @@ code {
 
 .animate-spin-slow {
   animation: spin-slow 12s linear infinite;
+}
+
+.animate-penlight-wave {
+  animation: penlight-wave 1.2s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+.animate-sparkle-rise {
+  animation: sparkle-rise ease-in-out infinite;
+}
+
+.animate-bounce-in {
+  animation: bounce-in 0.4s ease-out;
+}
+
+.animate-star-twinkle {
+  animation: star-twinkle 1.6s ease-in-out infinite;
+}
+
+.animate-marquee {
+  animation: marquee-scroll 40s linear infinite;
+}
+
+/* ホバー中はスクロールを一時停止（カードをじっくり見られるように） */
+.marquee-container:hover .animate-marquee {
+  animation-play-state: paused;
+}
+
+.animate-gradient-text {
+  background-size: 200% 200%;
+  animation: gradient-shift 6s ease-in-out infinite;
+}
+
+.animate-float-soft {
+  animation: float-soft 3s ease-in-out infinite;
+}
+
+.animate-reveal-center-x {
+  animation: reveal-center-x 0.8s ease-out both;
+}
+
+.animate-reveal-ltr {
+  animation: reveal-left-to-right 0.7s ease-out both;
+}
+
+.animate-slide-up-fade-in {
+  animation: slide-up-fade-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
