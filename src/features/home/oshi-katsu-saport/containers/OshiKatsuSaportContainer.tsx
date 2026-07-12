@@ -11,6 +11,7 @@ const initialState: OshiKatsuSaportState = {
     features: [],
     changeLogs: [],
     limitedTimeTopic: null,
+    musicList: [],
   },
 };
 

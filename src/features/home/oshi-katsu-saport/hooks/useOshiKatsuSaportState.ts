@@ -3,6 +3,7 @@ import { useOshiKatsuSaportApi } from './useOshiKatsuSaportApi';
 import { HomeFeature } from 'hooks/api/home/useHomeFeaturesGetApi';
 import { HomeChangeLog } from 'hooks/api/home/useHomeChangeLogsGetApi';
 import { HomeLimitedTimeTopic } from 'hooks/api/home/useHomeLimitedTimeTopicGetApi';
+import { Music } from 'features/talent-music/types';
 import { HOME_FEATURES, HOME_CHANGE_LOGS } from '../data/homeData';
 
 export interface OshiKatsuSaportState {
@@ -13,6 +14,8 @@ export interface OshiKatsuSaportState {
     features: HomeFeature[];
     changeLogs: HomeChangeLog[];
     limitedTimeTopic: HomeLimitedTimeTopic | null;
+    /** 楽曲ショーケース用の先頭数件 */
+    musicList: Music[];
   };
 }
 
@@ -53,12 +56,14 @@ const updateState = {
     prev: OshiKatsuSaportState,
     features: HomeFeature[],
     changeLogs: HomeChangeLog[],
-    limitedTimeTopic: HomeLimitedTimeTopic | null
+    limitedTimeTopic: HomeLimitedTimeTopic | null,
+    musicList: Music[]
   ) => ({
     data: {
       features: features,
       changeLogs: changeLogs,
       limitedTimeTopic: limitedTimeTopic,
+      musicList: musicList,
     },
   }),
 
@@ -99,8 +104,11 @@ export const useOshiKatsuSaportState = (
         // ローディング開始
         updateStateGroup.toLoading(setState, true);
 
-        // 期間限定トピックのみAPIから取得
-        const limitedTimeTopicResult = await api.executeHomeLimitedTimeTopicGet();
+        // 期間限定トピックと楽曲ショーケースをAPIから並列取得
+        const [limitedTimeTopicResult, musicResult] = await Promise.all([
+          api.executeHomeLimitedTimeTopicGet(),
+          api.executeHomeMusicGet(),
+        ]);
 
         // 静的データを使用
         const features = HOME_FEATURES;
@@ -114,7 +122,8 @@ export const useOshiKatsuSaportState = (
             prev,
             features,
             changeLogs,
-            limitedTimeTopicResult.data?.limitedTimeTopic ?? null
+            limitedTimeTopicResult.data?.limitedTimeTopic ?? null,
+            musicResult.data?.musicList ?? []
           ),
         }));
       } catch (error) {
