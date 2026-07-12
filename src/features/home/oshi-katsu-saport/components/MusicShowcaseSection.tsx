@@ -224,14 +224,14 @@ const MusicShowcaseSection: React.FC<MusicShowcaseSectionProps> = ({ musicList }
 
       {/* 楽曲一覧への導線 */}
       <div className="text-center">
-        <button
-          onClick={() => { window.location.href = MUSIC_LIST_PATH; }}
+        <a
+          href={MUSIC_LIST_PATH}
           className="group inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-rose-400 to-pink-500 text-white font-semibold rounded-full shadow-lg shadow-rose-500/30 hover:shadow-xl hover:shadow-rose-500/40 hover:scale-105 transition-all duration-300"
         >
           <span className="text-xl">♪</span>
           <span>楽曲一覧をもっと見る</span>
           <span className="group-hover:translate-x-1 transition-transform duration-300">→</span>
-        </button>
+        </a>
       </div>
     </section>
   );
