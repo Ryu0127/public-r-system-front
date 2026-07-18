@@ -1,10 +1,23 @@
 import {
   AttractionRec,
   CrowdAttraction,
-  CrowdSort,
+  CrowdAreaFilter,
+  CrowdRankFilter,
+  FoodCategoryFilter,
   ShowtimesData,
   ShowtimesTab,
 } from '../types';
+
+/** TDL エリア表示順 */
+export const TDL_AREA_ORDER = [
+  'ワールドバザール',
+  'アドベンチャーランド',
+  'ウエスタンランド',
+  'クリッターカントリー',
+  'ファンタジーランド',
+  'トゥーンタウン',
+  'トゥモローランド',
+] as const;
 
 export interface TdlShowtimesState {
   config: {
@@ -13,7 +26,9 @@ export interface TdlShowtimesState {
     activeTab: ShowtimesTab;
     enabledShows: Record<string, boolean>;
     crowdSlotIndex: number;
-    crowdSort: CrowdSort;
+    crowdAreaFilter: CrowdAreaFilter;
+    crowdRankFilter: CrowdRankFilter;
+    foodCategoryFilter: FoodCategoryFilter;
   };
   data: {
     date: string;
@@ -26,7 +41,9 @@ export interface TdlShowtimesActions {
   setActiveTab: (tab: ShowtimesTab) => void;
   toggleShow: (showId: string) => void;
   setCrowdSlotIndex: (index: number) => void;
-  setCrowdSort: (sort: CrowdSort) => void;
+  setCrowdAreaFilter: (area: CrowdAreaFilter) => void;
+  setCrowdRankFilter: (rank: CrowdRankFilter) => void;
+  setFoodCategoryFilter: (category: FoodCategoryFilter) => void;
 }
 
 export const waitColor = (w: number | null): string => {
@@ -49,19 +66,74 @@ export const waitTextColor = (w: number | null): string => {
   return '#c084fc';
 };
 
+/** ヒートマップセル上の分数ラベル用（背景色とのコントラスト） */
+export const waitSegLabelColor = (w: number | null): string => {
+  if (w == null) return '#c5cae0';
+  if (w <= 15) return '#ffffff';
+  if (w <= 30) return '#14532d';
+  if (w <= 45) return '#713f12';
+  if (w <= 60) return '#7c2d12';
+  return '#ffffff';
+};
+
+const slotToMinutes = (slot: string): number | null => {
+  const match = /^(\d{1,2}):(\d{2})$/.exec(slot.trim());
+  if (!match) return null;
+  return Number(match[1]) * 60 + Number(match[2]);
+};
+
+/**
+ * 現在時刻に最も近い（現在以前の直近）スロット index を返す
+ */
+export const findCrowdSlotIndexForNow = (
+  slots: string[],
+  now: Date = new Date()
+): number => {
+  if (!slots.length) return 0;
+
+  const nowMinutes = now.getHours() * 60 + now.getMinutes();
+  let selected = 0;
+
+  for (let i = 0; i < slots.length; i += 1) {
+    const minutes = slotToMinutes(slots[i]);
+    if (minutes == null) continue;
+    if (minutes <= nowMinutes) {
+      selected = i;
+    } else {
+      break;
+    }
+  }
+
+  return selected;
+};
+
+const validWaits = (wait: (number | null)[]): number[] =>
+  wait.filter((v): v is number => v != null);
+
 export const getAttractionRec = (
   att: CrowdAttraction,
   idx: number,
   slots: string[]
 ): AttractionRec => {
   const w = att.wait[idx];
-  const lo = Math.min(...att.wait);
-  const hi = Math.max(...att.wait);
+  if (w == null) {
+    return {
+      cls: 'ok',
+      icon: '⏸',
+      text: '運営時間外',
+      sub: 'この時刻は運営していません',
+    };
+  }
+
+  const vals = validWaits(att.wait);
+  const lo = Math.min(...vals);
+  const hi = Math.max(...vals);
   const ratio = hi > lo ? (w - lo) / (hi - lo) : 0;
 
   let ng = -1;
   for (let i = idx + 1; i < att.wait.length; i += 1) {
-    if (att.wait[i] <= lo * 1.4 + 8) {
+    const next = att.wait[i];
+    if (next != null && next <= lo * 1.4 + 8) {
       ng = i;
       break;
     }
@@ -99,30 +171,18 @@ export const getAttractionRec = (
   };
 };
 
-export const sortAttractions = (
-  attractions: CrowdAttraction[],
-  idx: number,
-  sort: CrowdSort,
-  slots: string[]
-): CrowdAttraction[] => {
-  const list = [...attractions];
-  const rankOrder: Record<string, number> = { S: 0, A: 1, B: 2, C: 3 };
-  const recOrder: Record<string, number> = { good: 0, ok: 1, later: 2, peak: 3 };
-
-  if (sort === 'wait') {
-    list.sort((a, b) => a.wait[idx] - b.wait[idx]);
-  } else if (sort === 'rank') {
-    list.sort(
-      (a, b) =>
-        rankOrder[a.rank] - rankOrder[b.rank] || a.wait[idx] - b.wait[idx]
-    );
-  } else {
-    list.sort((a, b) => {
-      const ra = getAttractionRec(a, idx, slots);
-      const rb = getAttractionRec(b, idx, slots);
-      return recOrder[ra.cls] - recOrder[rb.cls] || a.wait[idx] - b.wait[idx];
-    });
-  }
-
-  return list;
+/**
+ * データに存在するエリアを表示順で返す
+ */
+export const listAvailableAreas = (
+  attractions: CrowdAttraction[]
+): string[] => {
+  const present = new Set(
+    attractions.map((a) => a.area).filter((area) => Boolean(area))
+  );
+  const ordered = TDL_AREA_ORDER.filter((area) => present.has(area));
+  const extras = Array.from(present)
+    .filter((area) => !(TDL_AREA_ORDER as readonly string[]).includes(area))
+    .sort((a, b) => a.localeCompare(b, 'ja'));
+  return [...ordered, ...extras];
 };

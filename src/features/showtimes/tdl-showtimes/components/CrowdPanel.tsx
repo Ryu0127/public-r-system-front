@@ -1,19 +1,37 @@
 import React, { useMemo } from 'react';
-import { CrowdData, CrowdSort } from '../types';
+import {
+  CrowdAreaFilter,
+  CrowdAttraction,
+  CrowdData,
+  CrowdRankFilter,
+} from '../types';
 import {
   getAttractionRec,
-  sortAttractions,
+  listAvailableAreas,
   waitColor,
+  waitSegLabelColor,
   waitTextColor,
 } from '../hooks/showtimesUtils';
+import AttractionThumb from './AttractionThumb';
+
+const RANK_FILTERS: CrowdAttraction['rank'][] = ['S', 'A', 'B', 'C'];
+
+const RANK_COLORS: Record<CrowdAttraction['rank'], string> = {
+  S: '#B79BF2',
+  A: '#FF9A6B',
+  B: '#F5C86B',
+  C: '#8ED07A',
+};
 
 interface CrowdPanelProps {
   crowd: CrowdData;
   crowdSourceUrl: string;
   slotIndex: number;
-  sort: CrowdSort;
+  areaFilter: CrowdAreaFilter;
+  rankFilter: CrowdRankFilter;
   onSlotChange: (index: number) => void;
-  onSortChange: (sort: CrowdSort) => void;
+  onAreaFilterChange: (area: CrowdAreaFilter) => void;
+  onRankFilterChange: (rank: CrowdRankFilter) => void;
 }
 
 const ExtLinkIcon: React.FC = () => (
@@ -37,13 +55,19 @@ const avgByRank = (
   rank: string,
   idx: number
 ): string => {
-  const waits = attractions.filter((a) => a.rank === rank).map((a) => a.wait[idx]);
+  const waits = attractions
+    .filter((a) => a.rank === rank)
+    .map((a) => a.wait[idx])
+    .filter((v): v is number => v != null);
   if (!waits.length) return '—';
   return `${Math.round(waits.reduce((a, b) => a + b, 0) / waits.length)}分`;
 };
 
 const crowdNum = (attractions: CrowdData['attractions'], idx: number): number => {
-  const waits = attractions.map((a) => a.wait[idx]);
+  const waits = attractions
+    .map((a) => a.wait[idx])
+    .filter((v): v is number => v != null);
+  if (!waits.length) return 0;
   return Math.round(waits.reduce((a, b) => a + b, 0) / waits.length);
 };
 
@@ -54,9 +78,11 @@ const CrowdPanel: React.FC<CrowdPanelProps> = ({
   crowd,
   crowdSourceUrl,
   slotIndex,
-  sort,
+  areaFilter,
+  rankFilter,
   onSlotChange,
-  onSortChange,
+  onAreaFilterChange,
+  onRankFilterChange,
 }) => {
   const slots = crowd.slots;
   const showMarkers = crowd.showMarkers;
@@ -78,10 +104,22 @@ const CrowdPanel: React.FC<CrowdPanelProps> = ({
     gaugeLabel = '混んでいます';
   }
 
-  const sorted = useMemo(
-    () => sortAttractions(crowd.attractions, slotIndex, sort, slots),
-    [crowd.attractions, slotIndex, sort, slots]
+  const areas = useMemo(
+    () => listAvailableAreas(crowd.attractions),
+    [crowd.attractions]
   );
+
+  const filtered = useMemo(() => {
+    return crowd.attractions.filter((att) => {
+      if (areaFilter !== 'all' && att.area !== areaFilter) return false;
+      if (rankFilter !== 'all' && att.rank !== rankFilter) return false;
+      return true;
+    });
+  }, [crowd.attractions, areaFilter, rankFilter]);
+
+  const handleRankClick = (rank: CrowdAttraction['rank']) => {
+    onRankFilterChange(rankFilter === rank ? 'all' : rank);
+  };
 
   return (
     <>
@@ -92,68 +130,7 @@ const CrowdPanel: React.FC<CrowdPanelProps> = ({
         </a>
       </div>
 
-      <div className="tp-card">
-        <div className="tp-label">📍 パーク内の時刻を選択</div>
-        <div className="tp-time">
-          {slots[slotIndex]}
-          <span>の状況</span>
-        </div>
-        <input
-          className="tslider"
-          type="range"
-          min={0}
-          max={slots.length - 1}
-          value={slotIndex}
-          step={1}
-          aria-label="時刻を選択"
-          onChange={(e) => onSlotChange(Number(e.target.value))}
-        />
-        <div className="slabels">
-          <span>9:00</span>
-          <span>12:00</span>
-          <span>15:00</span>
-          <span>18:00</span>
-          <span>20:45</span>
-        </div>
-      </div>
-
-      <div className="sum-card">
-        <div className="sum-title">{crowd.summaryNote}</div>
-        <div className="sum-row">
-          <div className="sum-chip">
-            <div className="sum-chip-val" style={{ color: '#B79BF2' }}>
-              {avgByRank(crowd.attractions, 'S', slotIndex)}
-            </div>
-            <div className="sum-chip-lbl">S平均</div>
-          </div>
-          <div className="sum-chip">
-            <div className="sum-chip-val" style={{ color: '#FF9A6B' }}>
-              {avgByRank(crowd.attractions, 'A', slotIndex)}
-            </div>
-            <div className="sum-chip-lbl">A平均</div>
-          </div>
-          <div className="sum-chip">
-            <div className="sum-chip-val" style={{ color: '#F5C86B' }}>
-              {avgByRank(crowd.attractions, 'B', slotIndex)}
-            </div>
-            <div className="sum-chip-lbl">B平均</div>
-          </div>
-          <div className="sum-chip">
-            <div className="sum-chip-val" style={{ color: '#8ED07A' }}>
-              {avgByRank(crowd.attractions, 'C', slotIndex)}
-            </div>
-            <div className="sum-chip-lbl">C平均</div>
-          </div>
-          <div className="sum-chip">
-            <div className="sum-chip-val" style={{ color: '#7FB4F2' }}>
-              {ci}分
-            </div>
-            <div className="sum-chip-lbl">混雑指数</div>
-          </div>
-        </div>
-      </div>
-
-      <div className="gauge">
+      <div className="gauge mt-10">
         <div>
           <div className="glabel">全体混雑</div>
           <div className="gnum" style={{ color: gaugeColor }}>
@@ -174,6 +151,59 @@ const CrowdPanel: React.FC<CrowdPanelProps> = ({
             {gaugeLabel}
           </div>
         </div>
+      </div>
+
+      <div className="sum-card mt-8">
+        <div className="sum-title">{crowd.summaryNote}</div>
+        <div
+          className="sum-row"
+          role="group"
+          aria-label="ランク別平均待ち時間で絞り込み"
+        >
+          {RANK_FILTERS.map((rank) => (
+            <button
+              key={rank}
+              type="button"
+              className={`sum-chip${rankFilter === rank ? ' active' : ''}`}
+              aria-pressed={rankFilter === rank}
+              onClick={() => handleRankClick(rank)}
+            >
+              <div className="sum-chip-lbl">{rank}平均</div>
+              <div
+                className="sum-chip-val"
+                style={{ color: RANK_COLORS[rank] }}
+              >
+                {avgByRank(crowd.attractions, rank, slotIndex)}
+              </div>
+            </button>
+          ))}
+          <div className="sum-chip sum-chip-static">
+            <div className="sum-chip-lbl">混雑指数</div>
+            <div className="sum-chip-val" style={{ color: '#7FB4F2' }}>
+              {ci}分
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="areabar" role="group" aria-label="エリアで絞り込み">
+        <button
+          type="button"
+          className={`abtn${areaFilter === 'all' ? ' active' : ''}`}
+          onClick={() => onAreaFilterChange('all')}
+        >
+          すべて
+        </button>
+        {areas.map((area) => (
+          <button
+            key={area}
+            type="button"
+            className={`abtn${areaFilter === area ? ' active' : ''}`}
+            onClick={() => onAreaFilterChange(area)}
+          >
+            {area}
+          </button>
+        ))}
       </div>
 
       <div className="wlegend">
@@ -201,40 +231,20 @@ const CrowdPanel: React.FC<CrowdPanelProps> = ({
           <span className="ld" style={{ background: '#a855f7' }} />
           90分超
         </span>
-        <span className="li">
-          <span
-            className="ld"
-            style={{ background: '#F5C86B', borderRadius: '50%' }}
-          />
-          ▼=ショーパレ開催時刻
-        </span>
-      </div>
-
-      <div className="sortbar">
-        {(
-          [
-            ['rec', '🎯 おすすめ順'],
-            ['wait', '⏱ 待ち時間順'],
-            ['rank', '🏆 人気順'],
-          ] as const
-        ).map(([key, label]) => (
-          <button
-            key={key}
-            type="button"
-            className={`sbtn${sort === key ? ' active' : ''}`}
-            onClick={() => onSortChange(key)}
-          >
-            {label}
-          </button>
-        ))}
       </div>
 
       <div>
-        {sorted.map((att) => {
+        {filtered.length === 0 ? (
+          <div className="status-box">
+            この条件のアトラクションはありません
+          </div>
+        ) : (
+          filtered.map((att) => {
           const w = att.wait[slotIndex];
           const rec = getAttractionRec(att, slotIndex, slots);
-          const lo = Math.min(...att.wait);
-          const hi = Math.max(...att.wait);
+          const vals = att.wait.filter((v): v is number => v != null);
+          const lo = Math.min(...vals);
+          const hi = Math.max(...vals);
           const loI = att.wait.indexOf(lo);
           const hiI = att.wait.indexOf(hi);
           const p = att.pass[slotIndex];
@@ -243,56 +253,74 @@ const CrowdPanel: React.FC<CrowdPanelProps> = ({
           return (
             <div key={att.id} className={`acard rc-${rec.cls}`}>
               <div className="atop">
+                <AttractionThumb
+                  icon={att.icon}
+                  rank={att.rank}
+                  thumbUrl={att.thumbUrl}
+                />
                 <div className={`rbadge r${att.rank}`}>{att.rank}</div>
                 <div className="aname">
                   {att.name}
-                  <span className="aarea">{att.area}</span>
+                  <span className="aarea">
+                    {att.area}
+                    {att.duration ? ` ／ 所要${att.duration}` : ''}
+                  </span>
+                  {(att.dpaFlag || att.priorityPassFlag) && (
+                    <div className="badges">
+                      {att.dpaFlag && (
+                        <span className="badge dpa">DPA対象</span>
+                      )}
+                      {att.priorityPassFlag && (
+                        <span className="badge pp">プライオリティパス対象</span>
+                      )}
+                    </div>
+                  )}
                 </div>
                 <div className="wnow">
                   <div className="wnow-num" style={{ color: waitTextColor(w) }}>
-                    {w}
+                    {w == null ? '—' : w}
                   </div>
-                  <div className="wnow-unit">分待ち(目安)</div>
+                  <div className="wnow-unit">
+                    {w == null ? '運営時間外' : '分待ち(目安)'}
+                  </div>
                 </div>
               </div>
 
-              <div className="rec-line">
-                <span className={`rbadge-rec ${rec.cls}`}>
-                  {rec.icon} {rec.text}
-                </span>
-                {p === 'A' && <span className="pass-badge pA">DPA販売中</span>}
-                {p === 'P' && (
-                  <span className="pass-badge pP">プライオリティパス発行中</span>
-                )}
-              </div>
-              <div className="rsub">{rec.sub}</div>
-
               <div className="hmwrap">
-                <div className="hmnote">▼=ショーパレ時刻 ｜ 白枠=選択中の時刻</div>
-                <div className="hmbar">
+                <div className="hmnote">時刻別混雑予想（分）</div>
+                <div className="hmbar" role="group" aria-label="時刻別混雑予想">
                   {att.wait.map((v, i) => {
                     const markerLabel = showMarkers[String(i)];
-                    const title = `${slots[i]}: ${v}分${
-                      markerLabel ? ` ｜ ${markerLabel}` : ''
-                    }`;
+                    const title = `${slots[i]}: ${
+                      v == null ? '運営時間外' : `${v}分`
+                    }${markerLabel ? ` ｜ ${markerLabel}` : ''}`;
                     return (
-                      <div
+                      <button
                         key={`${att.id}-hm-${i}`}
+                        type="button"
                         className={`hmseg${i === slotIndex ? ' hm-now' : ''}${
                           markerLabel ? ' hm-show' : ''
                         }`}
-                        style={{ background: waitColor(v) }}
+                        style={{
+                          background: waitColor(v),
+                          color: waitSegLabelColor(v),
+                        }}
                         title={title}
-                      />
+                        aria-label={title}
+                        aria-pressed={i === slotIndex}
+                        onClick={() => onSlotChange(i)}
+                      >
+                        <span className="hmseg-val">
+                          {v == null ? '—' : `${v}分`}
+                        </span>
+                      </button>
                     );
                   })}
                 </div>
                 <div className="hmticks">
-                  <span>9:00</span>
-                  <span>12:00</span>
-                  <span>15:00</span>
-                  <span>18:00</span>
-                  <span>20:45</span>
+                  {slots.map((slot) => (
+                    <span key={`${att.id}-tick-${slot}`}>{slot}</span>
+                  ))}
                 </div>
               </div>
 
@@ -306,7 +334,7 @@ const CrowdPanel: React.FC<CrowdPanelProps> = ({
                 </div>
                 <div className="astat">
                   <div className="astat-val" style={{ color: waitTextColor(w) }}>
-                    {w}分
+                    {w == null ? '—' : `${w}分`}
                   </div>
                   <div className="astat-lbl">選択時刻の推定</div>
                   <div className="astat-sub">{slots[slotIndex]}</div>
@@ -320,15 +348,15 @@ const CrowdPanel: React.FC<CrowdPanelProps> = ({
                 </div>
               </div>
 
-              <div className="atip">💡 {att.tip}</div>
-              {marker && (att.rank === 'S' || att.rank === 'A') && (
+              {marker && (att.rank === 'S' || att.rank === 'A') ? (
                 <div className="atip" style={{ marginTop: 8 }}>
                   🎪 <b>{marker}</b> 開催時刻 — 観客がショー・パレードに集中し、待ちが下がる場合があります
                 </div>
-              )}
+              ) : null}
             </div>
           );
-        })}
+        })
+        )}
       </div>
 
       <div className="crowd-note">

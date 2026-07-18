@@ -2,6 +2,7 @@ import React from 'react';
 import ShowLegend from '../components/ShowLegend';
 import ShowTimeline from '../components/ShowTimeline';
 import CrowdPanel from '../components/CrowdPanel';
+import FoodPanel from '../components/FoodPanel';
 import { TdlShowtimesActions, TdlShowtimesState } from '../hooks/showtimesUtils';
 import '../styles/tdlShowtimes.css';
 
@@ -75,7 +76,7 @@ const TdlShowtimesPresenter: React.FC<TdlShowtimesPresenterProps> = ({
             aria-selected={config.activeTab === 'shows'}
             onClick={() => actions.setActiveTab('shows')}
           >
-            🎪 ショー&パレード
+            ショー&パレード
           </button>
           <button
             type="button"
@@ -84,7 +85,16 @@ const TdlShowtimesPresenter: React.FC<TdlShowtimesPresenterProps> = ({
             aria-selected={config.activeTab === 'crowd'}
             onClick={() => actions.setActiveTab('crowd')}
           >
-            🎢 アトラクション混雑
+            アトラクション混雑
+          </button>
+          <button
+            type="button"
+            className={`tab-btn${config.activeTab === 'food' ? ' active' : ''}`}
+            role="tab"
+            aria-selected={config.activeTab === 'food'}
+            onClick={() => actions.setActiveTab('food')}
+          >
+            フードメニュー
           </button>
         </nav>
 
@@ -111,9 +121,19 @@ const TdlShowtimesPresenter: React.FC<TdlShowtimesPresenterProps> = ({
             crowd={showtimes.crowd}
             crowdSourceUrl={park.crowdSourceUrl}
             slotIndex={config.crowdSlotIndex}
-            sort={config.crowdSort}
+            areaFilter={config.crowdAreaFilter}
+            rankFilter={config.crowdRankFilter}
             onSlotChange={actions.setCrowdSlotIndex}
-            onSortChange={actions.setCrowdSort}
+            onAreaFilterChange={actions.setCrowdAreaFilter}
+            onRankFilterChange={actions.setCrowdRankFilter}
+          />
+        )}
+
+        {config.activeTab === 'food' && showtimes.food && (
+          <FoodPanel
+            food={showtimes.food}
+            categoryFilter={config.foodCategoryFilter}
+            onCategoryFilterChange={actions.setFoodCategoryFilter}
           />
         )}
 

@@ -15,7 +15,9 @@ const initialState: TdlShowtimesState = {
     activeTab: 'shows',
     enabledShows: {},
     crowdSlotIndex: 0,
-    crowdSort: 'rec',
+    crowdAreaFilter: 'all',
+    crowdRankFilter: 'all',
+    foodCategoryFilter: 'all',
   },
   data: {
     date: DEFAULT_DATE,

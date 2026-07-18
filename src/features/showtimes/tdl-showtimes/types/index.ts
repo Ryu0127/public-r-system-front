@@ -44,9 +44,16 @@ export interface CrowdAttraction {
   name: string;
   area: string;
   rank: 'S' | 'A' | 'B' | 'C';
-  wait: number[];
+  /** SVGフォールバック用アイコン種別（当面モック由来） */
+  icon: string;
+  /** 公式CDNサムネイルURL */
+  thumbUrl: string;
+  /** 公式掲載の体験所要時間（例: 約8分） */
+  duration: string;
+  wait: (number | null)[];
   pass: string[];
-  tip: string;
+  dpaFlag?: boolean;
+  priorityPassFlag?: boolean;
 }
 
 export interface CrowdData {
@@ -55,6 +62,27 @@ export interface CrowdData {
   summaryNote: string;
   notes: string[];
   attractions: CrowdAttraction[];
+}
+
+export type FoodCategory = 'summer' | 'std';
+
+export interface FoodItem {
+  id: string;
+  category: FoodCategory;
+  icon: string;
+  name: string;
+  price: string;
+  area: string;
+  shop: string;
+  note: string;
+  timeLimit: string;
+  /** 公式CDNサムネイルURL */
+  thumbUrl: string;
+}
+
+export interface FoodData {
+  notes: string[];
+  items: FoodItem[];
 }
 
 export interface ShowtimesPark {
@@ -77,6 +105,7 @@ export interface ShowtimesData {
   excludedPrograms: ProgramNote[];
   stoppedPrograms: ProgramNote[];
   crowd: CrowdData;
+  food: FoodData;
   footer: {
     sources: string[];
   };
@@ -88,8 +117,13 @@ export interface ShowtimesApiResponse {
   message?: string;
 }
 
-export type ShowtimesTab = 'shows' | 'crowd';
-export type CrowdSort = 'rec' | 'wait' | 'rank';
+export type ShowtimesTab = 'shows' | 'crowd' | 'food';
+/** エリア絞り込み。'all' は全エリア */
+export type CrowdAreaFilter = 'all' | string;
+/** ランク絞り込み。'all' は全ランク */
+export type CrowdRankFilter = 'all' | CrowdAttraction['rank'];
+/** フードカテゴリ絞り込み */
+export type FoodCategoryFilter = 'all' | FoodCategory;
 
 export type RecClass = 'good' | 'ok' | 'later' | 'peak';
 

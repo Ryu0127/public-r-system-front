@@ -271,6 +271,11 @@
   color: var(--tdl-gold);
 }
 
+.tdl-showtimes .badge.pp {
+  border-color: var(--tdl-aqua);
+  color: var(--tdl-aqua);
+}
+
 .tdl-showtimes .badge.entry {
   border-color: var(--tdl-leaf);
   color: var(--tdl-leaf);
@@ -353,7 +358,6 @@
 .tdl-showtimes .slot-card {
   background: var(--tdl-card);
   border: 1px solid var(--tdl-line);
-  border-left: 4px solid var(--dot, #fff);
   border-radius: 12px;
   padding: 13px 16px;
   transition: transform 0.15s ease;
@@ -551,6 +555,19 @@
   text-align: center;
   border: 1px solid var(--tdl-line);
   background: #101736;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.tdl-showtimes .sum-chip-static {
+  cursor: default;
+}
+
+.tdl-showtimes .sum-chip.active {
+  border-color: var(--tdl-gold);
+  background: rgba(245, 200, 107, 0.1);
 }
 
 .tdl-showtimes .sum-chip-val {
@@ -631,51 +648,36 @@
   border-radius: 3px;
 }
 
-.tdl-showtimes .sortbar {
+.tdl-showtimes .areabar {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   margin-bottom: 16px;
 }
 
-.tdl-showtimes .sbtn {
-  flex: 1;
+.tdl-showtimes .abtn {
   background: var(--tdl-card);
   border: 1px solid var(--tdl-line);
   border-radius: 999px;
   color: var(--tdl-ink-dim);
   font-family: "Zen Kaku Gothic New", sans-serif;
-  font-size: 0.8rem;
+  font-size: 0.72rem;
   font-weight: 700;
-  padding: 8px 4px;
+  padding: 7px 12px;
   cursor: pointer;
   transition: all 0.2s;
 }
 
-.tdl-showtimes .sbtn.active {
-  border-color: var(--tdl-aqua);
-  color: var(--tdl-aqua);
-  background: rgba(95, 216, 210, 0.1);
+.tdl-showtimes .abtn.active {
+  border-color: var(--tdl-gold);
+  color: var(--tdl-gold);
+  background: rgba(245, 200, 107, 0.1);
 }
+
 
 .tdl-showtimes .acard {
   padding: 15px 16px;
   margin-bottom: 14px;
-}
-
-.tdl-showtimes .acard.rc-good {
-  border-left: 4px solid #22c55e;
-}
-
-.tdl-showtimes .acard.rc-ok {
-  border-left: 4px solid #86efac;
-}
-
-.tdl-showtimes .acard.rc-later {
-  border-left: 4px solid #fb923c;
-}
-
-.tdl-showtimes .acard.rc-peak {
-  border-left: 4px solid #ef4444;
 }
 
 .tdl-showtimes .atop {
@@ -683,6 +685,41 @@
   align-items: center;
   gap: 10px;
   margin-bottom: 8px;
+}
+
+.tdl-showtimes .athumb {
+  position: relative;
+  flex: 0 0 84px;
+  width: 84px;
+  height: 63px;
+  border-radius: 9px;
+  overflow: hidden;
+  border: 2px solid var(--tdl-line);
+  background: var(--tdl-dusk);
+}
+
+.tdl-showtimes .athumb svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.tdl-showtimes .athumb img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@media (max-width: 420px) {
+  .tdl-showtimes .athumb {
+    flex-basis: 68px;
+    width: 68px;
+    height: 51px;
+  }
 }
 
 .tdl-showtimes .rbadge {
@@ -720,6 +757,10 @@
   font-size: 0.92rem;
   font-weight: 700;
   line-height: 1.4;
+}
+
+.tdl-showtimes .aname .badges {
+  margin-top: 5px;
 }
 
 .tdl-showtimes .aarea {
@@ -811,14 +852,33 @@
 .tdl-showtimes .hmbar {
   display: flex;
   gap: 2px;
-  height: 26px;
+  height: 42px;
   border-radius: 6px;
   overflow: hidden;
 }
 
 .tdl-showtimes .hmseg {
   flex: 1;
+  min-width: 0;
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.tdl-showtimes .hmseg-val {
+  font-family: "Kanit", sans-serif;
+  font-weight: 700;
+  font-size: 0.82rem;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  pointer-events: none;
+  white-space: nowrap;
 }
 
 .tdl-showtimes .hmseg.hm-now {
@@ -844,11 +904,33 @@
 
 .tdl-showtimes .hmticks {
   display: flex;
-  justify-content: space-between;
-  font-size: 0.62rem;
+  gap: 2px;
+  font-size: 0.82rem;
   color: var(--tdl-ink-dim);
   margin-top: 4px;
   font-family: "Kanit", sans-serif;
+}
+
+.tdl-showtimes .hmticks span {
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+@media (max-width: 480px) {
+  .tdl-showtimes .hmbar {
+    height: 36px;
+  }
+
+  .tdl-showtimes .hmseg-val {
+    font-size: 0.82rem;
+  }
+
+  .tdl-showtimes .hmticks {
+    font-size: 0.82rem;
+  }
 }
 
 .tdl-showtimes .astats {
@@ -1027,6 +1109,149 @@
 .tdl-showtimes .status-box {
   padding: 48px 20px;
   text-align: center;
+  color: var(--tdl-ink-dim);
+}
+
+/* ---------- フードメニュータブ ---------- */
+.tdl-showtimes .food-filter {
+  display: flex;
+  gap: 8px;
+  margin: 24px 0 16px;
+  flex-wrap: wrap;
+}
+
+.tdl-showtimes .fbtn {
+  background: var(--tdl-card);
+  border: 1px solid var(--tdl-line);
+  border-radius: 999px;
+  color: var(--tdl-ink-dim);
+  font-family: "Zen Kaku Gothic New", sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tdl-showtimes .fbtn.active {
+  border-color: var(--tdl-coral);
+  color: var(--tdl-coral);
+  background: rgba(255, 126, 107, 0.1);
+}
+
+.tdl-showtimes .fcard {
+  background: var(--tdl-card);
+  border: 1px solid var(--tdl-line);
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.tdl-showtimes .fcard.f-std {
+  border-left: 4px solid var(--tdl-gold);
+}
+
+.tdl-showtimes .fthumb {
+  position: relative;
+  flex: 0 0 76px;
+  width: 76px;
+  height: 76px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 2px solid var(--tdl-line);
+  background: var(--tdl-dusk);
+}
+
+.tdl-showtimes .fthumb svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.tdl-showtimes .fthumb img {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.tdl-showtimes .fbody {
+  flex: 1;
+  min-width: 0;
+}
+
+.tdl-showtimes .fname {
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.tdl-showtimes .fprice {
+  font-family: "Kanit", sans-serif;
+  font-weight: 700;
+  color: var(--tdl-gold);
+  font-size: 0.95rem;
+  margin-left: 8px;
+}
+
+.tdl-showtimes .fbadges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin: 5px 0 7px;
+}
+
+.tdl-showtimes .fbadge {
+  font-size: 0.66rem;
+  font-weight: 700;
+  padding: 2px 9px;
+  border-radius: 999px;
+  border: 1px solid var(--tdl-line);
+  color: var(--tdl-ink-dim);
+}
+
+.tdl-showtimes .fbadge.summer {
+  border-color: var(--tdl-aqua);
+  color: var(--tdl-aqua);
+}
+
+.tdl-showtimes .fbadge.std {
+  border-color: var(--tdl-gold);
+  color: var(--tdl-gold);
+}
+
+.tdl-showtimes .fbadge.time {
+  border-color: var(--tdl-coral);
+  color: var(--tdl-coral);
+}
+
+.tdl-showtimes .floc {
+  font-size: 0.82rem;
+  color: var(--tdl-ink);
+  margin-bottom: 3px;
+}
+
+.tdl-showtimes .floc .larea {
+  display: inline-block;
+  background: #101736;
+  border: 1px solid var(--tdl-line);
+  border-radius: 6px;
+  padding: 1px 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #7fb4f2;
+  margin-right: 6px;
+}
+
+.tdl-showtimes .fnote {
+  font-size: 0.76rem;
   color: var(--tdl-ink-dim);
 }
 
