@@ -33,6 +33,13 @@ const AdminDashboardPresenter: React.FC = () => {
       icon: '📆',
       color: 'bg-purple-500 hover:bg-purple-600',
     },
+    {
+      title: 'TDL ショー&パレード',
+      description: 'TDL ショー&パレードの管理を行います',
+      path: '/admin/showtimes/tdl',
+      icon: '🎉',
+      color: 'bg-orange-500 hover:bg-orange-600',
+    },
   ];
 
   return (

@@ -44,7 +44,7 @@ const ShowTimeline: React.FC<ShowTimelineProps> = ({
           return (
             <div
               key={`slot-${item.time}-${item.showId}-${index}`}
-              className={`slot c-${item.showId}${hidden ? ' is-hidden' : ''}`}
+              className={`slot${hidden ? ' is-hidden' : ''}`}
               style={color ? { ['--dot' as string]: color } : undefined}
             >
               <span className="slot-time">{item.time}</span>

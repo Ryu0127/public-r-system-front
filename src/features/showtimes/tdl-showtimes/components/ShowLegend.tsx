@@ -44,24 +44,30 @@ const ShowLegend: React.FC<ShowLegendProps & { officialUrl: string }> = ({
       <section className="legend" aria-label="この日に公演があるショー一覧">
         {shows.map((show) => {
           const on = enabledShows[show.id] !== false;
-          const subParts = [show.location, show.duration, show.frequency].filter(Boolean);
+          const subParts = [
+            show.location,
+            show.duration,
+            show.frequency,
+          ].filter(Boolean);
 
           return (
             <div
               key={show.id}
-              className={`legend-card c-${show.colorKey}${on ? '' : ' is-off'}`}
+              className={`legend-card${on ? '' : ' is-off'}`}
               style={{ ['--dot' as string]: show.color }}
             >
               <div className="thumb-wrap" aria-hidden="true">
-                <img
-                  src={show.thumbUrl}
-                  alt=""
-                  referrerPolicy="no-referrer"
-                  loading="lazy"
-                  onError={(e) => {
-                    e.currentTarget.remove();
-                  }}
-                />
+                {show.thumbUrl ? (
+                  <img
+                    src={show.thumbUrl}
+                    alt=""
+                    referrerPolicy="no-referrer"
+                    loading="lazy"
+                    onError={(e) => {
+                      e.currentTarget.remove();
+                    }}
+                  />
+                ) : null}
               </div>
               <div className="legend-body">
                 <h3>

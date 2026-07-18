@@ -15,6 +15,7 @@ export interface ShowItem {
   frequency: string | null;
   thumbUrl: string;
   badges: ShowBadge[];
+  pauseFlag?: boolean;
 }
 
 export interface TimelinePhase {
