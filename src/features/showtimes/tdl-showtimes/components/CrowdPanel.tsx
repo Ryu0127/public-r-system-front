@@ -8,11 +8,10 @@ import {
 import {
   getAttractionRec,
   listAvailableAreas,
-  waitColor,
-  waitSegLabelColor,
   waitTextColor,
 } from '../hooks/showtimesUtils';
 import AttractionThumb from './AttractionThumb';
+import CrowdWaitHeatmap from './CrowdWaitHeatmap';
 
 const RANK_FILTERS: CrowdAttraction['rank'][] = ['S', 'A', 'B', 'C'];
 
@@ -286,43 +285,14 @@ const CrowdPanel: React.FC<CrowdPanelProps> = ({
                 </div>
               </div>
 
-              <div className="hmwrap">
-                <div className="hmnote">時刻別混雑予想（分）</div>
-                <div className="hmbar" role="group" aria-label="時刻別混雑予想">
-                  {att.wait.map((v, i) => {
-                    const markerLabel = showMarkers[String(i)];
-                    const title = `${slots[i]}: ${
-                      v == null ? '運営時間外' : `${v}分`
-                    }${markerLabel ? ` ｜ ${markerLabel}` : ''}`;
-                    return (
-                      <button
-                        key={`${att.id}-hm-${i}`}
-                        type="button"
-                        className={`hmseg${i === slotIndex ? ' hm-now' : ''}${
-                          markerLabel ? ' hm-show' : ''
-                        }`}
-                        style={{
-                          background: waitColor(v),
-                          color: waitSegLabelColor(v),
-                        }}
-                        title={title}
-                        aria-label={title}
-                        aria-pressed={i === slotIndex}
-                        onClick={() => onSlotChange(i)}
-                      >
-                        <span className="hmseg-val">
-                          {v == null ? '—' : `${v}分`}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-                <div className="hmticks">
-                  {slots.map((slot) => (
-                    <span key={`${att.id}-tick-${slot}`}>{slot}</span>
-                  ))}
-                </div>
-              </div>
+              <CrowdWaitHeatmap
+                attractionId={att.id}
+                slots={slots}
+                wait={att.wait}
+                slotIndex={slotIndex}
+                showMarkers={showMarkers}
+                onSlotChange={onSlotChange}
+              />
 
               <div className="astats">
                 <div className="astat">

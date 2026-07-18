@@ -678,6 +678,8 @@
 .tdl-showtimes .acard {
   padding: 15px 16px;
   margin-bottom: 14px;
+  container-type: inline-size;
+  container-name: acard;
 }
 
 .tdl-showtimes .atop {
@@ -846,13 +848,51 @@
 .tdl-showtimes .hmnote {
   font-size: 0.65rem;
   color: #8fa0de;
-  margin-bottom: 4px;
+  margin-bottom: 0;
 }
 
-.tdl-showtimes .hmbar {
+.tdl-showtimes .hmwrap {
+  padding-top: 14px;
+  margin-bottom: 10px;
+}
+
+.tdl-showtimes .hmhead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.tdl-showtimes .hm-toggle {
+  display: none;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+  padding: 4px 8px;
+  border: 1px solid var(--tdl-line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--tdl-ink-dim);
+  font-size: 0.68rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.tdl-showtimes .hm-toggle-icon {
+  font-size: 0.55rem;
+  line-height: 1;
+}
+
+.tdl-showtimes .hm-collapsed-summary {
+  display: none;
+}
+
+.tdl-showtimes .hmlist {
   display: flex;
   gap: 2px;
-  height: 42px;
+  height: 52px;
   border-radius: 6px;
   overflow: hidden;
 }
@@ -862,13 +902,24 @@
   min-width: 0;
   position: relative;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 0;
+  gap: 3px;
+  padding: 4px 2px;
   border: none;
   cursor: pointer;
   appearance: none;
   -webkit-appearance: none;
+}
+
+.tdl-showtimes .hmseg-time {
+  font-family: "Kanit", sans-serif;
+  font-size: 0.62rem;
+  line-height: 1;
+  opacity: 0.9;
+  pointer-events: none;
+  white-space: nowrap;
 }
 
 .tdl-showtimes .hmseg-val {
@@ -881,6 +932,10 @@
   white-space: nowrap;
 }
 
+.tdl-showtimes .hmseg-marker {
+  display: none;
+}
+
 .tdl-showtimes .hmseg.hm-now {
   outline: 2px solid var(--tdl-ink);
   outline-offset: -2px;
@@ -890,46 +945,110 @@
 .tdl-showtimes .hmseg.hm-show::after {
   content: "▼";
   position: absolute;
-  top: -14px;
+  top: -12px;
   left: 50%;
   transform: translateX(-50%);
   font-size: 8px;
   color: var(--tdl-gold);
 }
 
-.tdl-showtimes .hmwrap {
-  padding-top: 14px;
-  margin-bottom: 10px;
-}
-
-.tdl-showtimes .hmticks {
-  display: flex;
-  gap: 2px;
-  font-size: 0.82rem;
-  color: var(--tdl-ink-dim);
-  margin-top: 4px;
-  font-family: "Kanit", sans-serif;
-}
-
-.tdl-showtimes .hmticks span {
-  flex: 1;
-  min-width: 0;
-  text-align: center;
-  line-height: 1.2;
-  white-space: nowrap;
-}
-
-@media (max-width: 480px) {
-  .tdl-showtimes .hmbar {
-    height: 36px;
+/* アトラクションカードが狭いとき: 縦並び＋開閉 */
+@container acard (max-width: 560px) {
+  .hm-toggle {
+    display: inline-flex;
   }
 
-  .tdl-showtimes .hmseg-val {
-    font-size: 0.82rem;
+  .hmwrap.is-collapsed .hmlist {
+    display: none;
   }
 
-  .tdl-showtimes .hmticks {
+  .hmwrap.is-collapsed .hm-collapsed-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--tdl-line);
+    border-radius: 10px;
+    background: #101736;
+    color: inherit;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    text-align: left;
+  }
+
+  .hmwrap.is-collapsed .hm-collapsed-summary:hover {
+    border-color: var(--tdl-gold);
+  }
+
+  .hm-collapsed-time {
+    font-family: "Kanit", sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--tdl-ink);
+  }
+
+  .hm-collapsed-wait {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 4.5rem;
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-family: "Kanit", sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+  }
+
+  .hmwrap.is-expanded .hmlist {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    gap: 6px;
+    overflow: visible;
+    border-radius: 0;
+  }
+
+  .hmwrap.is-expanded .hmseg {
+    flex: none;
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 10px;
+    min-height: 42px;
+    padding: 8px 12px;
+    border-radius: 10px;
+  }
+
+  .hmwrap.is-expanded .hmseg-time {
+    flex: 0 0 3.6rem;
     font-size: 0.82rem;
+    font-weight: 700;
+    text-align: left;
+  }
+
+  .hmwrap.is-expanded .hmseg-val {
+    font-size: 0.9rem;
+  }
+
+  .hmwrap.is-expanded .hmseg-marker {
+    display: block;
+    margin-left: auto;
+    max-width: 45%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.62rem;
+    opacity: 0.85;
+  }
+
+  .hmwrap.is-expanded .hmseg.hm-show::after {
+    display: none;
+  }
+
+  .hmwrap.is-expanded .hmseg.hm-now {
+    outline-offset: 0;
   }
 }
 
