@@ -19,6 +19,7 @@ import AdminDashboardContainer from 'features/admin/dashboard/containers/AdminDa
 import AdminProtectedLayout from 'features/admin/layout/AdminProtectedLayout';
 import LoginContainer from 'features/auth/login/containers/LoginContainer';
 import TalentMusicContainer from 'features/talent-music/containers/TalentMusicContainer';
+import TdlShowtimesContainer from 'features/showtimes/tdl-showtimes/containers/TdlShowtimesContainer';
 import './App.css';
 
 // ページ遷移を追跡するコンポーネント
@@ -73,6 +74,8 @@ function App() {
           <Route path="talent-music" element={<MusicAdminContainer />} />
           <Route path="talent-music/new" element={<MusicFormContainer />} />
           <Route path="talent-music/:id/edit" element={<MusicFormContainer />} />
+          {/* TDL ショー&パレード */}
+          <Route path="showtimes/tdl" element={<TdlShowtimesContainer />} />
         </Route>
       </Routes>
     </Router>
