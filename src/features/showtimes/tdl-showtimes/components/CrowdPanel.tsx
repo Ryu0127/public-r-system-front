@@ -1,7 +1,6 @@
 import React, { useMemo } from 'react';
 import {
   CrowdAreaFilter,
-  CrowdAttraction,
   CrowdData,
   CrowdRankFilter,
 } from '../types';
