@@ -19,6 +19,12 @@ export const TDL_AREA_ORDER = [
   'トゥモローランド',
 ] as const;
 
+export interface TdlShowtimesFavorites {
+  showParadeIds: Record<string, true>;
+  attractionIds: Record<string, true>;
+  foodMenuIds: Record<string, true>;
+}
+
 export interface TdlShowtimesState {
   config: {
     isLoading: boolean;
@@ -29,6 +35,8 @@ export interface TdlShowtimesState {
     crowdAreaFilter: CrowdAreaFilter;
     crowdRankFilter: CrowdRankFilter;
     foodAreaFilter: FoodAreaFilter;
+    favorites: TdlShowtimesFavorites;
+    favoritePendingIds: Record<string, true>;
   };
   data: {
     date: string;
@@ -44,7 +52,24 @@ export interface TdlShowtimesActions {
   setCrowdAreaFilter: (area: CrowdAreaFilter) => void;
   setCrowdRankFilter: (rank: CrowdRankFilter) => void;
   setFoodAreaFilter: (area: FoodAreaFilter) => void;
+  toggleFavoriteShowParade: (showId: string) => Promise<void>;
+  toggleFavoriteAttraction: (attractionId: string) => Promise<void>;
+  toggleFavoriteFoodMenu: (foodMenuId: string) => Promise<void>;
 }
+
+export const emptyFavorites = (): TdlShowtimesFavorites => ({
+  showParadeIds: {},
+  attractionIds: {},
+  foodMenuIds: {},
+});
+
+export const idsToFavoriteMap = (ids: number[]): Record<string, true> => {
+  const map: Record<string, true> = {};
+  ids.forEach((id) => {
+    map[String(id)] = true;
+  });
+  return map;
+};
 
 export const waitColor = (w: number | null): string => {
   if (w == null) return '#3a4470';

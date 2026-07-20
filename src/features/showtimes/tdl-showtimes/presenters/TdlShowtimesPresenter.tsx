@@ -103,7 +103,10 @@ const TdlShowtimesPresenter: React.FC<TdlShowtimesPresenterProps> = ({
             <ShowLegend
               shows={showtimes.shows}
               enabledShows={config.enabledShows}
+              favoriteShowParadeIds={config.favorites.showParadeIds}
+              favoritePendingIds={config.favoritePendingIds}
               onToggle={actions.toggleShow}
+              onToggleFavorite={actions.toggleFavoriteShowParade}
               officialUrl={park.officialShowUrl}
             />
             <ShowTimeline
@@ -123,9 +126,12 @@ const TdlShowtimesPresenter: React.FC<TdlShowtimesPresenterProps> = ({
             slotIndex={config.crowdSlotIndex}
             areaFilter={config.crowdAreaFilter}
             rankFilter={config.crowdRankFilter}
+            favoriteAttractionIds={config.favorites.attractionIds}
+            favoritePendingIds={config.favoritePendingIds}
             onSlotChange={actions.setCrowdSlotIndex}
             onAreaFilterChange={actions.setCrowdAreaFilter}
             onRankFilterChange={actions.setCrowdRankFilter}
+            onToggleFavorite={actions.toggleFavoriteAttraction}
           />
         )}
 
@@ -133,7 +139,10 @@ const TdlShowtimesPresenter: React.FC<TdlShowtimesPresenterProps> = ({
           <FoodPanel
             food={showtimes.food}
             areaFilter={config.foodAreaFilter}
+            favoriteFoodMenuIds={config.favorites.foodMenuIds}
+            favoritePendingIds={config.favoritePendingIds}
             onAreaFilterChange={actions.setFoodAreaFilter}
+            onToggleFavorite={actions.toggleFavoriteFoodMenu}
           />
         )}
       </div>

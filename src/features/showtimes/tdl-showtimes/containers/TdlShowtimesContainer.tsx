@@ -5,6 +5,7 @@ import {
   TdlShowtimesState,
   useTdlShowtimesState,
 } from '../hooks/useTdlShowtimesState';
+import { emptyFavorites } from '../hooks/showtimesUtils';
 
 const DEFAULT_DATE = '2026-07-21';
 
@@ -18,6 +19,8 @@ const initialState: TdlShowtimesState = {
     crowdAreaFilter: 'all',
     crowdRankFilter: 'all',
     foodAreaFilter: 'all',
+    favorites: emptyFavorites(),
+    favoritePendingIds: {},
   },
   data: {
     date: DEFAULT_DATE,
