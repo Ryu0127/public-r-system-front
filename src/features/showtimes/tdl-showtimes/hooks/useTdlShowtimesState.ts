@@ -1,15 +1,17 @@
 import { Dispatch, SetStateAction, useCallback, useMemo } from 'react';
 import { useAttractionWaitForecastsGetApi } from 'hooks/api/showtimes/useAttractionWaitForecastsGetApi';
 import { useAttractionsGetApi } from 'hooks/api/showtimes/useAttractionsGetApi';
+import { useFoodMenusGetApi } from 'hooks/api/showtimes/useFoodMenusGetApi';
 import { useShowParadesGetApi } from 'hooks/api/showtimes/useShowParadesGetApi';
 import { useTdlShowtimesGetApi } from 'hooks/api/showtimes/useTdlShowtimesGetApi';
-import { CrowdAreaFilter, CrowdRankFilter, FoodCategoryFilter, ShowtimesTab } from '../types';
+import { CrowdAreaFilter, CrowdRankFilter, FoodAreaFilter, ShowtimesTab } from '../types';
 import {
   TdlShowtimesActions,
   TdlShowtimesState,
   findCrowdSlotIndexForNow,
 } from './showtimesUtils';
-import { mergeAttractionsWithMock } from '../utils/mapAttraction';
+import { mapAttractionsFromDb } from '../utils/mapAttraction';
+import { mapFoodMenusToFoodData } from '../utils/mapFoodMenu';
 import {
   PARK_TYPE_LAND,
   buildTimelineFromShowParades,
@@ -23,8 +25,9 @@ export type { TdlShowtimesActions, TdlShowtimesState } from './showtimesUtils';
  * TDL ショーパレ画面の状態管理
  * - ショーパレ一覧・タイムライン: DB（/showtimes/show-parades）
  * - アトラクション名寄せ・所要時間・サムネ・ランク: DB（/showtimes/attractions）
- * - 混雑 wait: DB（/showtimes/attraction-wait-forecasts）、なければモック
- * - pass / icon / フード等: 当面モック（/showtimes/tdl）
+ * - 混雑 wait / slots: DB（/showtimes/attraction-wait-forecasts）のみ。無ければ「-」
+ * - フードメニュー: DB（/showtimes/food-menus）
+ * - park 等: 当面モック（/showtimes/tdl）
  */
 export const useTdlShowtimesState = (
   state: TdlShowtimesState,
@@ -34,6 +37,7 @@ export const useTdlShowtimesState = (
   const { executeShowParadesGet } = useShowParadesGetApi();
   const { executeAttractionsGet } = useAttractionsGetApi();
   const { executeAttractionWaitForecastsGet } = useAttractionWaitForecastsGetApi();
+  const { executeFoodMenusGet } = useFoodMenusGetApi();
 
   const loadData = useCallback(async () => {
     setState((prev) => ({
@@ -42,13 +46,19 @@ export const useTdlShowtimesState = (
     }));
 
     const date = state.data.date;
-    const [tdlResult, showParadesResult, attractionsResult, waitForecastsResult] =
-      await Promise.all([
-        executeTdlShowtimesGet(date),
-        executeShowParadesGet(PARK_TYPE_LAND, date),
-        executeAttractionsGet(PARK_TYPE_LAND, date),
-        executeAttractionWaitForecastsGet(PARK_TYPE_LAND, date),
-      ]);
+    const [
+      tdlResult,
+      showParadesResult,
+      attractionsResult,
+      waitForecastsResult,
+      foodMenusResult,
+    ] = await Promise.all([
+      executeTdlShowtimesGet(date),
+      executeShowParadesGet(PARK_TYPE_LAND, date),
+      executeAttractionsGet(PARK_TYPE_LAND, date),
+      executeAttractionWaitForecastsGet(PARK_TYPE_LAND, date),
+      executeFoodMenusGet(PARK_TYPE_LAND, date),
+    ]);
 
     if (
       tdlResult.error ||
@@ -98,20 +108,28 @@ export const useTdlShowtimesState = (
       return;
     }
 
+    if (
+      foodMenusResult.error ||
+      !foodMenusResult.apiResponse?.status ||
+      !foodMenusResult.apiResponse.data
+    ) {
+      setState((prev) => ({
+        ...prev,
+        config: {
+          ...prev.config,
+          isLoading: false,
+          error: 'フードメニューデータの取得に失敗しました',
+        },
+      }));
+      return;
+    }
+
     const showParades = showParadesResult.apiResponse.data.showParades;
     const activeShowParades = showParades.filter((item) => item.pauseFlag !== 1);
     const shows = activeShowParades.map(mapShowParadeToShowItem);
     const timeline = buildTimelineFromShowParades(showParades);
-    const pausedNotes = mapPausedShowsToProgramNotes(showParades);
+    const excludedPrograms = mapPausedShowsToProgramNotes(showParades);
 
-    const mockStopped = tdlResult.apiResponse.data.stoppedPrograms ?? [];
-    const stoppedNames = new Set(pausedNotes.map((n) => n.name));
-    const stoppedPrograms = [
-      ...pausedNotes,
-      ...mockStopped.filter((n) => !stoppedNames.has(n.name)),
-    ];
-
-    const mockCrowd = tdlResult.apiResponse.data.crowd;
     const waitForecastData =
       !waitForecastsResult.error &&
       waitForecastsResult.apiResponse?.status &&
@@ -120,24 +138,27 @@ export const useTdlShowtimesState = (
         : null;
     const dbSlots = waitForecastData?.slots ?? [];
     const waitsByAttractionId = waitForecastData?.waitsByAttractionId ?? {};
-    const hasDbWaits = Object.keys(waitsByAttractionId).length > 0;
 
-    const attractions = mergeAttractionsWithMock(
+    const attractions = mapAttractionsFromDb(
       attractionsResult.apiResponse.data.attractions,
-      mockCrowd.attractions ?? [],
-      hasDbWaits ? waitsByAttractionId : undefined
+      waitsByAttractionId
+    );
+
+    const food = mapFoodMenusToFoodData(
+      foodMenusResult.apiResponse.data.foodMenus
     );
 
     const showtimes = {
       ...tdlResult.apiResponse.data,
       shows,
       timeline,
-      stoppedPrograms,
+      excludedPrograms,
+      stoppedPrograms: [],
       crowd: {
-        ...mockCrowd,
-        slots: dbSlots.length > 0 ? dbSlots : mockCrowd.slots,
+        slots: dbSlots,
         attractions,
       },
+      food,
     };
 
     const enabledShows: Record<string, boolean> = {};
@@ -164,6 +185,7 @@ export const useTdlShowtimesState = (
   }, [
     executeAttractionWaitForecastsGet,
     executeAttractionsGet,
+    executeFoodMenusGet,
     executeShowParadesGet,
     executeTdlShowtimesGet,
     setState,
@@ -226,11 +248,11 @@ export const useTdlShowtimesState = (
     [setState]
   );
 
-  const setFoodCategoryFilter = useCallback(
-    (category: FoodCategoryFilter) => {
+  const setFoodAreaFilter = useCallback(
+    (area: FoodAreaFilter) => {
       setState((prev) => ({
         ...prev,
-        config: { ...prev.config, foodCategoryFilter: category },
+        config: { ...prev.config, foodAreaFilter: area },
       }));
     },
     [setState]
@@ -244,7 +266,7 @@ export const useTdlShowtimesState = (
       setCrowdSlotIndex,
       setCrowdAreaFilter,
       setCrowdRankFilter,
-      setFoodCategoryFilter,
+      setFoodAreaFilter,
     }),
     [
       loadData,
@@ -253,7 +275,7 @@ export const useTdlShowtimesState = (
       setCrowdSlotIndex,
       setCrowdAreaFilter,
       setCrowdRankFilter,
-      setFoodCategoryFilter,
+      setFoodAreaFilter,
     ]
   );
 

@@ -448,8 +448,7 @@
 .tdl-showtimes .sum-card,
 .tdl-showtimes .gauge,
 .tdl-showtimes .acard,
-.tdl-showtimes .info,
-.tdl-showtimes .crowd-note {
+.tdl-showtimes .info {
   background: var(--tdl-card);
   border: 1px solid var(--tdl-line);
   border-radius: 14px;
@@ -527,14 +526,6 @@
 .tdl-showtimes .sum-card {
   padding: 14px 16px;
   margin-bottom: 14px;
-}
-
-.tdl-showtimes .sum-title {
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  color: var(--tdl-ink-dim);
-  margin-bottom: 10px;
 }
 
 .tdl-showtimes .sum-row {
@@ -700,12 +691,10 @@
   background: var(--tdl-dusk);
 }
 
-.tdl-showtimes .athumb svg {
+.tdl-showtimes .athumb-fallback {
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
-  display: block;
+  opacity: 0.35;
 }
 
 .tdl-showtimes .athumb img {
@@ -726,8 +715,9 @@
 
 .tdl-showtimes .rbadge {
   flex: 0 0 auto;
-  width: 28px;
+  min-width: 28px;
   height: 28px;
+  padding: 0 6px;
   border-radius: 8px;
   display: flex;
   align-items: center;
@@ -752,6 +742,14 @@
 
 .tdl-showtimes .rC {
   background: #8ed07a;
+}
+
+.tdl-showtimes .rNone {
+  background: #6b7396;
+  color: #e8ecff;
+  font-family: "Zen Kaku Gothic New", sans-serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.02em;
 }
 
 .tdl-showtimes .aname {
@@ -823,22 +821,6 @@
   color: #f87171;
 }
 
-.tdl-showtimes .pass-badge {
-  font-size: 0.62rem;
-  font-weight: 700;
-  padding: 2px 8px;
-  border-radius: 5px;
-  color: #0b1026;
-}
-
-.tdl-showtimes .pass-badge.pA {
-  background: #b79bf2;
-}
-
-.tdl-showtimes .pass-badge.pP {
-  background: #5fd8d2;
-}
-
 .tdl-showtimes .rsub {
   font-size: 0.76rem;
   color: var(--tdl-ink-dim);
@@ -854,6 +836,18 @@
 .tdl-showtimes .hmwrap {
   padding-top: 14px;
   margin-bottom: 10px;
+}
+
+.tdl-showtimes .hm-empty {
+  padding: 12px;
+  border: 1px solid var(--tdl-line);
+  border-radius: 10px;
+  background: #101736;
+  color: var(--tdl-ink-dim);
+  font-family: "Kanit", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-align: center;
 }
 
 .tdl-showtimes .hmhead {
@@ -932,24 +926,10 @@
   white-space: nowrap;
 }
 
-.tdl-showtimes .hmseg-marker {
-  display: none;
-}
-
 .tdl-showtimes .hmseg.hm-now {
   outline: 2px solid var(--tdl-ink);
   outline-offset: -2px;
   z-index: 1;
-}
-
-.tdl-showtimes .hmseg.hm-show::after {
-  content: "▼";
-  position: absolute;
-  top: -12px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 8px;
-  color: var(--tdl-gold);
 }
 
 /* アトラクションカードが狭いとき: 縦並び＋開閉 */
@@ -1032,21 +1012,6 @@
     font-size: 0.9rem;
   }
 
-  .hmwrap.is-expanded .hmseg-marker {
-    display: block;
-    margin-left: auto;
-    max-width: 45%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-size: 0.62rem;
-    opacity: 0.85;
-  }
-
-  .hmwrap.is-expanded .hmseg.hm-show::after {
-    display: none;
-  }
-
   .hmwrap.is-expanded .hmseg.hm-now {
     outline-offset: 0;
   }
@@ -1083,28 +1048,6 @@
 .tdl-showtimes .astat-sub {
   font-size: 0.62rem;
   color: var(--tdl-ink-dim);
-}
-
-.tdl-showtimes .atip {
-  font-size: 0.76rem;
-  color: var(--tdl-ink-dim);
-  background: rgba(245, 200, 107, 0.07);
-  border: 1px dashed rgba(245, 200, 107, 0.35);
-  border-radius: 8px;
-  padding: 8px 12px;
-}
-
-.tdl-showtimes .atip b {
-  color: var(--tdl-gold);
-}
-
-.tdl-showtimes .crowd-note {
-  font-size: 0.75rem;
-  color: var(--tdl-ink-dim);
-  line-height: 1.8;
-  border-radius: 12px;
-  padding: 12px 16px;
-  margin-top: 6px;
 }
 
 .tdl-showtimes .crowd-source {
@@ -1214,17 +1157,6 @@
   color: #e06a6a;
 }
 
-.tdl-showtimes footer.page-footer {
-  margin-top: 44px;
-  font-size: 0.75rem;
-  color: #6b7396;
-  line-height: 1.9;
-}
-
-.tdl-showtimes footer.page-footer a {
-  color: #8fa0de;
-}
-
 .tdl-showtimes .status-box {
   padding: 48px 20px;
   text-align: center;
@@ -1232,32 +1164,6 @@
 }
 
 /* ---------- フードメニュータブ ---------- */
-.tdl-showtimes .food-filter {
-  display: flex;
-  gap: 8px;
-  margin: 24px 0 16px;
-  flex-wrap: wrap;
-}
-
-.tdl-showtimes .fbtn {
-  background: var(--tdl-card);
-  border: 1px solid var(--tdl-line);
-  border-radius: 999px;
-  color: var(--tdl-ink-dim);
-  font-family: "Zen Kaku Gothic New", sans-serif;
-  font-size: 0.8rem;
-  font-weight: 700;
-  padding: 8px 16px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.tdl-showtimes .fbtn.active {
-  border-color: var(--tdl-coral);
-  color: var(--tdl-coral);
-  background: rgba(255, 126, 107, 0.1);
-}
-
 .tdl-showtimes .fcard {
   background: var(--tdl-card);
   border: 1px solid var(--tdl-line);
@@ -1336,9 +1242,14 @@
   color: var(--tdl-ink-dim);
 }
 
-.tdl-showtimes .fbadge.summer {
+.tdl-showtimes .fbadge.limited {
   border-color: var(--tdl-aqua);
   color: var(--tdl-aqua);
+}
+
+.tdl-showtimes .fbadge.period {
+  border-color: #8ed07a;
+  color: #8ed07a;
 }
 
 .tdl-showtimes .fbadge.std {
@@ -1349,6 +1260,18 @@
 .tdl-showtimes .fbadge.time {
   border-color: var(--tdl-coral);
   color: var(--tdl-coral);
+}
+
+.tdl-showtimes .fcontents {
+  font-size: 0.78rem;
+  color: var(--tdl-ink-dim);
+  line-height: 1.5;
+  margin-top: 4px;
+}
+
+.tdl-showtimes .food-official-link {
+  margin-top: 8px;
+  margin-bottom: 0;
 }
 
 .tdl-showtimes .floc {

@@ -187,7 +187,7 @@ export const buildTimelineFromShowParades = (
 };
 
 /**
- * 休止中マスタを stoppedPrograms 形式へ
+ * 休止中マスタを excludedPrograms 形式へ
  */
 export const mapPausedShowsToProgramNotes = (
   items: ShowParadeApiItem[]

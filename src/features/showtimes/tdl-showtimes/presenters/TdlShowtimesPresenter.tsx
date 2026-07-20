@@ -132,26 +132,10 @@ const TdlShowtimesPresenter: React.FC<TdlShowtimesPresenterProps> = ({
         {config.activeTab === 'food' && showtimes.food && (
           <FoodPanel
             food={showtimes.food}
-            categoryFilter={config.foodCategoryFilter}
-            onCategoryFilterChange={actions.setFoodCategoryFilter}
+            areaFilter={config.foodAreaFilter}
+            onAreaFilterChange={actions.setFoodAreaFilter}
           />
         )}
-
-        <footer className="page-footer">
-          出典：東京ディズニーリゾート公式サイト（
-          <a href={park.officialShowUrl} target="_blank" rel="noopener noreferrer">
-            パレード/ショー一覧
-          </a>
-          ・各ショーの月間スケジュール、2026年7月時点）。
-          <br />
-          アトラクション混雑の目安は一般的な傾向をまとめたものです。アトラクション別・時間帯別の詳細な過去データ分析は
-          <a href={park.crowdSourceUrl} target="_blank" rel="noopener noreferrer">
-            urtrip「ディズニーランド 人気アトラクション攻略用 過去データ分析」
-          </a>
-          （毎日更新）をご参照ください。
-          <br />
-          公演時間は予告なく変更・中止になる場合があります。当日は東京ディズニーリゾート・アプリで最新情報をご確認ください。
-        </footer>
       </div>
     </div>
   );

@@ -43,41 +43,44 @@ export interface CrowdAttraction {
   id: string;
   name: string;
   area: string;
-  rank: 'S' | 'A' | 'B' | 'C';
-  /** SVGフォールバック用アイコン種別（当面モック由来） */
-  icon: string;
+  /** DB rankTypeLabel。未登録時は null */
+  rank: 'S' | 'A' | 'B' | 'C' | null;
   /** 公式CDNサムネイルURL */
   thumbUrl: string;
   /** 公式掲載の体験所要時間（例: 約8分） */
   duration: string;
   wait: (number | null)[];
-  pass: string[];
   dpaFlag?: boolean;
   priorityPassFlag?: boolean;
 }
 
 export interface CrowdData {
   slots: string[];
-  showMarkers: Record<string, string>;
-  summaryNote: string;
-  notes: string[];
   attractions: CrowdAttraction[];
 }
 
-export type FoodCategory = 'summer' | 'std';
+export type FoodCategory = 'limited' | 'std';
 
 export interface FoodItem {
   id: string;
   category: FoodCategory;
+  /** SVGフォールバック用（APIに無い場合は固定値） */
   icon: string;
   name: string;
   price: string;
   area: string;
   shop: string;
-  note: string;
   timeLimit: string;
   /** 公式CDNサムネイルURL */
   thumbUrl: string;
+  /** 公式サイトURL */
+  officialUrl: string;
+  /** メニュー内容（構成） */
+  contents: string[];
+  /** 期間限定の販売開始日（YYYY-MM-DD） */
+  publishStartDate: string | null;
+  /** 期間限定の販売終了日（YYYY-MM-DD） */
+  publishEndDate: string | null;
 }
 
 export interface FoodData {
@@ -106,9 +109,6 @@ export interface ShowtimesData {
   stoppedPrograms: ProgramNote[];
   crowd: CrowdData;
   food: FoodData;
-  footer: {
-    sources: string[];
-  };
 }
 
 export interface ShowtimesApiResponse {
@@ -120,10 +120,10 @@ export interface ShowtimesApiResponse {
 export type ShowtimesTab = 'shows' | 'crowd' | 'food';
 /** エリア絞り込み。'all' は全エリア */
 export type CrowdAreaFilter = 'all' | string;
+/** フードエリア絞り込み。'all' は全エリア */
+export type FoodAreaFilter = 'all' | string;
 /** ランク絞り込み。'all' は全ランク */
-export type CrowdRankFilter = 'all' | CrowdAttraction['rank'];
-/** フードカテゴリ絞り込み */
-export type FoodCategoryFilter = 'all' | FoodCategory;
+export type CrowdRankFilter = 'all' | 'S' | 'A' | 'B' | 'C';
 
 export type RecClass = 'good' | 'ok' | 'later' | 'peak';
 

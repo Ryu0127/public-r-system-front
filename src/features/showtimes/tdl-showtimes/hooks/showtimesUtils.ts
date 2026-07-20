@@ -3,7 +3,7 @@ import {
   CrowdAttraction,
   CrowdAreaFilter,
   CrowdRankFilter,
-  FoodCategoryFilter,
+  FoodAreaFilter,
   ShowtimesData,
   ShowtimesTab,
 } from '../types';
@@ -28,7 +28,7 @@ export interface TdlShowtimesState {
     crowdSlotIndex: number;
     crowdAreaFilter: CrowdAreaFilter;
     crowdRankFilter: CrowdRankFilter;
-    foodCategoryFilter: FoodCategoryFilter;
+    foodAreaFilter: FoodAreaFilter;
   };
   data: {
     date: string;
@@ -43,7 +43,7 @@ export interface TdlShowtimesActions {
   setCrowdSlotIndex: (index: number) => void;
   setCrowdAreaFilter: (area: CrowdAreaFilter) => void;
   setCrowdRankFilter: (rank: CrowdRankFilter) => void;
-  setFoodCategoryFilter: (category: FoodCategoryFilter) => void;
+  setFoodAreaFilter: (area: FoodAreaFilter) => void;
 }
 
 export const waitColor = (w: number | null): string => {
@@ -175,10 +175,10 @@ export const getAttractionRec = (
  * データに存在するエリアを表示順で返す
  */
 export const listAvailableAreas = (
-  attractions: CrowdAttraction[]
+  items: Array<{ area: string }>
 ): string[] => {
   const present = new Set(
-    attractions.map((a) => a.area).filter((area) => Boolean(area))
+    items.map((item) => item.area).filter((area) => Boolean(area))
   );
   const ordered = TDL_AREA_ORDER.filter((area) => present.has(area));
   const extras = Array.from(present)

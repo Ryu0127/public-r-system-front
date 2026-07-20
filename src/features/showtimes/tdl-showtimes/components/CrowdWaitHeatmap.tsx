@@ -6,7 +6,6 @@ interface CrowdWaitHeatmapProps {
   slots: string[];
   wait: (number | null)[];
   slotIndex: number;
-  showMarkers: Record<string, string>;
   onSlotChange: (index: number) => void;
 }
 
@@ -14,19 +13,29 @@ interface CrowdWaitHeatmapProps {
  * 時刻別混雑予想
  * - 広い幅: 横並びヒートマップ
  * - 狭い幅: 縦並び＋開閉（閉じ時は選択中の時刻のみ）
+ * - slots / wait が無い場合は「-」
  */
 const CrowdWaitHeatmap: React.FC<CrowdWaitHeatmapProps> = ({
   attractionId,
   slots,
   wait,
   slotIndex,
-  showMarkers,
   onSlotChange,
 }) => {
   const [expanded, setExpanded] = useState(false);
-  const currentWait = wait[slotIndex];
-  const currentLabel =
-    currentWait == null ? '運営時間外' : `${currentWait}分`;
+
+  if (!slots.length) {
+    return (
+      <div className="hmwrap">
+        <div className="hmnote">時刻別混雑予想（分）</div>
+        <div className="hm-empty">-</div>
+      </div>
+    );
+  }
+
+  const currentWait = wait[slotIndex] ?? null;
+  const currentSlot = slots[slotIndex] ?? '-';
+  const currentLabel = currentWait == null ? '-' : `${currentWait}分`;
 
   return (
     <div
@@ -52,10 +61,10 @@ const CrowdWaitHeatmap: React.FC<CrowdWaitHeatmapProps> = ({
         className="hm-collapsed-summary"
         aria-hidden={expanded}
         tabIndex={expanded ? -1 : 0}
-        aria-label={`${slots[slotIndex]} の予想待ち ${currentLabel}。クリックですべての時刻を表示`}
+        aria-label={`${currentSlot} の予想待ち ${currentLabel}。クリックですべての時刻を表示`}
         onClick={() => setExpanded(true)}
       >
-        <span className="hm-collapsed-time">{slots[slotIndex]}</span>
+        <span className="hm-collapsed-time">{currentSlot}</span>
         <span
           className="hm-collapsed-wait"
           style={{
@@ -68,19 +77,15 @@ const CrowdWaitHeatmap: React.FC<CrowdWaitHeatmapProps> = ({
       </button>
 
       <div className="hmlist" role="group" aria-label="時刻別混雑予想">
-        {wait.map((v, i) => {
-          const markerLabel = showMarkers[String(i)];
-          const title = `${slots[i]}: ${
-            v == null ? '運営時間外' : `${v}分`
-          }${markerLabel ? ` ｜ ${markerLabel}` : ''}`;
+        {slots.map((slot, i) => {
+          const v = wait[i] ?? null;
+          const title = `${slot}: ${v == null ? '-' : `${v}分`}`;
 
           return (
             <button
               key={`${attractionId}-hm-${i}`}
               type="button"
-              className={`hmseg${i === slotIndex ? ' hm-now' : ''}${
-                markerLabel ? ' hm-show' : ''
-              }`}
+              className={`hmseg${i === slotIndex ? ' hm-now' : ''}`}
               style={{
                 background: waitColor(v),
                 color: waitSegLabelColor(v),
@@ -93,13 +98,10 @@ const CrowdWaitHeatmap: React.FC<CrowdWaitHeatmapProps> = ({
                 setExpanded(false);
               }}
             >
-              <span className="hmseg-time">{slots[i]}</span>
+              <span className="hmseg-time">{slot}</span>
               <span className="hmseg-val">
-                {v == null ? '—' : `${v}分`}
+                {v == null ? '-' : `${v}分`}
               </span>
-              {markerLabel ? (
-                <span className="hmseg-marker">{markerLabel}</span>
-              ) : null}
             </button>
           );
         })}
