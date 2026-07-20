@@ -166,6 +166,62 @@
   margin-top: 2px;
 }
 
+.tdl-showtimes .legend-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
+.tdl-showtimes .fav-btn {
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid var(--tdl-line);
+  background: #0b102a;
+  color: var(--tdl-ink-dim);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+.tdl-showtimes .fav-btn svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
+.tdl-showtimes .fav-btn:hover:not(:disabled) {
+  color: #f5c86b;
+  border-color: rgba(245, 200, 107, 0.45);
+}
+
+.tdl-showtimes .fav-btn.is-on {
+  color: #f5c86b;
+  border-color: rgba(245, 200, 107, 0.55);
+  background: rgba(245, 200, 107, 0.12);
+}
+
+.tdl-showtimes .fav-btn:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+
+.tdl-showtimes .fav-btn:focus-visible {
+  outline: 2px solid var(--tdl-gold);
+  outline-offset: 2px;
+}
+
+.tdl-showtimes .legend-card.is-fav,
+.tdl-showtimes .acard.is-fav,
+.tdl-showtimes .fcard.is-fav {
+  border-color: rgba(245, 200, 107, 0.4);
+}
+
 .tdl-showtimes .toggle {
   flex: 0 0 auto;
   position: relative;
@@ -1216,6 +1272,18 @@
   font-size: 0.95rem;
   font-weight: 700;
   line-height: 1.5;
+}
+
+.tdl-showtimes .fname-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.tdl-showtimes .fname-row .fname {
+  flex: 1;
+  min-width: 0;
 }
 
 .tdl-showtimes .fprice {

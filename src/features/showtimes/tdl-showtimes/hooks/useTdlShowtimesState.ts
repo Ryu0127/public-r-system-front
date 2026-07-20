@@ -1,14 +1,20 @@
 import { Dispatch, SetStateAction, useCallback, useMemo } from 'react';
 import { useAttractionWaitForecastsGetApi } from 'hooks/api/showtimes/useAttractionWaitForecastsGetApi';
 import { useAttractionsGetApi } from 'hooks/api/showtimes/useAttractionsGetApi';
+import { useFavoritesDeleteApi } from 'hooks/api/showtimes/useFavoritesDeleteApi';
+import { useFavoritesGetApi } from 'hooks/api/showtimes/useFavoritesGetApi';
+import { useFavoritesPostApi } from 'hooks/api/showtimes/useFavoritesPostApi';
 import { useFoodMenusGetApi } from 'hooks/api/showtimes/useFoodMenusGetApi';
 import { useShowParadesGetApi } from 'hooks/api/showtimes/useShowParadesGetApi';
 import { useTdlShowtimesGetApi } from 'hooks/api/showtimes/useTdlShowtimesGetApi';
+import { FAVORITE_TYPE, FavoriteType } from '../constants/favoriteType';
 import { CrowdAreaFilter, CrowdRankFilter, FoodAreaFilter, ShowtimesTab } from '../types';
 import {
   TdlShowtimesActions,
   TdlShowtimesState,
+  emptyFavorites,
   findCrowdSlotIndexForNow,
+  idsToFavoriteMap,
 } from './showtimesUtils';
 import { mapAttractionsFromDb } from '../utils/mapAttraction';
 import { mapFoodMenusToFoodData } from '../utils/mapFoodMenu';
@@ -21,12 +27,15 @@ import {
 
 export type { TdlShowtimesActions, TdlShowtimesState } from './showtimesUtils';
 
+type FavoriteBucket = 'showParadeIds' | 'attractionIds' | 'foodMenuIds';
+
 /**
  * TDL ショーパレ画面の状態管理
  * - ショーパレ一覧・タイムライン: DB（/showtimes/show-parades）
  * - アトラクション名寄せ・所要時間・サムネ・ランク: DB（/showtimes/attractions）
  * - 混雑 wait / slots: DB（/showtimes/attraction-wait-forecasts）のみ。無ければ「-」
  * - フードメニュー: DB（/showtimes/food-menus）
+ * - お気に入り: DB（/showtimes/favorites）
  * - park 等: 当面モック（/showtimes/tdl）
  */
 export const useTdlShowtimesState = (
@@ -38,6 +47,9 @@ export const useTdlShowtimesState = (
   const { executeAttractionsGet } = useAttractionsGetApi();
   const { executeAttractionWaitForecastsGet } = useAttractionWaitForecastsGetApi();
   const { executeFoodMenusGet } = useFoodMenusGetApi();
+  const { executeFavoritesGet } = useFavoritesGetApi();
+  const { executeFavoritesPost } = useFavoritesPostApi();
+  const { executeFavoritesDelete } = useFavoritesDeleteApi();
 
   const loadData = useCallback(async () => {
     setState((prev) => ({
@@ -52,12 +64,14 @@ export const useTdlShowtimesState = (
       attractionsResult,
       waitForecastsResult,
       foodMenusResult,
+      favoritesResult,
     ] = await Promise.all([
       executeTdlShowtimesGet(date),
       executeShowParadesGet(PARK_TYPE_LAND, date),
       executeAttractionsGet(PARK_TYPE_LAND, date),
       executeAttractionWaitForecastsGet(PARK_TYPE_LAND, date),
       executeFoodMenusGet(PARK_TYPE_LAND, date),
+      executeFavoritesGet(),
     ]);
 
     if (
@@ -168,6 +182,23 @@ export const useTdlShowtimesState = (
 
     const crowdSlotIndex = findCrowdSlotIndexForNow(showtimes.crowd.slots);
 
+    const favorites =
+      !favoritesResult.error &&
+      favoritesResult.apiResponse?.status &&
+      favoritesResult.apiResponse.data
+        ? {
+            showParadeIds: idsToFavoriteMap(
+              favoritesResult.apiResponse.data.showParadeIds
+            ),
+            attractionIds: idsToFavoriteMap(
+              favoritesResult.apiResponse.data.attractionIds
+            ),
+            foodMenuIds: idsToFavoriteMap(
+              favoritesResult.apiResponse.data.foodMenuIds
+            ),
+          }
+        : emptyFavorites();
+
     setState((prev) => ({
       ...prev,
       config: {
@@ -176,6 +207,8 @@ export const useTdlShowtimesState = (
         error: null,
         enabledShows,
         crowdSlotIndex,
+        favorites,
+        favoritePendingIds: {},
       },
       data: {
         ...prev.data,
@@ -185,6 +218,7 @@ export const useTdlShowtimesState = (
   }, [
     executeAttractionWaitForecastsGet,
     executeAttractionsGet,
+    executeFavoritesGet,
     executeFoodMenusGet,
     executeShowParadesGet,
     executeTdlShowtimesGet,
@@ -258,6 +292,123 @@ export const useTdlShowtimesState = (
     [setState]
   );
 
+  const toggleFavorite = useCallback(
+    async (
+      favoriteType: FavoriteType,
+      targetId: string,
+      bucket: FavoriteBucket
+    ) => {
+      const pendingKey = `${favoriteType}:${targetId}`;
+      const numericId = Number(targetId);
+      if (!Number.isFinite(numericId) || numericId <= 0) {
+        return;
+      }
+
+      const currentlyFavorite = Boolean(
+        state.config.favorites[bucket][targetId]
+      );
+      if (state.config.favoritePendingIds[pendingKey]) {
+        return;
+      }
+
+      const nextIsFavorite = !currentlyFavorite;
+
+      setState((prev) => {
+        if (prev.config.favoritePendingIds[pendingKey]) {
+          return prev;
+        }
+        const nextBucket = { ...prev.config.favorites[bucket] };
+        if (nextIsFavorite) {
+          nextBucket[targetId] = true;
+        } else {
+          delete nextBucket[targetId];
+        }
+        return {
+          ...prev,
+          config: {
+            ...prev.config,
+            favorites: {
+              ...prev.config.favorites,
+              [bucket]: nextBucket,
+            },
+            favoritePendingIds: {
+              ...prev.config.favoritePendingIds,
+              [pendingKey]: true,
+            },
+          },
+        };
+      });
+
+      const result = nextIsFavorite
+        ? await executeFavoritesPost({
+            favoriteType,
+            targetId: numericId,
+          })
+        : await executeFavoritesDelete(favoriteType, numericId);
+
+      const failed = Boolean(result.error) || !result.apiResponse?.status;
+
+      setState((prev) => {
+        const nextPending = { ...prev.config.favoritePendingIds };
+        delete nextPending[pendingKey];
+
+        if (!failed) {
+          return {
+            ...prev,
+            config: {
+              ...prev.config,
+              favoritePendingIds: nextPending,
+            },
+          };
+        }
+
+        const rolledBack = { ...prev.config.favorites[bucket] };
+        if (nextIsFavorite) {
+          delete rolledBack[targetId];
+        } else {
+          rolledBack[targetId] = true;
+        }
+
+        return {
+          ...prev,
+          config: {
+            ...prev.config,
+            favorites: {
+              ...prev.config.favorites,
+              [bucket]: rolledBack,
+            },
+            favoritePendingIds: nextPending,
+          },
+        };
+      });
+    },
+    [
+      executeFavoritesDelete,
+      executeFavoritesPost,
+      setState,
+      state.config.favoritePendingIds,
+      state.config.favorites,
+    ]
+  );
+
+  const toggleFavoriteShowParade = useCallback(
+    (showId: string) =>
+      toggleFavorite(FAVORITE_TYPE.SHOW_PARADE, showId, 'showParadeIds'),
+    [toggleFavorite]
+  );
+
+  const toggleFavoriteAttraction = useCallback(
+    (attractionId: string) =>
+      toggleFavorite(FAVORITE_TYPE.ATTRACTION, attractionId, 'attractionIds'),
+    [toggleFavorite]
+  );
+
+  const toggleFavoriteFoodMenu = useCallback(
+    (foodMenuId: string) =>
+      toggleFavorite(FAVORITE_TYPE.FOOD_MENU, foodMenuId, 'foodMenuIds'),
+    [toggleFavorite]
+  );
+
   const actions = useMemo(
     () => ({
       loadData,
@@ -267,6 +418,9 @@ export const useTdlShowtimesState = (
       setCrowdAreaFilter,
       setCrowdRankFilter,
       setFoodAreaFilter,
+      toggleFavoriteShowParade,
+      toggleFavoriteAttraction,
+      toggleFavoriteFoodMenu,
     }),
     [
       loadData,
@@ -276,6 +430,9 @@ export const useTdlShowtimesState = (
       setCrowdAreaFilter,
       setCrowdRankFilter,
       setFoodAreaFilter,
+      toggleFavoriteShowParade,
+      toggleFavoriteAttraction,
+      toggleFavoriteFoodMenu,
     ]
   );
 

@@ -11,6 +11,8 @@ import {
 } from '../hooks/showtimesUtils';
 import AttractionThumb from './AttractionThumb';
 import CrowdWaitHeatmap from './CrowdWaitHeatmap';
+import FavoriteButton from './FavoriteButton';
+import { FAVORITE_TYPE } from '../constants/favoriteType';
 
 const RANK_FILTERS: Array<'S' | 'A' | 'B' | 'C'> = ['S', 'A', 'B', 'C'];
 
@@ -27,9 +29,12 @@ interface CrowdPanelProps {
   slotIndex: number;
   areaFilter: CrowdAreaFilter;
   rankFilter: CrowdRankFilter;
+  favoriteAttractionIds: Record<string, true>;
+  favoritePendingIds: Record<string, true>;
   onSlotChange: (index: number) => void;
   onAreaFilterChange: (area: CrowdAreaFilter) => void;
   onRankFilterChange: (rank: CrowdRankFilter) => void;
+  onToggleFavorite: (attractionId: string) => void;
 }
 
 const ExtLinkIcon: React.FC = () => (
@@ -78,9 +83,12 @@ const CrowdPanel: React.FC<CrowdPanelProps> = ({
   slotIndex,
   areaFilter,
   rankFilter,
+  favoriteAttractionIds,
+  favoritePendingIds,
   onSlotChange,
   onAreaFilterChange,
   onRankFilterChange,
+  onToggleFavorite,
 }) => {
   const slots = crowd.slots;
   const ci = crowdNum(crowd.attractions, slotIndex);
@@ -112,12 +120,18 @@ const CrowdPanel: React.FC<CrowdPanelProps> = ({
   );
 
   const filtered = useMemo(() => {
-    return crowd.attractions.filter((att) => {
-      if (areaFilter !== 'all' && att.area !== areaFilter) return false;
-      if (rankFilter !== 'all' && att.rank !== rankFilter) return false;
-      return true;
-    });
-  }, [crowd.attractions, areaFilter, rankFilter]);
+    return crowd.attractions
+      .filter((att) => {
+        if (areaFilter !== 'all' && att.area !== areaFilter) return false;
+        if (rankFilter !== 'all' && att.rank !== rankFilter) return false;
+        return true;
+      })
+      .sort((a, b) => {
+        const aFav = favoriteAttractionIds[a.id] ? 0 : 1;
+        const bFav = favoriteAttractionIds[b.id] ? 0 : 1;
+        return aFav - bFav;
+      });
+  }, [crowd.attractions, areaFilter, rankFilter, favoriteAttractionIds]);
 
   const handleRankClick = (rank: 'S' | 'A' | 'B' | 'C') => {
     onRankFilterChange(rankFilter === rank ? 'all' : rank);
@@ -253,8 +267,16 @@ const CrowdPanel: React.FC<CrowdPanelProps> = ({
             const loI = hasWaitStats && lo != null ? att.wait.indexOf(lo) : -1;
             const hiI = hasWaitStats && hi != null ? att.wait.indexOf(hi) : -1;
 
+            const isFavorite = Boolean(favoriteAttractionIds[att.id]);
+            const pending = Boolean(
+              favoritePendingIds[`${FAVORITE_TYPE.ATTRACTION}:${att.id}`]
+            );
+
             return (
-              <div key={att.id} className={`acard rc-${rec.cls}`}>
+              <div
+                key={att.id}
+                className={`acard rc-${rec.cls}${isFavorite ? ' is-fav' : ''}`}
+              >
                 <div className="atop">
                   <AttractionThumb
                     rank={att.rank}
@@ -282,6 +304,12 @@ const CrowdPanel: React.FC<CrowdPanelProps> = ({
                       </div>
                     )}
                   </div>
+                  <FavoriteButton
+                    isFavorite={isFavorite}
+                    label={att.name}
+                    disabled={pending}
+                    onToggle={() => onToggleFavorite(att.id)}
+                  />
                   <div className="wnow">
                     <div className="wnow-num" style={{ color: waitTextColor(w) }}>
                       {w == null ? '-' : w}

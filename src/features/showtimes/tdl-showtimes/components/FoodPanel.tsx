@@ -1,12 +1,17 @@
 import React, { useMemo } from 'react';
 import { FoodAreaFilter, FoodData, FoodItem } from '../types';
 import { listAvailableAreas } from '../hooks/showtimesUtils';
+import { FAVORITE_TYPE } from '../constants/favoriteType';
 import FoodThumb from './FoodThumb';
+import FavoriteButton from './FavoriteButton';
 
 interface FoodPanelProps {
   food: FoodData;
   areaFilter: FoodAreaFilter;
+  favoriteFoodMenuIds: Record<string, true>;
+  favoritePendingIds: Record<string, true>;
   onAreaFilterChange: (area: FoodAreaFilter) => void;
+  onToggleFavorite: (foodMenuId: string) => void;
 }
 
 const ExtLinkIcon: React.FC = () => (
@@ -54,7 +59,10 @@ const formatLimitedPeriod = (item: FoodItem): string | null => {
 const FoodPanel: React.FC<FoodPanelProps> = ({
   food,
   areaFilter,
+  favoriteFoodMenuIds,
+  favoritePendingIds,
   onAreaFilterChange,
+  onToggleFavorite,
 }) => {
   const areas = useMemo(
     () => listAvailableAreas(food.items),
@@ -62,9 +70,16 @@ const FoodPanel: React.FC<FoodPanelProps> = ({
   );
 
   const filtered = useMemo(() => {
-    if (areaFilter === 'all') return food.items;
-    return food.items.filter((item) => item.area === areaFilter);
-  }, [food.items, areaFilter]);
+    const items =
+      areaFilter === 'all'
+        ? food.items
+        : food.items.filter((item) => item.area === areaFilter);
+    return [...items].sort((a, b) => {
+      const aFav = favoriteFoodMenuIds[a.id] ? 0 : 1;
+      const bFav = favoriteFoodMenuIds[b.id] ? 0 : 1;
+      return aFav - bFav;
+    });
+  }, [food.items, areaFilter, favoriteFoodMenuIds]);
 
   return (
     <>
@@ -94,16 +109,31 @@ const FoodPanel: React.FC<FoodPanelProps> = ({
         ) : (
           filtered.map((item) => {
             const limitedPeriod = formatLimitedPeriod(item);
+            const isFavorite = Boolean(favoriteFoodMenuIds[item.id]);
+            const pending = Boolean(
+              favoritePendingIds[`${FAVORITE_TYPE.FOOD_MENU}:${item.id}`]
+            );
 
             return (
-              <div key={item.id} className={`fcard f-${item.category}`}>
+              <div
+                key={item.id}
+                className={`fcard f-${item.category}${isFavorite ? ' is-fav' : ''}`}
+              >
                 <FoodThumb icon={item.icon} thumbUrl={item.thumbUrl || null} />
                 <div className="fbody">
-                  <div className="fname">
-                    {item.name}
-                    {item.price ? (
-                      <span className="fprice">{item.price}</span>
-                    ) : null}
+                  <div className="fname-row">
+                    <div className="fname">
+                      {item.name}
+                      {item.price ? (
+                        <span className="fprice">{item.price}</span>
+                      ) : null}
+                    </div>
+                    <FavoriteButton
+                      isFavorite={isFavorite}
+                      label={item.name}
+                      disabled={pending}
+                      onToggle={() => onToggleFavorite(item.id)}
+                    />
                   </div>
                   <div className="fbadges">
                     {item.category === 'limited' ? (
