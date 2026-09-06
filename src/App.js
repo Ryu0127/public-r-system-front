@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { BrowserRouter as Router, Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Navigate, Route, Routes, useLocation, useParams } from 'react-router-dom';
 import { initGA, logPageView } from './utils/analytics';
 import Profile from './components/Profile';
 import Settings from './components/Settings';
@@ -20,6 +20,7 @@ import AdminProtectedLayout from 'features/admin/layout/AdminProtectedLayout';
 import LoginContainer from 'features/auth/login/containers/LoginContainer';
 import TalentMusicContainer from 'features/talent-music/containers/TalentMusicContainer';
 import TdlShowtimesContainer from 'features/showtimes/tdl-showtimes/containers/TdlShowtimesContainer';
+import SimplePageViewerContainer from 'features/simple-pages/containers/SimplePageViewerContainer';
 import './App.css';
 
 // ページ遷移を追跡するコンポーネント
@@ -31,6 +32,11 @@ function AnalyticsTracker() {
   }, [location]);
 
   return null;
+}
+
+function RedirectSimplePageToEvent() {
+  const { slug } = useParams();
+  return <Navigate to={`/event/${slug}`} replace />;
 }
 
 function App() {
@@ -58,6 +64,9 @@ function App() {
         <Route path="/life/life-schedule-month" element={<LifeScheduleMonthContainer />} />
         {/* イベントカレンダー */}
         <Route path="/events/calendar" element={<EventsCalendarContainer />} />
+        {/* イベントページ（静的HTML） */}
+        <Route path="/event/:slug" element={<SimplePageViewerContainer />} />
+        <Route path="/simple-pages/:slug" element={<RedirectSimplePageToEvent />} />
         {/* 管理画面（一律認証） */}
         <Route path="/admin" element={<AdminProtectedLayout />}>
           <Route index element={<Navigate to="dashboard" replace />} />

@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import LoadingScreen from 'components/LoadingScreen';
+// import LoadingScreen from 'components/LoadingScreen';
 import LimitedTimeTopicModal from 'components/LimitedTimeTopicModal';
 import HeroSection, { IntroPhase, isPhaseReached } from '../components/HeroSection';
 import TalentShowcaseSection from '../components/TalentShowcaseSection';
 import SelectionModeFloatingBadge from 'components/molecules/SelectionModeFloatingBadge';
 import MusicShowcaseSection from '../components/MusicShowcaseSection';
+import EventsSection from '../components/EventsSection';
 import FeaturesSection from '../components/FeaturesSection';
 import ChangeLogsSection from '../components/ChangeLogsSection';
+import { HOME_EVENTS } from '../data/homeData';
 import { OshiKatsuSaportState, OshiKatsuSaportActions } from '../hooks/useOshiKatsuSaportState';
 import { consumeSkipHomeLoading } from 'utils/homeTransition';
 import DecorativeBackground from 'components/molecules/DecorativeBackground';
@@ -29,26 +31,29 @@ const OshiKatsuSaportPresenter: React.FC<OshiKatsuSaportPresenterProps> = ({
   actions,
 }) => {
   // サイト内の「ホームに戻る」からの遷移時はロード画面・イントロ演出をスキップ
-  const [introPhase, setIntroPhase] = useState<'loading' | IntroPhase>(() =>
-    consumeSkipHomeLoading() ? 'done' : 'loading'
+  // TODO: ローディング画面を一時的にOFF（元に戻すときは型を 'loading' | IntroPhase、初期値を 'loading' に）
+  const [introPhase, setIntroPhase] = useState<IntroPhase>(() =>
+    consumeSkipHomeLoading() ? 'done' : 'title-reveal'
+    // consumeSkipHomeLoading() ? 'done' : 'loading'
   );
 
   // イントロ演出のフェーズを順番に進める
   useEffect(() => {
-    if (introPhase === 'loading') return;
+    // if (introPhase === 'loading') return;
     const step = INTRO_TIMELINE[introPhase];
     if (!step) return;
     const timer = window.setTimeout(() => setIntroPhase(step.next), step.delay);
     return () => window.clearTimeout(timer);
   }, [introPhase]);
 
-  const handleLoadingComplete = () => {
-    setIntroPhase('title-reveal');
-  };
+  // const handleLoadingComplete = () => {
+  //   setIntroPhase('title-reveal');
+  // };
 
-  if (introPhase === 'loading') {
-    return <LoadingScreen duration={3000} onLoadingComplete={handleLoadingComplete} />;
-  }
+  // 一時的にローディング画面をOFF
+  // if (introPhase === 'loading') {
+  //   return <LoadingScreen duration={3000} onLoadingComplete={handleLoadingComplete} />;
+  // }
 
   const sectionsVisible = isPhaseReached(introPhase, 'sections');
 
@@ -84,61 +89,81 @@ const OshiKatsuSaportPresenter: React.FC<OshiKatsuSaportPresenterProps> = ({
 
       {/* メインコンテンツ */}
       <div className="relative z-10 max-w-6xl mx-auto px-4 py-16 space-y-32">
-        {/* ヒーローセクション */}
-        <HeroSection introPhase={introPhase} />
+        {/* 各エリアは間の空白なしで隣接させる */}
+        <div>
+          {/* ヒーローセクション（サイト名） */}
+          <div className="pb-14">
+            <HeroSection introPhase={introPhase} />
+          </div>
 
-        {/* Talentエリア: 全幅のスカイブルー帯でエリアを区切る */}
-        {state.data.talentGroups.length > 0 && (
-          <div className={sectionClass} style={sectionStyle('0s')}>
-            <div className="relative left-1/2 -ml-[50vw] w-screen bg-sky-100/50 border-y border-sky-200/60 py-14">
+          {state.data.talentGroups.length > 0 && (
+            <div className={sectionClass} style={sectionStyle('0s')}>
+              <div className="relative left-1/2 -ml-[50vw] w-screen bg-sky-100/50 border-y border-sky-200/60 py-14">
+                <div className="max-w-6xl mx-auto px-4">
+                  <TalentShowcaseSection
+                    talentGroups={state.data.talentGroups}
+                    selectedTalent={state.data.selectedTalent}
+                    selectedGroupId={state.data.selectedGroupId}
+                    onSelectTalent={actions.selectTalent}
+                    onClearSelection={actions.clearTalentSelection}
+                    onSelectGroup={actions.selectGroup}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {state.data.musicList.length > 0 && (
+            <div className={sectionClass} style={sectionStyle('0.15s')}>
+              <div className="relative left-1/2 -ml-[50vw] w-screen py-14">
+                <div className="max-w-6xl mx-auto px-4">
+                  <MusicShowcaseSection
+                    musicList={state.data.musicList}
+                    selectedTalentName={state.data.selectedTalent?.talentName ?? null}
+                    listUrl={
+                      state.data.selectedTalent?.talentSlug
+                        ? `/music?talent=${encodeURIComponent(state.data.selectedTalent.talentSlug)}`
+                        : '/music'
+                    }
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {HOME_EVENTS.length > 0 && (
+            <div className={sectionClass} style={sectionStyle('0.3s')}>
+              <div className="relative left-1/2 -ml-[50vw] w-screen bg-rose-100/40 border-t border-rose-200/60 py-14">
+                <div className="max-w-6xl mx-auto px-4">
+                  <EventsSection events={HOME_EVENTS} />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 主な機能セクション（選択中タレントを遷移先へ引き継ぐ） */}
+          <div className={sectionClass} style={sectionStyle('0.45s')}>
+            <div className="relative left-1/2 -ml-[50vw] w-screen bg-white border-y border-gray-200 py-14">
               <div className="max-w-6xl mx-auto px-4">
-                <TalentShowcaseSection
-                  talentGroups={state.data.talentGroups}
-                  selectedTalent={state.data.selectedTalent}
-                  selectedGroupId={state.data.selectedGroupId}
-                  onSelectTalent={actions.selectTalent}
-                  onClearSelection={actions.clearTalentSelection}
-                  onSelectGroup={actions.selectGroup}
+                <FeaturesSection
+                  features={state.data.features}
+                  selectedTalentSlug={state.data.selectedTalent?.talentSlug ?? null}
                 />
               </div>
             </div>
           </div>
-        )}
 
-        {/* 楽曲ピックアップ（通常背景。タレント選択時はそのタレントの楽曲） */}
-        {state.data.musicList.length > 0 && (
-          <div className={sectionClass} style={sectionStyle('0.15s')}>
-            <MusicShowcaseSection
-              musicList={state.data.musicList}
-              selectedTalentName={state.data.selectedTalent?.talentName ?? null}
-              listUrl={
-                state.data.selectedTalent?.talentSlug
-                  ? `/music?talent=${encodeURIComponent(state.data.selectedTalent.talentSlug)}`
-                  : '/music'
-              }
-            />
-          </div>
-        )}
-
-        {/* 主な機能セクション: 全幅のアンバー帯でエリアを区切る（選択中タレントを遷移先へ引き継ぐ） */}
-        <div className={sectionClass} style={sectionStyle('0.3s')}>
-          <div className="relative left-1/2 -ml-[50vw] w-screen bg-amber-100/40 border-y border-amber-200/60 py-14">
-            <div className="max-w-6xl mx-auto px-4">
-              <FeaturesSection
-                features={state.data.features}
-                selectedTalentSlug={state.data.selectedTalent?.talentSlug ?? null}
-              />
+          <div className={sectionClass} style={sectionStyle('0.6s')}>
+            <div className="relative left-1/2 -ml-[50vw] w-screen py-14">
+              <div className="max-w-6xl mx-auto px-4">
+                <ChangeLogsSection changeLogs={state.data.changeLogs} />
+              </div>
             </div>
           </div>
         </div>
 
-        {/* 更新履歴セクション（通常背景） */}
-        <div className={sectionClass} style={sectionStyle('0.45s')}>
-          <ChangeLogsSection changeLogs={state.data.changeLogs} />
-        </div>
-
         {/* 装飾的なアイコン列 */}
-        <div className={sectionClass} style={sectionStyle('0.6s')}>
+        <div className={sectionClass} style={sectionStyle('0.75s')}>
           <div className="flex justify-center gap-6 text-5xl opacity-20">
             <span className="text-amber-500">✦</span>
             <span className="text-sky-500">◆</span>
@@ -151,13 +176,10 @@ const OshiKatsuSaportPresenter: React.FC<OshiKatsuSaportPresenterProps> = ({
         {/* フッター */}
         <footer
           className={`text-center pt-10 border-t border-gray-200 ${sectionClass}`}
-          style={sectionStyle('0.7s')}
+          style={sectionStyle('0.85s')}
         >
           <p className="text-gray-500 text-sm font-light tracking-wide">
             © 2025 ホロリスの推し活サポート. All rights reserved.
-          </p>
-          <p className="text-gray-400 text-xs mt-2 italic">
-            Built with React 19 + Tailwind CSS 4
           </p>
         </footer>
       </div>

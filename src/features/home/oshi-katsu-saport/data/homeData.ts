@@ -1,6 +1,29 @@
 import { HomeFeature } from 'hooks/api/home/useHomeFeaturesGetApi';
 import { HomeChangeLog } from 'hooks/api/home/useHomeChangeLogsGetApi';
 
+export interface HomeEvent {
+  id: string;
+  title: string;
+  description: string;
+  dateLabel: string;
+  link: string;
+  color: string;
+}
+
+/**
+ * ホーム画面のイベント一覧データ（静的）
+ */
+export const HOME_EVENTS: HomeEvent[] = [
+  {
+    id: '2026-11-04-ep-tokino-sora',
+    title: 'ときのそら NEW EP「CHECK！」',
+    description: '11/4発売。販売エディション・イベントスケジュール・先着特典・店舗一覧の購入ガイドです。',
+    dateLabel: '2026.11.04 RELEASE',
+    link: '/event/2026-11-04-ep-tokino-sora',
+    color: 'rose',
+  },
+];
+
 /**
  * ホーム画面の機能一覧データ（静的）
  */
