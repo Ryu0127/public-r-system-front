@@ -95,7 +95,7 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
   selectedTalentSlug = null,
 }) => {
   return (
-    <section className="space-y-6 animate-fade-in" style={{ animationDelay: '0.15s', marginTop: '60px' }}>
+    <section className="space-y-6 animate-fade-in" style={{ animationDelay: '0.15s' }}>
       {/* セクションタイトル */}
       <SectionTitle en="Key Features" ja="主な機能" />
 

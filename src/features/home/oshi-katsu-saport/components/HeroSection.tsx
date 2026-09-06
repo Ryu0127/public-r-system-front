@@ -108,7 +108,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ introPhase }) => {
 
       {/* 装飾的な区切り線 */}
       <div className={showSubtitle ? 'animate-fade-in' : 'opacity-0'}>
-        <div className="flex items-center justify-center gap-3 opacity-40 pt-8">
+        <div className="flex items-center justify-center gap-3 opacity-40">
           <div className="w-16 h-px bg-gradient-to-r from-transparent to-amber-400" />
           <div className="w-2 h-2 bg-amber-400 rounded-full" />
           <div className="w-16 h-px bg-gradient-to-l from-transparent to-amber-400" />
