@@ -1,0 +1,63 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "proxy": {
+    "entrypoint": "middleware.ts",
+    "matcher": ["/music", "/music/"]
+  },
+  "rewrites": [
+    {
+      "source": "/music",
+      "has": [
+        {
+          "type": "query",
+          "key": "talent",
+          "value": "tokino-sora"
+        },
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*(Twitterbot|facebookexternalhit|Facebot|Discordbot|Slackbot|TelegramBot|WhatsApp|LinkedInBot|Pinterest|Iframely|Embedly|redditbot|SkypeUriPreview|Viber|line-poker|SummalyBot|Bluesky).*"
+        }
+      ],
+      "destination": "/og/music-tokino-sora.html"
+    },
+    {
+      "source": "/music",
+      "has": [
+        {
+          "type": "query",
+          "key": "talent",
+          "value": "tokino-sora"
+        },
+        {
+          "type": "query",
+          "key": "og-preview",
+          "value": "1"
+        }
+      ],
+      "destination": "/og/music-tokino-sora.html"
+    },
+    {
+      "source": "/music",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*(Twitterbot|facebookexternalhit|Facebot|Discordbot|Slackbot|TelegramBot|WhatsApp|LinkedInBot|Pinterest|Iframely|Embedly|redditbot|SkypeUriPreview|Viber|line-poker|SummalyBot|Bluesky).*"
+        }
+      ],
+      "destination": "/og/music.html"
+    },
+    {
+      "source": "/music",
+      "has": [
+        {
+          "type": "query",
+          "key": "og-preview",
+          "value": "1"
+        }
+      ],
+      "destination": "/og/music.html"
+    }
+  ]
+}

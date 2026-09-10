@@ -4,6 +4,7 @@ import { useSearchParams } from 'react-router-dom';
 import { TalentMusicState, useTalentMusicState, TalentMusicActions } from '../hooks/useTalentMusicState';
 import { toGroupSlug } from '../utils/toGroupSlug';
 import { saveTalentSelection } from 'utils/talentSelectionStorage';
+import { getMusicOgPage, SITE_ORIGIN } from 'og/musicOgPages';
 import TalentMusicPresenter from '../presenters/TalentMusicPresenter';
 
 const initialState: TalentMusicState = {
@@ -99,27 +100,36 @@ const TalentMusicContainer: React.FC = () => {
     };
   }, [actions, setSearchParams]);
 
+  const ogPage = useMemo(() => getMusicOgPage(talentQuery), [talentQuery]);
+  const pageUrl = `${SITE_ORIGIN}${ogPage.path}`;
+  const imageUrl = `${SITE_ORIGIN}${ogPage.imagePath}`;
+  const twitterImageUrl = `${SITE_ORIGIN}${ogPage.twitterImagePath}`;
+
   return (
     <>
       <Helmet>
-        <title>楽曲一覧 | ホロリスの推し活サポート</title>
-        <meta
-          name="description"
-          content="ホロライブタレントのオリジナル曲・カバー曲をYouTubeサムネイルで一覧確認できます。推しの楽曲をまとめてチェックしよう。"
-        />
-        <meta property="og:title" content="楽曲一覧 | ホロリスの推し活サポート" />
-        <meta
-          property="og:description"
-          content="ホロライブタレントのオリジナル曲・カバー曲をYouTubeサムネイルで一覧確認。推しの楽曲をまとめてチェック。"
-        />
-        <meta
-          property="og:url"
-          content="https://public-r-system-front.vercel.app/music"
-        />
-        <link
-          rel="canonical"
-          href="https://public-r-system-front.vercel.app/music"
-        />
+        <title>{ogPage.title}</title>
+        <meta name="description" content={ogPage.description} />
+        <meta name="keywords" content={ogPage.keywords} />
+        <link rel="canonical" href={pageUrl} />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content={ogPage.title} />
+        <meta property="og:description" content={ogPage.description} />
+        <meta property="og:url" content={pageUrl} />
+        <meta property="og:image" content={imageUrl} />
+        {ogPage.imageWidth != null && (
+          <meta property="og:image:width" content={String(ogPage.imageWidth)} />
+        )}
+        {ogPage.imageHeight != null && (
+          <meta property="og:image:height" content={String(ogPage.imageHeight)} />
+        )}
+        <meta property="og:locale" content="ja_JP" />
+        <meta property="og:site_name" content="ホロリスの推し活サポート" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:url" content={pageUrl} />
+        <meta name="twitter:title" content={ogPage.title} />
+        <meta name="twitter:description" content={ogPage.description} />
+        <meta name="twitter:image" content={twitterImageUrl} />
       </Helmet>
       <TalentMusicPresenter state={state} actions={actionsWithUrl} />
     </>
