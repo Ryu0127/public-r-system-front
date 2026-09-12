@@ -3,6 +3,9 @@ export type SimplePage = {
   title: string;
   description: string;
   htmlPath: string;
+  ogImagePath: string;
+  ogImageWidth: number;
+  ogImageHeight: number;
 };
 
 /**
@@ -15,6 +18,9 @@ export const SIMPLE_PAGES: SimplePage[] = [
     title: 'ときのそら NEW EP「CHECK！」購入ガイド',
     description: '販売エディション・イベントスケジュール・先着特典・店舗一覧',
     htmlPath: '/event/2026-11-04-ep-tokino-sora/index.html',
+    ogImagePath: '/og-image-event-2026-11-04-ep-tokino-sora.jpg',
+    ogImageWidth: 1200,
+    ogImageHeight: 630,
   },
 ];
 
