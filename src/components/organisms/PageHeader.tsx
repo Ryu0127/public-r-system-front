@@ -27,9 +27,16 @@ export interface PageHeaderProps {
   iconGradientClass: string;
   /** 使い方3ステップ（省略時は非表示） */
   steps?: string[];
-  onBackToHome: () => void;
+  /** 指定時のみ「ホームに戻る」ボタンを表示 */
+  onBackToHome?: () => void;
   /** 指定時のみ「使い方」ボタンを表示 */
   onHelpClick?: () => void;
+  /**
+   * アイコン・タイトル・説明の並べ方
+   * - stacked（既定）: 縦に積んで中央揃え
+   * - inline: 横一列（スマホではアイコン＋タイトルの下に説明）
+   */
+  layout?: 'stacked' | 'inline';
 }
 
 /**
@@ -44,48 +51,86 @@ const PageHeader: React.FC<PageHeaderProps> = ({
   steps,
   onBackToHome,
   onHelpClick,
+  layout = 'stacked',
 }) => {
   // サイト内からの復帰ではホームのロード画面をスキップする
   const handleBackToHome = () => {
     markSkipHomeLoading();
-    onBackToHome();
+    onBackToHome?.();
   };
+
+  const hasTopButtons = !!onBackToHome || !!onHelpClick;
 
   return (
     <header className="text-center mb-10 animate-fade-in">
       {/* ホームに戻るボタンと使い方ボタン */}
-      <div className="flex justify-between items-center mb-6">
-        <button onClick={handleBackToHome} className={pillButtonClass}>
-          <HomeIcon />
-          <span className="text-sm font-medium">ホームに戻る</span>
-        </button>
-        {onHelpClick && (
-          <button onClick={onHelpClick} className={pillButtonClass}>
-            <HelpIcon />
-            <span className="text-sm font-medium">使い方</span>
-          </button>
-        )}
-      </div>
+      {hasTopButtons && (
+        <div className="flex justify-between items-center mb-6">
+          {onBackToHome ? (
+            <button onClick={handleBackToHome} className={pillButtonClass}>
+              <HomeIcon />
+              <span className="text-sm font-medium">ホームに戻る</span>
+            </button>
+          ) : (
+            <span />
+          )}
+          {onHelpClick && (
+            <button onClick={onHelpClick} className={pillButtonClass}>
+              <HelpIcon />
+              <span className="text-sm font-medium">使い方</span>
+            </button>
+          )}
+        </div>
+      )}
 
-      {/* 機能アイコンバッジ */}
-      <div
-        className={`inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br ${iconGradientClass} rounded-2xl mb-4 shadow-lg text-white`}
-      >
-        {icon}
-      </div>
+      {layout === 'inline' ? (
+        // アイコン・タイトル・説明を横一列に表示
+        <div className="flex flex-col md:flex-row items-center justify-center gap-3 md:gap-5">
+          <div className="flex items-center gap-3 md:gap-4 flex-shrink-0">
+            {/* 機能アイコンバッジ */}
+            <div
+              className={`inline-flex items-center justify-center w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br ${iconGradientClass} rounded-2xl shadow-lg text-white flex-shrink-0`}
+            >
+              {icon}
+            </div>
 
-      {/* タイトル */}
-      <h1
-        className="text-3xl md:text-4xl font-bold text-gray-800 mb-3"
-        style={{ fontFamily: "'Playfair Display', serif" }}
-      >
-        {title}
-      </h1>
+            {/* タイトル */}
+            <h1
+              className="text-3xl md:text-4xl font-bold text-gray-800 whitespace-nowrap"
+              style={{ fontFamily: "'Playfair Display', serif" }}
+            >
+              {title}
+            </h1>
+          </div>
 
-      {/* サブタイトル */}
-      <p className="text-base md:text-lg text-gray-600 font-light">
-        {subtitle}
-      </p>
+          {/* サブタイトル（PC ではタイトルとの間に区切り線） */}
+          <p className="text-base md:text-lg text-gray-600 font-light text-center md:text-left md:pl-5 md:border-l md:border-gray-300">
+            {subtitle}
+          </p>
+        </div>
+      ) : (
+        <>
+          {/* 機能アイコンバッジ */}
+          <div
+            className={`inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br ${iconGradientClass} rounded-2xl mb-4 shadow-lg text-white`}
+          >
+            {icon}
+          </div>
+
+          {/* タイトル */}
+          <h1
+            className="text-3xl md:text-4xl font-bold text-gray-800 mb-3"
+            style={{ fontFamily: "'Playfair Display', serif" }}
+          >
+            {title}
+          </h1>
+
+          {/* サブタイトル */}
+          <p className="text-base md:text-lg text-gray-600 font-light">
+            {subtitle}
+          </p>
+        </>
+      )}
 
       {/* 使い方ステップ */}
       {steps && steps.length > 0 && (

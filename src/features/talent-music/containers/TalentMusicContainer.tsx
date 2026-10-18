@@ -15,15 +15,18 @@ const initialState: TalentMusicState = {
     isDropdownOpen: false,
     activeFilter: 'all',
     hasMoreMusic: false,
+    isMultiSelectMode: false,
   },
   data: {
     talents: [],
     groups: [],
+    playlists: [],
     musicList: [],
     musicPagination: null,
     musicCounts: null,
     selectedTalent: null,
     selectedGroup: null,
+    playlistSelection: [],
   },
   ui: {
     talentSearchQuery: '',
