@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import type { MusicPlaylist } from 'features/talent-music/types';
+import type { MusicPlaylist, MusicPlaylistTrack } from 'features/talent-music/types';
 
 /** YouTube プレイリストID として許可する形式 */
 const YOUTUBE_PLAYLIST_CODE_PATTERN = /^[A-Za-z0-9_-]{2,64}$/;
@@ -14,8 +14,25 @@ const MOCK_PLAYLISTS: MusicPlaylist[] = [
     youtubePlaylistCode: 'PL_0A0t0-Y0AMZWQAuvcAf_VzfKKhxqvO4',
     name: 'おすすめ楽曲プレイリスト',
     url: buildPlaylistUrl('PL_0A0t0-Y0AMZWQAuvcAf_VzfKKhxqvO4'),
+    musicCount: 0,
+    musicList: [],
   },
 ];
+
+/** 紐付け楽曲を正規化（ID・曲名のない行は除外） */
+function normalizeTracks(raw: unknown): MusicPlaylistTrack[] {
+  if (!Array.isArray(raw)) return [];
+  const out: MusicPlaylistTrack[] = [];
+  for (const item of raw) {
+    if (!item || typeof item !== 'object') continue;
+    const t = item as Record<string, unknown>;
+    const id = Number(t.id);
+    const title = String(t.title ?? '').trim();
+    if (!Number.isFinite(id) || !title) continue;
+    out.push({ id, title, youtubeVideoId: String(t.youtubeVideoId ?? '') });
+  }
+  return out;
+}
 
 export interface MusicPlaylistsFetchParams {
   /** タレント slug（指定時はそのタレントが含まれるプレイリストのみ） */
@@ -58,11 +75,15 @@ function normalizePlaylists(raw: unknown): MusicPlaylist[] | null {
     const id = Number(p.id);
     if (!YOUTUBE_PLAYLIST_CODE_PATTERN.test(code) || !name || seen.has(code)) continue;
     seen.add(code);
+    const musicList = normalizeTracks(p.musicList);
+    const musicCount = Number(p.musicCount);
     out.push({
       id: Number.isFinite(id) ? id : out.length + 1,
       youtubePlaylistCode: code,
       name,
       url: buildPlaylistUrl(code),
+      musicCount: Number.isFinite(musicCount) ? musicCount : musicList.length,
+      musicList,
     });
   }
   return out;
@@ -72,7 +93,7 @@ function normalizePlaylists(raw: unknown): MusicPlaylist[] | null {
  * GET …/oshi-katsu-saport/talent-music/playlists（?talent= で絞り込み）
  *
  * レスポンス:
- * { status: true, data: { playlists: [{ id, youtubePlaylistCode, name, url }] } }
+ * { status: true, data: { playlists: [{ id, youtubePlaylistCode, name, url, musicCount, musicList: [{ id, title, youtubeVideoId }] }] } }
  */
 export const useMusicPlaylistsGetApi = () => {
   const executeMusicPlaylistsGet = useCallback(async (params: MusicPlaylistsFetchParams = {}): Promise<{
