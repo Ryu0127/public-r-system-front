@@ -7,11 +7,8 @@ const MusicIcon = () => (
   </svg>
 );
 
-interface TalentMusicHeaderProps {
-  onBackToHome: () => void;
-}
-
-export const TalentMusicHeader: React.FC<TalentMusicHeaderProps> = ({ onBackToHome }) => {
+/** ホームへの導線は上部固定ヘッダー（TalentMusicTopBar）に集約 */
+export const TalentMusicHeader: React.FC = () => {
   return (
     <PageHeader
       title="楽曲一覧"
@@ -19,7 +16,7 @@ export const TalentMusicHeader: React.FC<TalentMusicHeaderProps> = ({ onBackToHo
       icon={<MusicIcon />}
       iconGradientClass="from-red-500 to-pink-600"
       steps={[]}
-      onBackToHome={onBackToHome}
+      layout="inline"
     />
   );
 };
