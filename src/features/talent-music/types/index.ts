@@ -12,6 +12,15 @@ export interface Music {
   description?: string;
 }
 
+/** YouTube プレイリスト（GET …/talent-music/playlists） */
+export interface MusicPlaylist {
+  id: number;
+  /** YouTube プレイリストID（URL の list パラメータ） */
+  youtubePlaylistCode: string;
+  name: string;
+  url: string;
+}
+
 export interface MusicTalent {
   /** 一覧APIの id（数値でも文字列でも返りうるため文字列で保持） */
   id: string;

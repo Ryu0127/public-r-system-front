@@ -36,6 +36,16 @@ export const API_ENDPOINTS = {
     update: (id: string) => `${API_BASE_URL}/admin/talent-music/${id}`,
     delete: (id: string) => `${API_BASE_URL}/admin/talent-music/${id}`,
   },
+  // プレイリスト管理（管理者用）
+  musicPlaylists: {
+    list: `${API_BASE_URL}/admin/music-playlists`,
+    detail: (id: string) => `${API_BASE_URL}/admin/music-playlists/${id}`,
+    create: `${API_BASE_URL}/admin/music-playlists`,
+    update: (id: string) => `${API_BASE_URL}/admin/music-playlists/${id}`,
+    delete: (id: string) => `${API_BASE_URL}/admin/music-playlists/${id}`,
+    /** 紐付け楽曲（GET: 取得 / PUT: 置き換え） */
+    music: (id: string) => `${API_BASE_URL}/admin/music-playlists/${id}/music`,
+  },
 };
 
 /**

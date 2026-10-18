@@ -27,6 +27,13 @@ const AdminDashboardPresenter: React.FC = () => {
       color: 'bg-pink-500 hover:bg-pink-600',
     },
     {
+      title: 'プレイリスト管理',
+      description: '楽曲一覧画面に表示するYouTubeプレイリストの登録・編集・削除を行います',
+      path: '/admin/music-playlists',
+      icon: '📃',
+      color: 'bg-red-500 hover:bg-red-600',
+    },
+    {
       title: '月次スケジュール',
       description: '月次のスケジュールを確認・管理します',
       path: '/life/life-schedule-month',

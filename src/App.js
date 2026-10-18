@@ -15,10 +15,14 @@ import TalentAdminContainer from 'features/admin/talents/containers/TalentAdminC
 import TalentFormContainer from 'features/admin/talent-edit/containers/TalentFormContainer';
 import MusicAdminContainer from 'features/admin/talent-music/containers/MusicAdminContainer';
 import MusicFormContainer from 'features/admin/talent-music-edit/containers/MusicFormContainer';
+import MusicPlaylistAdminContainer from 'features/admin/music-playlists/containers/MusicPlaylistAdminContainer';
+import MusicPlaylistFormContainer from 'features/admin/music-playlist-edit/containers/MusicPlaylistFormContainer';
+import MusicPlaylistMusicContainer from 'features/admin/music-playlist-music/containers/MusicPlaylistMusicContainer';
 import AdminDashboardContainer from 'features/admin/dashboard/containers/AdminDashboardContainer';
 import AdminProtectedLayout from 'features/admin/layout/AdminProtectedLayout';
 import LoginContainer from 'features/auth/login/containers/LoginContainer';
 import TalentMusicContainer from 'features/talent-music/containers/TalentMusicContainer';
+import MusicLyricsContainer from 'features/music-lyrics/containers/MusicLyricsContainer';
 import TdlShowtimesContainer from 'features/showtimes/tdl-showtimes/containers/TdlShowtimesContainer';
 import SimplePageViewerContainer from 'features/simple-pages/containers/SimplePageViewerContainer';
 import './App.css';
@@ -57,6 +61,8 @@ function App() {
         <Route path="/ego-search-support" element={<EgoSearchContainer />} />
         {/* 楽曲一覧 */}
         <Route path="/music" element={<TalentMusicContainer />} />
+        {/* 歌詞・コール確認 */}
+        <Route path="/music/:musicId/lyrics" element={<MusicLyricsContainer />} />
         {/* 旧URLから新URLへリダイレクト */}
         <Route path="/talent-music" element={<Navigate to="/music" replace />} />
         {/* 生活管理システム */}
@@ -83,6 +89,11 @@ function App() {
           <Route path="talent-music" element={<MusicAdminContainer />} />
           <Route path="talent-music/new" element={<MusicFormContainer />} />
           <Route path="talent-music/:id/edit" element={<MusicFormContainer />} />
+          {/* プレイリスト管理 */}
+          <Route path="music-playlists" element={<MusicPlaylistAdminContainer />} />
+          <Route path="music-playlists/new" element={<MusicPlaylistFormContainer />} />
+          <Route path="music-playlists/:id/edit" element={<MusicPlaylistFormContainer />} />
+          <Route path="music-playlists/:id/music" element={<MusicPlaylistMusicContainer />} />
           {/* TDL ショー&パレード */}
           <Route path="showtimes/tdl" element={<TdlShowtimesContainer />} />
         </Route>
