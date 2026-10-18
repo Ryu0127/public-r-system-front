@@ -13,12 +13,23 @@ export interface Music {
 }
 
 /** YouTube プレイリスト（GET …/talent-music/playlists） */
+/** プレイリストに紐付いた楽曲（一覧表示用の最小情報） */
+export interface MusicPlaylistTrack {
+  id: number;
+  title: string;
+  youtubeVideoId: string;
+}
+
 export interface MusicPlaylist {
   id: number;
   /** YouTube プレイリストID（URL の list パラメータ） */
   youtubePlaylistCode: string;
   name: string;
   url: string;
+  /** 紐付け楽曲数 */
+  musicCount: number;
+  /** 紐付け楽曲（並び順） */
+  musicList: MusicPlaylistTrack[];
 }
 
 export interface MusicTalent {

@@ -91,6 +91,23 @@ const TalentMusicPresenter: React.FC<TalentMusicPresenterProps> = ({ state, acti
 
   const showMusicSection = !config.isLoading && !config.isMusicLoading;
 
+  // タレントID → タレント名（楽曲カードのタレント表示用）
+  const talentNameById = useMemo(() => {
+    const map = new Map<number, string>();
+    data.talents.forEach((t) => {
+      const id = Number(t.id);
+      if (Number.isFinite(id) && t.talentName) map.set(id, t.talentName);
+    });
+    return map;
+  }, [data.talents]);
+  const getTalentNames = useCallback(
+    (talentIds: number[]) =>
+      Array.from(new Set(talentIds))
+        .map((id) => talentNameById.get(id))
+        .filter((name): name is string => !!name),
+    [talentNameById]
+  );
+
   // 複数選択（一時プレイリスト）: 楽曲ID → 選択順（1始まり）
   const playlistSelection = data.playlistSelection;
   const selectionOrderById = useMemo(() => {
@@ -189,6 +206,7 @@ const TalentMusicPresenter: React.FC<TalentMusicPresenterProps> = ({ state, acti
                     selectionOrder={selectionOrderById.get(music.id)}
                     isSelectionDisabled={isSelectionMaxReached && !selectionOrderById.has(music.id)}
                     onToggleSelect={actions.toggleMusicSelection}
+                    talentNames={getTalentNames(music.talentIds)}
                   />
                 ))}
               </div>

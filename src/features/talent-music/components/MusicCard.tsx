@@ -12,6 +12,8 @@ interface MusicCardProps {
   /** 選択上限到達などで選択できない */
   isSelectionDisabled?: boolean;
   onToggleSelect?: (music: Music) => void;
+  /** 楽曲に紐付いているタレント名（曲名の下に小さく表示） */
+  talentNames?: string[];
 }
 
 /** マウスを乗せてから情報パネルを展開するまでの待ち時間（素早く横切った時のちらつき防止） */
@@ -19,8 +21,10 @@ const HOVER_EXPAND_DELAY_MS = 250;
 
 /** 通常時カード本文（タイトル欄）の余白 */
 const CARD_BODY_CLASS = 'p-3';
-/** タイトル: 2行分の高さを確保してカードの高さを揃える */
-const TITLE_CLASS = 'text-base leading-snug tracking-wide line-clamp-2 min-h-[2.75rem]';
+/** タイトル: 1行（横幅を超える場合は … で省略） */
+const TITLE_CLASS = 'text-base leading-snug tracking-wide truncate';
+/** タレント名: 1行（長い場合は省略）。タレント未設定でも高さを確保してカードの高さを揃える */
+const TALENT_CLASS = 'mt-1 text-xs leading-normal text-gray-500 tracking-wide truncate';
 
 // 楽曲タイプバッジ（TOP 楽曲ピックアップと同じスタイル）
 const TYPE_BADGE_CLASSES: Record<string, string> = {
@@ -82,7 +86,9 @@ export const MusicCard: React.FC<MusicCardProps> = ({
   selectionOrder,
   isSelectionDisabled = false,
   onToggleSelect,
+  talentNames = [],
 }) => {
+  const talentLabel = talentNames.join('、');
   const [thumbnailError, setThumbnailError] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const cardRef = useRef<HTMLDivElement | null>(null);
@@ -189,6 +195,7 @@ export const MusicCard: React.FC<MusicCardProps> = ({
         <div className="aspect-[11/6]" />
         <div className={CARD_BODY_CLASS}>
           <div className={TITLE_CLASS}>&nbsp;</div>
+          <div className={TALENT_CLASS}>&nbsp;</div>
         </div>
       </div>
 
@@ -300,9 +307,15 @@ export const MusicCard: React.FC<MusicCardProps> = ({
               </Link>
             </div>
 
-            <h3 className="font-bold text-gray-900 text-base leading-snug tracking-wide line-clamp-2">
+            <h3 className="font-bold text-gray-900 text-base leading-snug tracking-wide truncate" title={music.title}>
               {music.title}
             </h3>
+
+            {talentLabel && (
+              <p className="text-xs text-gray-500 tracking-wide truncate" title={talentLabel}>
+                {talentLabel}
+              </p>
+            )}
 
             {releaseDateLabel && (
               <p className="text-sm text-gray-500 tracking-wide">{releaseDateLabel}</p>
@@ -313,9 +326,14 @@ export const MusicCard: React.FC<MusicCardProps> = ({
             )}
           </div>
         ) : (
-          /* 通常時: タイトルのみ（TOP 楽曲ピックアップと同じ表示） */
+          /* 通常時: タイトル + タレント名 */
           <div className={CARD_BODY_CLASS}>
-            <h3 className={`font-bold text-gray-900 ${TITLE_CLASS}`}>{music.title}</h3>
+            <h3 className={`font-bold text-gray-900 ${TITLE_CLASS}`} title={music.title}>
+              {music.title}
+            </h3>
+            <p className={TALENT_CLASS} title={talentLabel || undefined}>
+              {talentLabel || ' '}
+            </p>
           </div>
         )}
       </div>
