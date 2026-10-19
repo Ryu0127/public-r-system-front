@@ -9,6 +9,13 @@ import { MusicTalent, MusicTalentGroup } from '../types';
  */
 const SITE_ICON_SRC = `${process.env.PUBLIC_URL}/logo192.png`;
 
+/**
+ * ヘッダーの高さ（64px）と、ヘッダー直下に要素を配置する場合の top 位置
+ * ※ Tailwind はクラス名を静的に検出するため、値を変える場合は両方をそろえて書き換えること
+ */
+const TOP_BAR_HEIGHT_CLASS = 'h-16';
+export const TALENT_MUSIC_TOP_BAR_OFFSET_CLASS = 'top-16';
+
 const UsersIcon: React.FC<{ className?: string }> = ({ className = 'w-4 h-4' }) => (
   <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -53,7 +60,7 @@ export const TalentMusicTopBar: React.FC<TalentMusicTopBarProps> = ({
 
   return (
     <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-gray-200 shadow-sm">
-      <div className="flex items-center gap-3 h-16 px-4 md:px-8">
+      <div className={`flex items-center gap-3 ${TOP_BAR_HEIGHT_CLASS} px-4 md:px-8`}>
         {/* ホームへ */}
         <a
           href="/"

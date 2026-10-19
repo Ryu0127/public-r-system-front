@@ -58,18 +58,31 @@ interface TalentSelectionModalProps<T extends PickerTalent, G extends PickerTale
   onGroupSelect?: (group: G) => void;
   onClose: () => void;
   /**
-   * モーダルの大きさ
-   * - default: 最大幅 672px・3列（既定）
-   * - wide: 最大幅 1024px・画面幅に応じて 3〜5列
+   * モーダルの大きさ・表示方法
+   * - default: 画面中央に表示。最大幅 672px・最大高さ 85vh・3列（既定）
+   * - wide: 画面上端から下端まで広げて表示（上から下へ広がるアニメーション）。最大幅 1024px・画面幅に応じて 3〜5列
    */
   size?: TalentSelectionModalSize;
+  /**
+   * モーダル（背景の暗幕を含む）の上端位置を指定する Tailwind の top クラス（例: 'top-16'）
+   * 画面上部に固定ヘッダーがある場合に、ヘッダーと重ならないよう直下から表示するために使用（既定: 'top-0'）
+   */
+  topOffsetClass?: string;
 }
 
 export type TalentSelectionModalSize = 'default' | 'wide';
 
-const MODAL_SIZE_CLASSES: Record<TalentSelectionModalSize, { panel: string; grid: string }> = {
-  default: { panel: 'max-w-2xl', grid: 'grid-cols-3' },
-  wide: { panel: 'max-w-5xl', grid: 'grid-cols-3 md:grid-cols-4 lg:grid-cols-5' },
+const MODAL_SIZE_CLASSES: Record<TalentSelectionModalSize, { overlay: string; panel: string; grid: string }> = {
+  default: {
+    overlay: 'items-center',
+    panel: 'max-w-2xl max-h-[85vh]',
+    grid: 'grid-cols-3',
+  },
+  wide: {
+    overlay: 'items-stretch',
+    panel: 'max-w-5xl h-full animate-expand-down',
+    grid: 'grid-cols-3 md:grid-cols-4 lg:grid-cols-5',
+  },
 };
 
 /**
@@ -87,6 +100,7 @@ export function TalentSelectionModal<T extends PickerTalent, G extends PickerTal
   onGroupSelect,
   onClose,
   size = 'default',
+  topOffsetClass = 'top-0',
 }: TalentSelectionModalProps<T, G>) {
   const sizeClasses = MODAL_SIZE_CLASSES[size];
   // groups がある場合は groups を検索フィルタリングして使用、なければ talents をフラット表示
@@ -184,12 +198,12 @@ export function TalentSelectionModal<T extends PickerTalent, G extends PickerTal
 
   return (
     <div
-      className="fixed inset-0 bg-black/60 flex items-center justify-center z-[9999] p-4"
+      className={`fixed ${topOffsetClass} inset-x-0 bottom-0 bg-black/60 flex ${sizeClasses.overlay} justify-center z-[9999] p-4`}
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className={`bg-white rounded-2xl w-full ${sizeClasses.panel} max-h-[85vh] flex flex-col shadow-2xl`}>
+      <div className={`bg-white rounded-2xl w-full ${sizeClasses.panel} flex flex-col shadow-2xl`}>
         {/* ヘッダー */}
         <div className="flex-shrink-0 border-b border-gray-200 px-6 py-4 flex justify-between items-center">
           <h2 className="text-xl font-bold text-gray-900">{title}</h2>
