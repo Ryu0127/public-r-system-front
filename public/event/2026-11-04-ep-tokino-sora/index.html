@@ -255,18 +255,7 @@
   .modal-link{ display:inline-flex; align-items:center; gap:6px; font-size:0.86rem; font-weight:800; color:#fff; background:linear-gradient(90deg,var(--sky1),var(--sky2)); padding:9px 18px; border-radius:999px; text-decoration:none; transition:.15s ease; }
   .modal-link:hover{ box-shadow:0 6px 14px -6px rgba(111,179,224,.7); }
   .modal-products{ display:grid; grid-template-columns:repeat(2, 1fr); gap:12px; }
-  .modal-product-card{ display:flex; flex-direction:column; align-items:flex-start; gap:10px; background:#fff9ec; border:1px solid var(--card-border); border-radius:14px; padding:14px; position:relative; overflow:hidden; }
-  .modal-product-card.is-expired .plink{ pointer-events:none; }
-  .purchase-expired-overlay{
-    position:absolute; left:0; top:0; right:0; bottom:0; z-index:20;
-    display:flex; align-items:center; justify-content:center;
-    background:rgba(72,72,72,.58);
-    pointer-events:auto;
-  }
-  .purchase-expired-overlay span{
-    font-weight:900; font-size:1.08rem; letter-spacing:.14em;
-    color:#fff; text-shadow:0 2px 10px rgba(0,0,0,.35);
-  }
+  .modal-product-card{ display:flex; flex-direction:column; align-items:flex-start; gap:10px; background:#fff9ec; border:1px solid var(--card-border); border-radius:14px; padding:14px; }
   .modal-product-card .pname{ font-size:0.94rem; font-weight:800; color:var(--ink); line-height:1.55; }
   .modal-product-card .pfacts{ display:flex; flex-direction:column; gap:6px; width:100%; }
   .modal-product-card .pfact{ display:flex; gap:8px; font-size:0.88rem; align-items:baseline; }
@@ -511,7 +500,7 @@ const STORES = [
       {name:'「CHECK！」/ときのそら 【初回限定盤】', url:'https://www.gamers.co.jp/pn/%E3%80%90%E3%82%A2%E3%83%AB%E3%83%90%E3%83%A0%E3%80%91%E3%80%8CCHECK%EF%BC%81%E3%80%8D/%E3%81%A8%E3%81%8D%E3%81%AE%E3%81%9D%E3%82%89+%E3%80%90%E5%88%9D%E5%9B%9E%E9%99%90%E5%AE%9A%E7%9B%A4%E3%80%91/pd/10931715/', price:'¥4,400（税込）', release:'2026-11-04T00:00:00+09:00', eventLabel:'通常販売', earlyBird:'対象（9/15(火)23:59まで）', chainGoods:'A3タペストリー＋缶バッジ＋L判ブロマイド', eventEntry:`なし`},
       {name:'「CHECK！」/ときのそら 【通常盤】', url:'https://www.gamers.co.jp/pn/%E3%80%90%E3%82%A2%E3%83%AB%E3%83%90%E3%83%A0%E3%80%91%E3%80%8CCHECK%EF%BC%81%E3%80%8D/%E3%81%A8%E3%81%8D%E3%81%AE%E3%81%9D%E3%82%89+%E3%80%90%E9%80%9A%E5%B8%B8%E7%9B%A4%E3%80%91/pd/10931716/', price:'¥2,750（税込）', release:'2026-11-04T00:00:00+09:00', eventLabel:'通常販売', earlyBird:'対象（9/15(火)23:59まで）', chainGoods:'缶バッジ＋L判ブロマイド', eventEntry:`なし`},
       {name:`「CHECK！」/ときのそら 【初回限定盤】
-      ※11/22[１日店長]イベントシリアル付専用`, url:'https://www.gamers.co.jp/pn/%E3%80%90%E3%82%A2%E3%83%AB%E3%83%90%E3%83%A0%E3%80%91%E2%80%BB11/22%5B%EF%BC%91%E6%97%A5%E5%BA%97%E9%95%B7%5D%E3%82%A4%E3%83%99%E3%83%B3%E3%83%88%E3%82%B7%E3%83%AA%E3%82%A2%E3%83%AB%E4%BB%98%E5%B0%82%E7%94%A8%E2%80%BB%E3%80%8CCHECK%EF%BC%81%E3%80%8D/%E3%81%A8%E3%81%8D%E3%81%AE%E3%81%9D%E3%82%89+%E3%80%90%E5%88%9D%E5%9B%9E%E9%99%90%E5%AE%9A%E7%9B%A4%E3%80%91/pd/10931883/', price:'¥4,400（税込）', release:'2026-11-04T00:00:00+09:00', eventLabel:'1日店長イベント', earlyBird:'対象外', chainGoods:'A3タペストリー＋缶バッジ＋L判ブロマイド',       eventEntry:`1日店長イベント 応募シリアル`,
+      ※11/22[１日店長]イベントシリアル付専用`, url:'https://www.gamers.co.jp/pn/%E3%80%90%E3%82%A2%E3%83%AB%E3%83%90%E3%83%A0%E3%80%91%E2%80%BB11/22%5B%EF%BC%91%E6%97%A5%E5%BA%97%E9%95%B7%5D%E3%82%A4%E3%83%99%E3%83%B3%E3%83%88%E3%82%B7%E3%83%AA%E3%82%A2%E3%83%AB%E4%BB%98%E5%B0%82%E7%94%A8%E2%80%BB%E3%80%8CCHECK%EF%BC%81%E3%80%8D/%E3%81%A8%E3%81%8D%E3%81%AE%E3%81%9D%E3%82%89+%E3%80%90%E5%88%9D%E5%9B%9E%E9%99%90%E5%AE%9A%E7%9B%A4%E3%80%91/pd/10931883/', price:'¥4,400（税込）', release:'2026-11-04T00:00:00+09:00', eventLabel:'1日店長イベント', earlyBird:'対象外', chainGoods:'A3タペストリー＋缶バッジ＋L判ブロマイド', eventEntry:`1日店長イベント 応募シリアル`,
       notes:`※注文締切は10/25(日)23:59、応募締切は11/1(日)23:59です。`},
       {name:`「CHECK！」/ときのそら 【通常盤】
       ※11/22[１日店長]イベントシリアル付専用`, url:'https://www.gamers.co.jp/pn/%E3%80%90%E3%82%A2%E3%83%AB%E3%83%90%E3%83%A0%E3%80%91%E2%80%BB11/22%5B%EF%BC%91%E6%97%A5%E5%BA%97%E9%95%B7%5D%E3%82%A4%E3%83%99%E3%83%B3%E3%83%88%E3%82%B7%E3%83%AA%E3%82%A2%E3%83%AB%E4%BB%98%E5%B0%82%E7%94%A8%E2%80%BB%E3%80%8CCHECK%EF%BC%81%E3%80%8D/%E3%81%A8%E3%81%8D%E3%81%AE%E3%81%9D%E3%82%89+%E3%80%90%E9%80%9A%E5%B8%B8%E7%9B%A4%E3%80%91/pd/10931884/', price:'¥2,750（税込）', release:'2026-11-04T00:00:00+09:00', eventLabel:'1日店長イベント', earlyBird:'対象外', chainGoods:'缶バッジ＋L判ブロマイド', eventEntry:`1日店長イベント 応募シリアル`,
@@ -755,7 +744,7 @@ B賞：「オリジナルポストカード」 (サイン等なし)
       eventUrl:'https://www.gamers.co.jp/contents/event_fair/detail.php?id=7886',
       participationBenefit:'参加者全員に「AKIHABARAゲーマーズ本店 1日店長名刺」をプレゼント',
       products:[
-        {name:'「CHECK！」/ときのそら 【初回限定盤】 ※11/22[１日店長]イベントシリアル付専用', url:'https://www.gamers.co.jp/pn/pd/10931883/', price:'¥4,400（税込）', release:'2026-11-04T00:00:00+09:00', earlyBird:'対象外', chainGoods:'A3タペストリー＋缶バッジ＋L判ブロマイド',         eventEntry:`1日店長イベント 応募シリアル`,
+        {name:'「CHECK！」/ときのそら 【初回限定盤】 ※11/22[１日店長]イベントシリアル付専用', url:'https://www.gamers.co.jp/pn/pd/10931883/', price:'¥4,400（税込）', release:'2026-11-04T00:00:00+09:00', earlyBird:'対象外', chainGoods:'A3タペストリー＋缶バッジ＋L判ブロマイド', eventEntry:`1日店長イベント 応募シリアル`,
         notes:`※注文締切は10/25(日)23:59、応募締切は11/1(日)23:59です。
 ※早期予約キャンペーン特典「ときのそら 一筆入魂！複製メッセージカード」は付きませんので予めご了承願います。
 ※早期予約キャンペーン特典を希望される場合は別の購入ページがございますので、そちらからご予約下さい。`},
@@ -1064,38 +1053,8 @@ function breakAtMark(str){
   return result;
 }
 
-function hasEventEntryBenefit(p){
-  const v = String(p.eventEntry || '').trim();
-  return v && v !== 'なし';
-}
-
-function isEventDedicatedProduct(p){
-  if(!hasEventEntryBenefit(p)) return false;
-  const name = String(p.name || '');
-  return name.indexOf('専用') !== -1 || name.indexOf('インターネットサイン会用') !== -1;
-}
-
-function getPurchaseDeadline(p, inheritedDeadline){
-  if(p.purchaseDeadline) return new Date(p.purchaseDeadline);
-  if(inheritedDeadline) return new Date(inheritedDeadline);
-  if(!p.eventLabel) return null;
-  const item = TIMELINE_ITEMS.find(it => it.label === p.eventLabel);
-  if(!item || (item.info && item.info.isApplicationPeriod)) return null;
-  return new Date(item.end);
-}
-
-function isPurchaseExpired(p, inheritedDeadline){
-  if(!isEventDedicatedProduct(p)) return false;
-  const deadline = getPurchaseDeadline(p, inheritedDeadline);
-  if(!deadline || isNaN(deadline.getTime())) return false;
-  return Date.now() > deadline.getTime();
-}
-
-function productCardHtml(p, inheritedDeadline){
-  const expired = isPurchaseExpired(p, inheritedDeadline);
-  const overlay = expired ? `<div class="purchase-expired-overlay" aria-label="購入期限切れ"><span>購入期限切れ</span></div>` : '';
-  return `<div class="modal-product-card${expired ? ' is-expired' : ''}">
-        ${overlay}
+function productCardHtml(p){
+  return `<div class="modal-product-card">
         <span class="pname">${breakAtMark(p.name)}</span>
         <div class="pfacts">
           <div class="pfact"><span class="pk">発売日</span><span class="pv">${fmtDate(new Date(p.release))}</span></div>
@@ -1109,12 +1068,11 @@ function productCardHtml(p, inheritedDeadline){
       </div>`;
 }
 
-function productsSectionHtml(products, inheritedDeadline){
+function productsSectionHtml(products){
   if(!products || !products.length) return '';
-  const card = p => productCardHtml(p, inheritedDeadline);
   const hasLabels = products.some(p=>p.eventLabel);
   if(!hasLabels){
-    return `<div class="modal-section"><h4>対象商品</h4><div class="modal-products">${products.map(card).join('')}</div></div>`;
+    return `<div class="modal-section"><h4>対象商品</h4><div class="modal-products">${products.map(productCardHtml).join('')}</div></div>`;
   }
   const groups = [];
   products.forEach(p=>{
@@ -1122,7 +1080,7 @@ function productsSectionHtml(products, inheritedDeadline){
     if(!g){ g = {label:p.eventLabel, items:[]}; groups.push(g); }
     g.items.push(p);
   });
-  return groups.map(g=>`<div class="modal-section"><h4>対象商品（${g.label}）</h4><div class="modal-products">${g.items.map(card).join('')}</div></div>`).join('');
+  return groups.map(g=>`<div class="modal-section"><h4>対象商品（${g.label}）</h4><div class="modal-products">${g.items.map(productCardHtml).join('')}</div></div>`).join('');
 }
 
 function openEventModal(idx){
@@ -1141,8 +1099,7 @@ function openEventModal(idx){
   if(it.info.eventUrl){
     html += `<div class="modal-section"><h4>公式イベントページ</h4><a class="modal-link" href="${it.info.eventUrl}" target="_blank" rel="noopener noreferrer">イベント詳細ページを見る ↗</a></div>`;
   }
-  const inheritedDeadline = (it.info && it.info.isApplicationPeriod) ? null : it.end;
-  html += productsSectionHtml(it.info.products, inheritedDeadline);
+  html += productsSectionHtml(it.info.products);
   modalBody.innerHTML = html;
   modalOverlay.classList.add('active');
   document.body.classList.add('modal-open');

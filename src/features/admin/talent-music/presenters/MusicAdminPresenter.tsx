@@ -12,6 +12,18 @@ interface MusicAdminPresenterProps {
   error: string | null;
 }
 
+/** 楽曲登録時の参照用リンク（別タブで開く） */
+const REFERENCE_LINKS: { label: string; href: string }[] = [
+  {
+    label: 'オリジナル',
+    href: 'https://seesaawiki.jp/hololivetv/d/%a5%aa%a5%ea%a5%b8%a5%ca%a5%eb%a5%bd%a5%f3%a5%b0#content_4',
+  },
+  {
+    label: '歌みた',
+    href: 'https://seesaawiki.jp/hololivetv/d/%A5%DB%A5%ED%A5%E9%A5%A4%A5%D6%A1%DA%B2%CE%A4%C3%A4%C6%A4%DF%A4%BF%C6%B0%B2%E8%B0%EC%CD%F7%A1%DB_%B4%CA%B0%D7%C8%C7#information-box',
+  },
+];
+
 type SortType =
   | 'createdAtDesc'
   | 'createdAtAsc'
@@ -119,6 +131,26 @@ const MusicAdminPresenter: React.FC<MusicAdminPresenterProps> = ({
             >
               + 新規登録
             </button>
+          </div>
+
+          {/* 参照用リンク（別タブ） */}
+          <div className="flex flex-wrap items-center gap-2 mb-4">
+            <span className="text-sm text-gray-600">参照:</span>
+            {REFERENCE_LINKS.map((link) => (
+              <a
+                key={link.label}
+                href={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 px-3 py-1.5 rounded border border-gray-300 text-sm text-blue-600 hover:bg-blue-50 hover:border-blue-300"
+              >
+                {link.label}
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+                <span className="sr-only">（別タブで開く）</span>
+              </a>
+            ))}
           </div>
 
           {/* 検索とフィルター */}

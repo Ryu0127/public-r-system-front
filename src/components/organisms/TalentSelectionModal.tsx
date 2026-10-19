@@ -57,7 +57,20 @@ interface TalentSelectionModalProps<T extends PickerTalent, G extends PickerTale
   /** 未指定の場合は「グループを選択」ボタンを表示しない */
   onGroupSelect?: (group: G) => void;
   onClose: () => void;
+  /**
+   * モーダルの大きさ
+   * - default: 最大幅 672px・3列（既定）
+   * - wide: 最大幅 1024px・画面幅に応じて 3〜5列
+   */
+  size?: TalentSelectionModalSize;
 }
+
+export type TalentSelectionModalSize = 'default' | 'wide';
+
+const MODAL_SIZE_CLASSES: Record<TalentSelectionModalSize, { panel: string; grid: string }> = {
+  default: { panel: 'max-w-2xl', grid: 'grid-cols-3' },
+  wide: { panel: 'max-w-5xl', grid: 'grid-cols-3 md:grid-cols-4 lg:grid-cols-5' },
+};
 
 /**
  * タレント選択モーダル（検索絞り込み・グループ別表示・アイコングリッド）
@@ -73,7 +86,9 @@ export function TalentSelectionModal<T extends PickerTalent, G extends PickerTal
   onTalentSelect,
   onGroupSelect,
   onClose,
+  size = 'default',
 }: TalentSelectionModalProps<T, G>) {
+  const sizeClasses = MODAL_SIZE_CLASSES[size];
   // groups がある場合は groups を検索フィルタリングして使用、なければ talents をフラット表示
   // グループ名にマッチ → グループ内の全タレントを表示
   // タレント名にマッチ → マッチしたタレントのみ表示
@@ -174,7 +189,7 @@ export function TalentSelectionModal<T extends PickerTalent, G extends PickerTal
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[85vh] flex flex-col shadow-2xl">
+      <div className={`bg-white rounded-2xl w-full ${sizeClasses.panel} max-h-[85vh] flex flex-col shadow-2xl`}>
         {/* ヘッダー */}
         <div className="flex-shrink-0 border-b border-gray-200 px-6 py-4 flex justify-between items-center">
           <h2 className="text-xl font-bold text-gray-900">{title}</h2>
@@ -219,7 +234,7 @@ export function TalentSelectionModal<T extends PickerTalent, G extends PickerTal
             </div>
           ) : groups.length > 0 ? (
             /* グループ別表示 */
-            <div className="space-y-6">
+            <div className="flex flex-col">
               {filteredGroups.map((group) => (
                 <div key={group.groupId}>
                   {/* グループヘッダー */}
@@ -236,7 +251,7 @@ export function TalentSelectionModal<T extends PickerTalent, G extends PickerTal
                     )}
                   </div>
                   {/* タレントグリッド */}
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className={`grid ${sizeClasses.grid} gap-3`}>
                     {group.talents.map((talent, index) => renderTalentCard(talent, index))}
                   </div>
                 </div>
@@ -244,7 +259,7 @@ export function TalentSelectionModal<T extends PickerTalent, G extends PickerTal
             </div>
           ) : (
             /* フラット表示（groups が空のとき） */
-            <div className="grid grid-cols-3 gap-3">
+            <div className={`grid ${sizeClasses.grid} gap-3`}>
               {filteredTalents.map((talent, index) => renderTalentCard(talent, index))}
             </div>
           )}
