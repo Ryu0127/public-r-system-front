@@ -29,6 +29,8 @@ interface MusicSelectionFooterProps {
   selectedMusic: Music[];
   /** 選択できる楽曲がない（一覧が空・読み込み中）場合 true */
   isStartDisabled?: boolean;
+  /** true の間は画面下へスライドして隠す（タレント・グループ選択モーダル表示中など） */
+  isHidden?: boolean;
   onStart: () => void;
   onCancel: () => void;
 }
@@ -42,6 +44,7 @@ export const MusicSelectionFooter: React.FC<MusicSelectionFooterProps> = ({
   isMultiSelectMode,
   selectedMusic,
   isStartDisabled = false,
+  isHidden = false,
   onStart,
   onCancel,
 }) => {
@@ -53,7 +56,13 @@ export const MusicSelectionFooter: React.FC<MusicSelectionFooterProps> = ({
   );
 
   return (
-    <footer className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-t border-gray-200 shadow-2xl">
+    <footer
+      aria-hidden={isHidden || undefined}
+      className={`fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-t border-gray-200 shadow-2xl transition-transform duration-300 ease-out motion-reduce:transition-none ${
+        // 上方向の影まで見えなくなるよう、高さ + 影の分だけ下げる
+        isHidden ? 'translate-y-[calc(100%+3rem)] pointer-events-none' : 'translate-y-0'
+      }`}
+    >
       <div className="max-w-4xl mx-auto px-4 h-20 flex items-center gap-3 sm:gap-4">
         {isMultiSelectMode ? (
           <button

@@ -153,6 +153,7 @@ const TalentMusicPresenter: React.FC<TalentMusicPresenterProps> = ({ state, acti
             onTalentSelect={actions.selectTalent}
             onGroupSelect={actions.selectGroup}
             onClose={handleModalClose}
+            size="wide"
           />
 
           {config.isLoading && (
@@ -233,11 +234,12 @@ const TalentMusicPresenter: React.FC<TalentMusicPresenterProps> = ({ state, acti
       {/* ページ上部へ戻るボタン（選択モードバッジ・フッターの上に表示） */}
       <ScrollToTopButton positionClass={scrollTopPositionClass} />
 
-      {/* 楽曲の複数選択フッター（常時表示） */}
+      {/* 楽曲の複数選択フッター（常時表示。タレント・グループ選択モーダル表示中は下へスライドして隠す） */}
       <MusicSelectionFooter
         isMultiSelectMode={config.isMultiSelectMode}
         selectedMusic={playlistSelection}
         isStartDisabled={!showMusicSection || filteredMusicList.length === 0}
+        isHidden={config.isDropdownOpen}
         onStart={actions.startMultiSelect}
         onCancel={actions.cancelMultiSelect}
       />
