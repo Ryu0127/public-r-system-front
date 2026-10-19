@@ -1,7 +1,7 @@
 import React, { useMemo, useCallback, useEffect, useRef } from 'react';
 import { TalentMusicState, TalentMusicActions } from '../hooks/useTalentMusicState';
 import { TalentMusicHeader } from '../components/TalentMusicHeader';
-import { TalentMusicTopBar } from '../components/TalentMusicTopBar';
+import { TalentMusicTopBar, TALENT_MUSIC_TOP_BAR_OFFSET_CLASS } from '../components/TalentMusicTopBar';
 import { TalentSelectionModal } from 'components/organisms/TalentSelectionModal';
 import { MusicFilterTabs } from '../components/MusicFilterTabs';
 import { MusicCard } from '../components/MusicCard';
@@ -154,6 +154,7 @@ const TalentMusicPresenter: React.FC<TalentMusicPresenterProps> = ({ state, acti
             onGroupSelect={actions.selectGroup}
             onClose={handleModalClose}
             size="wide"
+            topOffsetClass={TALENT_MUSIC_TOP_BAR_OFFSET_CLASS}
           />
 
           {config.isLoading && (

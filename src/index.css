@@ -194,6 +194,16 @@ code {
   }
 }
 
+/* 上端から下へ広がって出現（タレント・グループ選択モーダル用。中身を縮めず上から順に見せる） */
+@keyframes expand-down {
+  0% {
+    clip-path: inset(0 0 100% 0 round 1rem);
+  }
+  100% {
+    clip-path: inset(0 0 0 0 round 1rem);
+  }
+}
+
 /* クラス定義 */
 .animate-float-elegant {
   animation: float-elegant ease-in-out infinite;
@@ -255,4 +265,15 @@ code {
 
 .animate-slide-in-corner {
   animation: slide-in-corner 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* 終了後は clip-path を外して影が切れないよう backwards（開始前のみ初期状態を適用） */
+.animate-expand-down {
+  animation: expand-down 0.4s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-expand-down {
+    animation: none;
+  }
 }
