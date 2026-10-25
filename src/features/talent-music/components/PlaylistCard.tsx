@@ -171,9 +171,15 @@ export const PlaylistCard: React.FC<PlaylistCardProps> = ({ playlist }) => {
             id={listId}
             className="rounded-xl bg-white border border-gray-200 shadow-2xl overflow-hidden"
           >
-            <div className="px-4 py-2 border-b border-gray-100 flex items-center justify-between">
-              <span className="text-sm font-bold text-gray-700 tracking-wide">収録曲</span>
-              <span className="text-xs text-gray-500">{playlist.musicCount}曲</span>
+            <div className="px-4 py-2.5 border-b border-gray-100">
+              {/* プレイリスト名（省略せず、長い場合は折り返して全文表示） */}
+              <p className="text-base font-bold text-gray-900 tracking-wide leading-snug break-words">
+                {playlist.name}
+              </p>
+              <div className="mt-0.5 flex items-center justify-between text-xs text-gray-500 tracking-wide">
+                <span>収録曲</span>
+                <span>{playlist.musicCount}曲</span>
+              </div>
             </div>
             {playlist.musicList.length === 0 ? (
               <p className="px-4 py-4 text-sm text-gray-500 tracking-wide">楽曲はまだ登録されていません</p>
