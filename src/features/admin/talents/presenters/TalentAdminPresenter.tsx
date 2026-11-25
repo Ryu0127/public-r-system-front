@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { AdminTalent } from '../../talent-edit/types';
 import TalentListTable from '../components/TalentListTable';
 import Spinner from 'components/atoms/Spinner';
@@ -17,13 +17,13 @@ const TalentAdminPresenter: React.FC<TalentAdminPresenterProps> = ({
   error,
   onDelete,
 }) => {
-  const navigate = useNavigate();
+  const router = useRouter();
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [filterGroup, setFilterGroup] = useState<string>('all');
 
   const handleEdit = (id: string) => {
-    navigate(`/admin/talents/${id}/edit`);
+    router.push(`/admin/talents/${id}/edit`);
   };
 
   const handleDelete = async (id: string) => {
@@ -55,7 +55,7 @@ const TalentAdminPresenter: React.FC<TalentAdminPresenterProps> = ({
           <div className="flex justify-between items-center mb-4">
             <h1 className="text-3xl font-bold">タレント管理</h1>
             <button
-              onClick={() => navigate('/admin/talents/new')}
+              onClick={() => router.push('/admin/talents/new')}
               className="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
             >
               + 新規作成

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import Spinner from 'components/atoms/Spinner';
 import { AdminMusicPlaylist, MusicPlaylistLastAction } from '../../music-playlist-edit/types';
 import MusicPlaylistListTable from '../components/MusicPlaylistListTable';
@@ -17,7 +17,7 @@ const MusicPlaylistAdminPresenter: React.FC<MusicPlaylistAdminPresenterProps> = 
   error,
   lastAction,
 }) => {
-  const navigate = useNavigate();
+  const router = useRouter();
   const visibleCount = playlists.filter((p) => p.isVisible).length;
 
   return (
@@ -29,7 +29,7 @@ const MusicPlaylistAdminPresenter: React.FC<MusicPlaylistAdminPresenterProps> = 
             <h1 className="text-3xl font-bold">プレイリスト管理</h1>
             <button
               type="button"
-              onClick={() => navigate('/admin/music-playlists/new')}
+              onClick={() => router.push('/admin/music-playlists/new')}
               className="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
             >
               + 新規登録
@@ -74,8 +74,8 @@ const MusicPlaylistAdminPresenter: React.FC<MusicPlaylistAdminPresenterProps> = 
           <div className="bg-white rounded-lg shadow">
             <MusicPlaylistListTable
               playlists={playlists}
-              onEdit={(id) => navigate(`/admin/music-playlists/${id}/edit`)}
-              onEditMusic={(id) => navigate(`/admin/music-playlists/${id}/music`)}
+              onEdit={(id) => router.push(`/admin/music-playlists/${id}/edit`)}
+              onEditMusic={(id) => router.push(`/admin/music-playlists/${id}/music`)}
             />
           </div>
         )}

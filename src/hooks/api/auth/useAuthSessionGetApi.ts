@@ -9,7 +9,7 @@ export interface AuthSessionApiResponse {
 }
 
 const getApiUrl = (): string => {
-  return `${process.env.REACT_APP_API_DOMAIN}/auth/session`;
+  return `${process.env.NEXT_PUBLIC_API_DOMAIN}/auth/session`;
 };
 
 /**

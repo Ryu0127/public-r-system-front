@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { AdminTalent } from '../types';
 import TalentForm from '../components/TalentForm';
 import Spinner from 'components/atoms/Spinner';
@@ -19,18 +19,18 @@ const TalentFormPresenter: React.FC<TalentFormPresenterProps> = ({
   onSave,
   onDelete,
 }) => {
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const handleSave = async (talentData: Partial<AdminTalent>) => {
     const success = await onSave(talentData);
     if (success) {
       alert(talent ? 'タレント情報を更新しました' : 'タレントを作成しました');
-      navigate('/admin/talents');
+      router.push('/admin/talents');
     }
   };
 
   const handleCancel = () => {
-    navigate('/admin/talents');
+    router.push('/admin/talents');
   };
 
   const handleDelete = async () => {
@@ -38,7 +38,7 @@ const TalentFormPresenter: React.FC<TalentFormPresenterProps> = ({
       const success = await onDelete();
       if (success) {
         alert('タレントを削除しました');
-        navigate('/admin/talents');
+        router.push('/admin/talents');
       }
     }
   };

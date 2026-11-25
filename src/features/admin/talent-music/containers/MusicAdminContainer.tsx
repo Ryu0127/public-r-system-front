@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import MusicAdminPresenter from '../presenters/MusicAdminPresenter';
 import { useMusicList } from '../hooks/useMusicList';

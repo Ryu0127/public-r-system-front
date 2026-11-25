@@ -53,3 +53,6 @@ export interface MusicPlaylistLastAction {
   message: string;
   id: number;
 }
+
+/** 登録・編集画面から一覧へ完了メッセージを渡すフラッシュキー（utils/navigationFlash） */
+export const LAST_PLAYLIST_ACTION_FLASH_KEY = 'lastPlaylistAction';

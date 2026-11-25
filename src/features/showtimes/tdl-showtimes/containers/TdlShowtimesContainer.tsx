@@ -1,6 +1,8 @@
+'use client';
+
 import React, { useEffect, useState } from 'react';
-import { Helmet } from 'react-helmet-async';
 import TdlShowtimesPresenter from '../presenters/TdlShowtimesPresenter';
+import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import {
   TdlShowtimesState,
   useTdlShowtimesState,
@@ -45,17 +47,18 @@ const TdlShowtimesContainer: React.FC = () => {
     ? `TDL ショー&パレード タイムライン｜${park.date.replace(/-/g, '.')}（${park.dayOfWeek}）`
     : 'TDL ショー&パレード タイムライン';
 
+  useDocumentTitle(title);
+
+  // React 19 の <link> ホイスティングで <head> に出力される（precedence 指定のスタイルシートは重複排除される）
   return (
     <>
-      <Helmet>
-        <title>{title}</title>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@600;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Kanit:ital,wght@0,600;1,700&display=swap"
-          rel="stylesheet"
-        />
-      </Helmet>
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      <link
+        href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@600;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Kanit:ital,wght@0,600;1,700&display=swap"
+        rel="stylesheet"
+        precedence="default"
+      />
       <TdlShowtimesPresenter state={state} actions={actions} />
     </>
   );

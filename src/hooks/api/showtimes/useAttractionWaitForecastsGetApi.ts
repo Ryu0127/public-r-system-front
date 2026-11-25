@@ -23,7 +23,7 @@ const getApiUrl = (parkType: number, date: string): string => {
     park_type: String(parkType),
     date,
   });
-  return `${process.env.REACT_APP_API_DOMAIN}/showtimes/attraction-wait-forecasts?${params.toString()}`;
+  return `${process.env.NEXT_PUBLIC_API_DOMAIN}/showtimes/attraction-wait-forecasts?${params.toString()}`;
 };
 
 /**

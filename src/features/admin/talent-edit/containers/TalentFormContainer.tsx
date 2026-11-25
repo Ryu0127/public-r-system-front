@@ -1,5 +1,7 @@
+'use client';
+
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'next/navigation';
 import TalentFormPresenter from '../presenters/TalentFormPresenter';
 import { useTalentEdit } from '../hooks/useTalentEdit';
 import { AdminTalent } from '../types';

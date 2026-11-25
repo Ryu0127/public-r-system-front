@@ -13,7 +13,7 @@ export interface SelectItemCustomProps {
   isOpen: boolean;
   activeItem: string | null;
   selectedItem: string | null;
-  dropdownRef: React.RefObject<HTMLDivElement>;
+  dropdownRef: React.RefObject<HTMLDivElement | null>;
   onToggleDropdown: () => void;
   onOptionClick: (optionId: string) => void;
   onMouseEnter: (optionId: string) => void;

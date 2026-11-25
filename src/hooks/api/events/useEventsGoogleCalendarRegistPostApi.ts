@@ -14,7 +14,7 @@ export interface EventsGoogleCalendarRegistPostApiResponse {
 }
 
 const getApiUrl = (): string => {
-  return `${process.env.REACT_APP_API_DOMAIN}/events/google-calendar/regist`;
+  return `${process.env.NEXT_PUBLIC_API_DOMAIN}/events/google-calendar/regist`;
 };
 
 /**

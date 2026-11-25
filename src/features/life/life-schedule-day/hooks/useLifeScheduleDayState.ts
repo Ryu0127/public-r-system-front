@@ -15,8 +15,8 @@ export interface LifeScheduleDayState {
     isLoading: boolean;
     sidebarVisible: boolean;
     taskListVisible: boolean; // タスクリストの表示/非表示（モバイル用）
-    taskListRef: React.RefObject<HTMLDivElement>;
-    timelineRef: React.RefObject<HTMLDivElement>;
+    taskListRef: React.RefObject<HTMLDivElement | null>;
+    timelineRef: React.RefObject<HTMLDivElement | null>;
     isScrolling: boolean; // スクロール中判定
     openDetailPanel: boolean;
   }

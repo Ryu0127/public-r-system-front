@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { HololiveEvent, EventStatus } from '../../../events/events-calendar/types';
 import EventListTable from '../components/EventListTable';
 import EventPreview from '../../event-edit/components/EventPreview';
@@ -18,13 +18,13 @@ const EventAdminPresenter: React.FC<EventAdminPresenterProps> = ({
   error,
   getEventById,
 }) => {
-  const navigate = useNavigate();
+  const router = useRouter();
   const [filterStatus, setFilterStatus] = useState<EventStatus | 'all'>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [previewEventId, setPreviewEventId] = useState<string | null>(null);
 
   const handleEdit = (id: string) => {
-    navigate(`/admin/events/${id}/edit`);
+    router.push(`/admin/events/${id}/edit`);
   };
 
   const handlePreview = (id: string) => {
@@ -70,7 +70,7 @@ const EventAdminPresenter: React.FC<EventAdminPresenterProps> = ({
                 ホロライブ公式X検索
               </button>
               <button
-                onClick={() => navigate('/admin/events/new')}
+                onClick={() => router.push('/admin/events/new')}
                 className="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
               >
                 + 新規作成

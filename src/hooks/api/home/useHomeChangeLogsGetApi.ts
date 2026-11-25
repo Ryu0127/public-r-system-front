@@ -15,7 +15,7 @@ export interface HomeChangeLog {
 }
 
 const getApiUrl = (): string => {
-  return `${process.env.REACT_APP_API_DOMAIN}/home/change-logs`;
+  return `${process.env.NEXT_PUBLIC_API_DOMAIN}/home/change-logs`;
 };
 
 /**

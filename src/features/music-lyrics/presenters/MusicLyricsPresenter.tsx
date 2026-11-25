@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { MusicLyricsActions, MusicLyricsState } from '../hooks/useMusicLyricsState';
 import { MusicLyricsHeader } from '../components/MusicLyricsHeader';
 import { LyricsDisplayControls } from '../components/LyricsDisplayControls';
@@ -39,7 +39,7 @@ const MusicLyricsPresenter: React.FC<MusicLyricsPresenterProps> = ({ state, acti
 
         <div className="mb-6">
           <Link
-            to="/music"
+            href="/music"
             className="inline-flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>

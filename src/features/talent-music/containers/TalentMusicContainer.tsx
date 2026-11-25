@@ -1,10 +1,12 @@
+'use client';
+
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { Helmet } from 'react-helmet-async';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParamsState } from 'hooks/navigation/useSearchParamsState';
+import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { TalentMusicState, useTalentMusicState, TalentMusicActions } from '../hooks/useTalentMusicState';
 import { toGroupSlug } from '../utils/toGroupSlug';
 import { saveTalentSelection } from 'utils/talentSelectionStorage';
-import { getMusicOgPage, SITE_ORIGIN } from 'og/musicOgPages';
+import { getMusicOgPage } from 'og/musicOgPages';
 import TalentMusicPresenter from '../presenters/TalentMusicPresenter';
 
 const initialState: TalentMusicState = {
@@ -39,7 +41,7 @@ const initialState: TalentMusicState = {
 const TalentMusicContainer: React.FC = () => {
   const [state, setState] = useState<TalentMusicState>(initialState);
   const { actions } = useTalentMusicState(state, setState);
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParamsState();
   const talentQuery = useMemo(() => (searchParams.get('talent') ?? '').trim(), [searchParams]);
   const groupQuery = useMemo(() => (searchParams.get('group') ?? '').trim(), [searchParams]);
   const urlSelectionAppliedRef = useRef(false);
@@ -103,40 +105,11 @@ const TalentMusicContainer: React.FC = () => {
     };
   }, [actions, setSearchParams]);
 
+  // タブタイトルはタレント選択に追従させる（初期値は app/music/page.tsx の generateMetadata）
   const ogPage = useMemo(() => getMusicOgPage(talentQuery), [talentQuery]);
-  const pageUrl = `${SITE_ORIGIN}${ogPage.path}`;
-  const imageUrl = `${SITE_ORIGIN}${ogPage.imagePath}`;
-  const twitterImageUrl = `${SITE_ORIGIN}${ogPage.twitterImagePath}`;
+  useDocumentTitle(ogPage.title);
 
-  return (
-    <>
-      <Helmet>
-        <title>{ogPage.title}</title>
-        <meta name="description" content={ogPage.description} />
-        <meta name="keywords" content={ogPage.keywords} />
-        <link rel="canonical" href={pageUrl} />
-        <meta property="og:type" content="website" />
-        <meta property="og:title" content={ogPage.title} />
-        <meta property="og:description" content={ogPage.description} />
-        <meta property="og:url" content={pageUrl} />
-        <meta property="og:image" content={imageUrl} />
-        {ogPage.imageWidth != null && (
-          <meta property="og:image:width" content={String(ogPage.imageWidth)} />
-        )}
-        {ogPage.imageHeight != null && (
-          <meta property="og:image:height" content={String(ogPage.imageHeight)} />
-        )}
-        <meta property="og:locale" content="ja_JP" />
-        <meta property="og:site_name" content="ホロリスの推し活サポート" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:url" content={pageUrl} />
-        <meta name="twitter:title" content={ogPage.title} />
-        <meta name="twitter:description" content={ogPage.description} />
-        <meta name="twitter:image" content={twitterImageUrl} />
-      </Helmet>
-      <TalentMusicPresenter state={state} actions={actionsWithUrl} />
-    </>
-  );
+  return <TalentMusicPresenter state={state} actions={actionsWithUrl} />;
 };
 
 export default TalentMusicContainer;

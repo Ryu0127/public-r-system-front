@@ -1,8 +1,11 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { AdminMusic } from '../types';
+import { useRouter } from 'next/navigation';
+import { AdminMusic, LAST_MUSIC_ACTION_FLASH_KEY, LastMusicAction } from '../types';
 import MusicForm from '../components/MusicForm';
 import Spinner from 'components/atoms/Spinner';
+import { setNavigationFlash } from 'utils/navigationFlash';
+
+const LIST_PATH = '/admin/talent-music';
 
 interface MusicFormPresenterProps {
   music?: AdminMusic;
@@ -19,38 +22,33 @@ const MusicFormPresenter: React.FC<MusicFormPresenterProps> = ({
   onSave,
   onDelete,
 }) => {
-  const navigate = useNavigate();
+  const router = useRouter();
+
+  /** 完了メッセージを一覧画面へ渡して遷移する */
+  const backToListWithMessage = (action: LastMusicAction) => {
+    setNavigationFlash(LAST_MUSIC_ACTION_FLASH_KEY, action);
+    router.push(LIST_PATH);
+  };
 
   const handleSave = async (musicData: Partial<AdminMusic>) => {
     const id = await onSave(musicData);
     if (id != null) {
-      navigate('/admin/talent-music', {
-        state: {
-          lastMusicAction: {
-            message: music ? '楽曲を更新しました' : '楽曲を登録しました',
-            id,
-          },
-        },
+      backToListWithMessage({
+        message: music ? '楽曲を更新しました' : '楽曲を登録しました',
+        id,
       });
     }
   };
 
   const handleCancel = () => {
-    navigate('/admin/talent-music');
+    router.push(LIST_PATH);
   };
 
   const handleDelete = async () => {
     if (onDelete) {
       const id = await onDelete();
       if (id != null) {
-        navigate('/admin/talent-music', {
-          state: {
-            lastMusicAction: {
-              message: '楽曲を削除しました',
-              id,
-            },
-          },
-        });
+        backToListWithMessage({ message: '楽曲を削除しました', id });
       }
     }
   };

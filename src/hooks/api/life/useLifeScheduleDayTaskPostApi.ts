@@ -20,7 +20,7 @@ export interface LifeScheduleDayTaskApiRequestTask {
 }
 
 const getApiUrl = (): string => {
-  return `${process.env.REACT_APP_API_DOMAIN}/life/schedule-day/tasks`;
+  return `${process.env.NEXT_PUBLIC_API_DOMAIN}/life/schedule-day/tasks`;
 };
 
 /**

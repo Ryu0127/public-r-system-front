@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState } from 'react';
 import EventsCalendarPresenter from '../presenters/EventsCalendarPresenter';
 import { EventsCalendarState, useEventsCalendarState } from '../hooks/useEventsCalendarState';

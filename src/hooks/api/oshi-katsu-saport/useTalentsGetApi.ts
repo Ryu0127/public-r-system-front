@@ -52,7 +52,7 @@ export interface Talent extends TalentsListApiRow {
 }
 
 function resolveTalentsApiUrl(): string | null {
-  const base = process.env.REACT_APP_API_DOMAIN?.trim();
+  const base = process.env.NEXT_PUBLIC_API_DOMAIN?.trim();
   if (base) {
     return `${base.replace(/\/$/, '')}/oshi-katsu-saport/talents`;
   }

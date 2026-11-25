@@ -14,7 +14,7 @@ export interface SelectItemRedirectProps {
   isOpen: boolean;
   activeItem: string | null;
   selectedItem: string | null;
-  dropdownRef: React.RefObject<HTMLDivElement>;
+  dropdownRef: React.RefObject<HTMLDivElement | null>;
   onToggleDropdown: () => void;
   onMouseEnter: (optionId: string) => void;
   onMouseLeave: () => void;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 
 interface LyricsStatusMessageProps {
   title: string;
@@ -34,7 +34,7 @@ export const LyricsStatusMessage: React.FC<LyricsStatusMessageProps> = ({
         </button>
       )}
       <Link
-        to="/music"
+        href="/music"
         className="px-5 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-xl text-sm font-medium hover:border-gray-400 transition-all duration-200 shadow-sm"
       >
         楽曲一覧へ

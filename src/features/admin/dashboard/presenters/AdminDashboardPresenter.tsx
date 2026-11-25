@@ -1,8 +1,8 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 
 const AdminDashboardPresenter: React.FC = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const menuItems = [
     {
@@ -64,7 +64,7 @@ const AdminDashboardPresenter: React.FC = () => {
             <button
               key={item.path}
               type="button"
-              onClick={() => navigate(item.path)}
+              onClick={() => router.push(item.path)}
               className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 p-6 text-left border border-gray-200 hover:border-gray-300"
             >
               <div className="flex items-center mb-4">

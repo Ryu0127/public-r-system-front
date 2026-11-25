@@ -7,7 +7,7 @@ export interface FavoritesDeleteApiResponse {
 }
 
 const getApiUrl = (favoriteType: FavoriteType, targetId: number): string => {
-  return `${process.env.REACT_APP_API_DOMAIN}/showtimes/favorites/${favoriteType}/${targetId}`;
+  return `${process.env.NEXT_PUBLIC_API_DOMAIN}/showtimes/favorites/${favoriteType}/${targetId}`;
 };
 
 /**

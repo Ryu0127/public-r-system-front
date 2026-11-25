@@ -1,6 +1,6 @@
 /**
  * 静的HTML（public/event など）向け Google Analytics。
- * React 画面の REACT_APP_GA_MEASUREMENT_ID と同じ Measurement ID を使う。
+ * React 画面の NEXT_PUBLIC_GA_MEASUREMENT_ID と同じ Measurement ID を使う。
  * iframe 内では親の react-ga4 が計測するため、ここでは送信しない。
  */
 (function () {

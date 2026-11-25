@@ -1,5 +1,6 @@
+'use client';
+
 import React, { useState } from 'react';
-import { Helmet } from 'react-helmet-async';
 import { useAuth } from 'hooks/auth/useAuth';
 import { LifeScheduleMonthState, useLifeScheduleMonthState } from '../hooks/useLifeScheduleMonthState';
 import LifeScheduleMonthPresenter from '../presenters/LifeScheduleMonthPresenter';
@@ -52,14 +53,6 @@ const LifeScheduleMonthContainer: React.FC = () => {
 
   return (
     <>
-      <Helmet>
-        <title>月次スケジュール | ホロリスの推し活サポート</title>
-        <meta name="description" content="月別の生活スケジュールを管理。1ヶ月の予定を一覧で確認し、推し活と日常生活を効率的に計画できます。" />
-        <meta property="og:title" content="月次スケジュール | ホロリスの推し活サポート" />
-        <meta property="og:description" content="月別の生活スケジュールを管理。1ヶ月の予定を一覧で確認し、推し活と日常生活を効率的に計画できます。" />
-        <meta property="og:url" content="https://public-r-system-front.vercel.app/life/life-schedule-month" />
-        <link rel="canonical" href="https://public-r-system-front.vercel.app/life/life-schedule-month" />
-      </Helmet>
       <LifeScheduleMonthPresenter
         state={state}
         actions={actions}
