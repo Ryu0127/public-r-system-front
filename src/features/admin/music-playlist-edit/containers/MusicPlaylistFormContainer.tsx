@@ -1,8 +1,16 @@
+'use client';
+
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { AdminMusicPlaylist, MusicPlaylistFormData, MusicPlaylistLastAction } from '../types';
+import { useParams, useRouter } from 'next/navigation';
+import {
+  AdminMusicPlaylist,
+  LAST_PLAYLIST_ACTION_FLASH_KEY,
+  MusicPlaylistFormData,
+  MusicPlaylistLastAction,
+} from '../types';
 import { useMusicPlaylistEdit } from '../hooks/useMusicPlaylistEdit';
 import MusicPlaylistFormPresenter from '../presenters/MusicPlaylistFormPresenter';
+import { setNavigationFlash } from 'utils/navigationFlash';
 
 const LIST_PATH = '/admin/music-playlists';
 
@@ -13,7 +21,7 @@ const LIST_PATH = '/admin/music-playlists';
  */
 const MusicPlaylistFormContainer: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
+  const router = useRouter();
   const { loading, saving, error, fetchPlaylistById, createPlaylist, updatePlaylist, deletePlaylist } =
     useMusicPlaylistEdit();
   const [playlist, setPlaylist] = useState<AdminMusicPlaylist | undefined>(undefined);
@@ -38,7 +46,10 @@ const MusicPlaylistFormContainer: React.FC = () => {
   }, [id, fetchPlaylistById]);
 
   const backToList = (lastPlaylistAction?: MusicPlaylistLastAction) => {
-    navigate(LIST_PATH, lastPlaylistAction ? { state: { lastPlaylistAction } } : undefined);
+    if (lastPlaylistAction) {
+      setNavigationFlash(LAST_PLAYLIST_ACTION_FLASH_KEY, lastPlaylistAction);
+    }
+    router.push(LIST_PATH);
   };
 
   const handleSave = async (data: MusicPlaylistFormData) => {

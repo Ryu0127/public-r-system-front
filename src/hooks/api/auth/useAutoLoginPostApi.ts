@@ -16,7 +16,7 @@ export interface AutoLoginApiRequest {
 }
 
 const getApiUrl = (): string => {
-  return `${process.env.REACT_APP_API_DOMAIN}/auth/auto-login`;
+  return `${process.env.NEXT_PUBLIC_API_DOMAIN}/auth/auto-login`;
 };
 
 /**

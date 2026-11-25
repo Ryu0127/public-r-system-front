@@ -16,7 +16,7 @@ export interface HomeLimitedTimeTopic {
 }
 
 const getApiUrl = (): string => {
-  return `${process.env.REACT_APP_API_DOMAIN}/home/limited-time-topic`;
+  return `${process.env.NEXT_PUBLIC_API_DOMAIN}/home/limited-time-topic`;
 };
 
 /**

@@ -40,7 +40,7 @@ export interface MusicPlaylistsFetchParams {
 }
 
 function resolvePlaylistsApiUrl(params: MusicPlaylistsFetchParams): string | null {
-  const base = process.env.REACT_APP_API_DOMAIN?.trim();
+  const base = process.env.NEXT_PUBLIC_API_DOMAIN?.trim();
   const path = '/oshi-katsu-saport/talent-music/playlists';
   const talentSlug = params.talentSlug?.trim() ?? '';
   const query = talentSlug ? `?${new URLSearchParams({ talent: talentSlug }).toString()}` : '';

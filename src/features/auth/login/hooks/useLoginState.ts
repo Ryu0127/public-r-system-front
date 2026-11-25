@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useLoginPostApi, LoginApiRequest } from 'hooks/api/auth/useLoginPostApi';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { setCookie } from 'utils/cookieUtil';
+import { REDIRECT_FROM_PARAM, resolveSafeRedirectPath } from 'utils/redirectPath';
 
 export interface LoginState {
   email: string;
@@ -18,8 +19,7 @@ export interface LoginActions {
 }
 
 export const useLoginState = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
+  const router = useRouter();
   const { executeLogin, loading } = useLoginPostApi();
 
   const [email, setEmail] = useState('');
@@ -54,8 +54,10 @@ export const useLoginState = () => {
         setCookie('autoLoginToken', apiResponse.data.autoLoginToken, 30);
 
         // 遷移元がある場合はそこへリダイレクト、なければホーム画面へ
-        const from = (location.state as any)?.from || '/';
-        navigate(from);
+        const from = resolveSafeRedirectPath(
+          new URLSearchParams(window.location.search).get(REDIRECT_FROM_PARAM)
+        );
+        router.push(from);
       } else {
         // ログイン失敗
         if (apiResponse.locked) {

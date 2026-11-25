@@ -7,7 +7,7 @@ import { MusicTalent, MusicTalentGroup } from '../types';
  * サイトアイコン（ブラウザのタブに表示している favicon と同じ絵柄）
  * favicon.ico は小さいサイズ向けのため、高解像度画面でも粗くならない logo192.png を使用
  */
-const SITE_ICON_SRC = `${process.env.PUBLIC_URL}/logo192.png`;
+const SITE_ICON_SRC = '/logo192.png';
 
 /**
  * ヘッダーの高さ（64px）と、ヘッダー直下に要素を配置する場合の top 位置

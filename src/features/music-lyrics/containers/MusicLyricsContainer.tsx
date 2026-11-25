@@ -1,11 +1,12 @@
+'use client';
+
 import React, { useEffect, useMemo, useState } from 'react';
-import { Helmet } from 'react-helmet-async';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'next/navigation';
 import { MusicLyricsState, useMusicLyricsState } from '../hooks/useMusicLyricsState';
 import { loadLyricsDisplaySettings } from '../utils/lyricsDisplayStorage';
+import { buildLyricsPageTitle, parseMusicId } from '../utils/lyricsPageMeta';
 import MusicLyricsPresenter from '../presenters/MusicLyricsPresenter';
-
-const SITE_NAME = 'ホロリスの推し活サポート';
+import { useDocumentTitle } from 'hooks/useDocumentTitle';
 
 const createInitialState = (): MusicLyricsState => ({
   config: {
@@ -20,15 +21,11 @@ const createInitialState = (): MusicLyricsState => ({
   ui: loadLyricsDisplaySettings(),
 });
 
-/** URL パラメータを正の整数の楽曲IDに変換（不正値は null） */
-const parseMusicId = (raw: string | undefined): number | null => {
-  if (!raw || !/^\d+$/.test(raw)) return null;
-  const n = Number(raw);
-  return Number.isSafeInteger(n) && n > 0 ? n : null;
-};
-
 /**
  * 歌詞・コール確認画面
+ *
+ * title / description はページの generateMetadata でサーバー出力する。
+ * ここでは取得後の楽曲名でタブタイトルを更新し、デモデータ時は noindex にする。
  */
 const MusicLyricsContainer: React.FC = () => {
   const [state, setState] = useState<MusicLyricsState>(createInitialState);
@@ -48,27 +45,23 @@ const MusicLyricsContainer: React.FC = () => {
     loadLyrics(musicId);
   }, [musicId, loadLyrics]);
 
-  const musicTitle = state.data.music?.title;
-  const pageTitle = musicTitle
-    ? `${musicTitle} 歌詞・コール | ${SITE_NAME}`
-    : `歌詞・コール確認 | ${SITE_NAME}`;
+  useDocumentTitle(buildLyricsPageTitle(state.data.music?.title));
+
+  // デモデータ（API 未設定時）は検索エンジンに登録させない
+  useEffect(() => {
+    if (!state.config.isDemo) return;
+    const robots = document.querySelector<HTMLMetaElement>('meta[name="robots"]');
+    if (robots) {
+      robots.content = 'noindex';
+    }
+  }, [state.config.isDemo]);
 
   return (
-    <>
-      <Helmet>
-        <title>{pageTitle}</title>
-        <meta
-          name="description"
-          content="楽曲の歌詞とライブで入れるコールを一緒に確認できます。表示モードの切り替えや文字サイズの変更にも対応。"
-        />
-        <meta name="robots" content={state.config.isDemo ? 'noindex' : 'index, follow'} />
-      </Helmet>
-      <MusicLyricsPresenter
-        state={state}
-        actions={actions}
-        onRetry={musicId !== null ? () => loadLyrics(musicId) : undefined}
-      />
-    </>
+    <MusicLyricsPresenter
+      state={state}
+      actions={actions}
+      onRetry={musicId !== null ? () => loadLyrics(musicId) : undefined}
+    />
   );
 };
 

@@ -20,7 +20,7 @@ export interface LoginApiRequest {
 }
 
 const getApiUrl = (): string => {
-  return `${process.env.REACT_APP_API_DOMAIN}/auth/login`;
+  return `${process.env.NEXT_PUBLIC_API_DOMAIN}/auth/login`;
 };
 
 /**

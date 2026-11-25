@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import EventAdminPresenter from '../presenters/EventAdminPresenter';
 import { useEventList } from '../hooks/useEventList';

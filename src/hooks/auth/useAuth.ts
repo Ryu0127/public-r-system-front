@@ -1,6 +1,9 @@
+'use client';
+
 import { useEffect, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { getCookie, setCookie } from 'utils/cookieUtil';
+import { buildLoginPath } from 'utils/redirectPath';
 import { useAutoLoginPostApi } from 'hooks/api/auth/useAutoLoginPostApi';
 import { useAuthSessionGetApi } from 'hooks/api/auth/useAuthSessionGetApi';
 
@@ -10,12 +13,11 @@ import { useAuthSessionGetApi } from 'hooks/api/auth/useAuthSessionGetApi';
  * - localStorage に認証トークンがある場合は /auth/session で有効性を検証
  * - 無効ならトークンを破棄し、自動ログインまたはログイン画面へ
  * - 自動ログイントークンをチェックし、存在すれば自動ログイン認証APIを実行
- * - 存在しない場合はログイン画面にリダイレクト
+ * - 存在しない場合はログイン画面にリダイレクト（遷移元を ?from= に保持）
  * - 認証成功時は認証トークンをlocalStorageに保存
  */
 export const useAuth = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
+  const router = useRouter();
   const { executeAutoLogin } = useAutoLoginPostApi();
   const { executeSession } = useAuthSessionGetApi();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -39,9 +41,7 @@ export const useAuth = () => {
 
       if (!autoLoginToken) {
         // 自動ログイントークンが存在しない場合はログイン画面にリダイレクト
-        navigate('/login', {
-          state: { from: location.pathname + location.search }
-        });
+        router.push(buildLoginPath(window.location.pathname + window.location.search));
         setIsChecking(false);
         return;
       }
@@ -51,9 +51,7 @@ export const useAuth = () => {
 
       if (error || !apiResponse || !apiResponse.status || !apiResponse.data) {
         // 認証失敗時はログイン画面にリダイレクト
-        navigate('/login', {
-          state: { from: location.pathname + location.search }
-        });
+        router.push(buildLoginPath(window.location.pathname + window.location.search));
         setIsChecking(false);
         return;
       }

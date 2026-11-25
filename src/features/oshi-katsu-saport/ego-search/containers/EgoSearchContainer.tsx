@@ -1,6 +1,7 @@
+'use client';
+
 import React, { useMemo, useEffect, useState } from 'react';
-import { Helmet } from 'react-helmet-async';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParamsState } from 'hooks/navigation/useSearchParamsState';
 import { EgoSearchState, useEgoSearchState } from '../hooks/useEgoSearchState';
 import { defaultEgoSearchFilters } from '../types';
 import { loadTalentSelection, saveTalentSelection } from 'utils/talentSelectionStorage';
@@ -31,7 +32,7 @@ const EgoSearchContainer: React.FC = () => {
 
   // Actions Hook
   const { actions } = useEgoSearchState(state, setState);
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParamsState();
   const talentQuery = useMemo(() => (searchParams.get('talent') ?? '').trim(), [searchParams]);
 
   // URLの ?talent=...（slug）がある場合、完全一致するタレントを自動選択
@@ -73,16 +74,6 @@ const EgoSearchContainer: React.FC = () => {
 
   return (
     <>
-      <Helmet>
-        <title>エゴサーチ サポート | ホロリスの推し活サポート</title>
-        <meta name="description" content="高度な検索フィルタで効率的にエゴサーチができます。タレントアカウントの絞り込みや、除外ワード設定など、便利な機能が満載。" />
-        <meta property="og:title" content="エゴサーチ サポート | ホロリスの推し活サポート" />
-        <meta property="og:description" content="高度な検索フィルタで効率的にエゴサーチができます。タレントアカウントの絞り込みや、除外ワード設定など、便利な機能が満載。" />
-        <meta property="og:url" content="https://public-r-system-front.vercel.app/ego-search-support" />
-        <meta name="twitter:title" content="エゴサーチ サポート | ホロリスの推し活サポート" />
-        <meta name="twitter:description" content="高度な検索フィルタで効率的にエゴサーチができます。" />
-        <link rel="canonical" href="https://public-r-system-front.vercel.app/ego-search-support" />
-      </Helmet>
       <EgoSearchPresenter
         state={state}
         actions={actionsWithUrl}

@@ -171,7 +171,7 @@ function normalizeResponse(raw: unknown, musicId: number): MusicLyricsApiRespons
 }
 
 function resolveLyricsApiUrl(musicId: number): string | null {
-  const base = process.env.REACT_APP_API_DOMAIN?.trim();
+  const base = process.env.NEXT_PUBLIC_API_DOMAIN?.trim();
   const path = `/oshi-katsu-saport/talent-music/${encodeURIComponent(String(musicId))}/lyrics`;
   if (base) {
     return `${base.replace(/\/$/, '')}${path}`;

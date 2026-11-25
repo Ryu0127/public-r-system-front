@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { LifeScheduleMonthState, LifeScheduleMonthActions } from '../hooks/useLifeScheduleMonthState';
 import LifeScheduleMonthHeader from '../components/LifeScheduleMonthHeader';
 import LifeScheduleMonthCalendar from '../components/LifeScheduleMonthCalendar';
@@ -16,7 +16,7 @@ export interface PresenterProps {
  * 月次スケジュールPresenter
  */
 const LifeScheduleMonthPresenter: React.FC<PresenterProps> = ({ state, actions }) => {
-  const navigate = useNavigate();
+  const router = useRouter();
 
   // 日付クリック時の処理（日次スケジュール画面へ遷移）
   const handleDateClick = useCallback(
@@ -25,9 +25,9 @@ const LifeScheduleMonthPresenter: React.FC<PresenterProps> = ({ state, actions }
       const month = String(date.getMonth() + 1).padStart(2, '0');
       const day = String(date.getDate()).padStart(2, '0');
       const usageYmd = `${year}-${month}-${day}`;
-      navigate(`/life/life-schedule-day?usageYmd=${usageYmd}`);
+      router.push(`/life/life-schedule-day?usageYmd=${usageYmd}`);
     },
-    [navigate]
+    [router]
   );
 
   return (

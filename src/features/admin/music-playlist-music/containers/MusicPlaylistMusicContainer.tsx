@@ -1,5 +1,7 @@
+'use client';
+
 import React, { useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams, useRouter } from 'next/navigation';
 import { useMusicPlaylistMusic } from '../hooks/useMusicPlaylistMusic';
 import MusicPlaylistMusicPresenter from '../presenters/MusicPlaylistMusicPresenter';
 
@@ -12,7 +14,7 @@ const LEAVE_CONFIRM_MESSAGE = '保存していない変更があります。破�
  */
 const MusicPlaylistMusicContainer: React.FC = () => {
   const { id = '' } = useParams<{ id: string }>();
-  const navigate = useNavigate();
+  const router = useRouter();
   const state = useMusicPlaylistMusic(id);
   const { isDirty } = state;
 
@@ -29,7 +31,7 @@ const MusicPlaylistMusicContainer: React.FC = () => {
 
   const navigateWithConfirm = (path: string) => {
     if (isDirty && !window.confirm(LEAVE_CONFIRM_MESSAGE)) return;
-    navigate(path);
+    router.push(path);
   };
 
   const handleReset = () => {

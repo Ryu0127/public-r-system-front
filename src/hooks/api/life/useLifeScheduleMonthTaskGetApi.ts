@@ -18,8 +18,8 @@ export interface LifeScheduleMonthTaskApiTask {
 }
 
 const getApiUrl = (yearMonth: string): string => {
-  console.log(process.env.REACT_APP_API_DOMAIN);
-  return `${process.env.REACT_APP_API_DOMAIN}/life/schedule-month/tasks/${yearMonth}`;
+  console.log(process.env.NEXT_PUBLIC_API_DOMAIN);
+  return `${process.env.NEXT_PUBLIC_API_DOMAIN}/life/schedule-month/tasks/${yearMonth}`;
 };
 
 /**

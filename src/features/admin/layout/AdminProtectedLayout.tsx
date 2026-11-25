@@ -1,13 +1,18 @@
-import React from 'react';
-import { Outlet } from 'react-router-dom';
+'use client';
+
+import React, { ReactNode } from 'react';
 import { useAuth } from 'hooks/auth/useAuth';
 import Spinner from 'components/atoms/Spinner';
 
+interface AdminProtectedLayoutProps {
+  children: ReactNode;
+}
+
 /**
  * 管理画面（/admin/*）の一律認証レイアウト。
- * 未認証は useAuth により /login へリダイレクト（遷移元を state に保持）。
+ * 未認証は useAuth により /login へリダイレクト（遷移元を ?from= に保持）。
  */
-const AdminProtectedLayout: React.FC = () => {
+const AdminProtectedLayout: React.FC<AdminProtectedLayoutProps> = ({ children }) => {
   const { isAuthenticated, isChecking } = useAuth();
 
   if (isChecking) {
@@ -25,7 +30,7 @@ const AdminProtectedLayout: React.FC = () => {
     return null;
   }
 
-  return <Outlet />;
+  return <>{children}</>;
 };
 
 export default AdminProtectedLayout;

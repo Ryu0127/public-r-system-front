@@ -30,7 +30,7 @@ const getApiUrl = (parkType: number, date?: string): string => {
   if (date) {
     params.set('date', date);
   }
-  return `${process.env.REACT_APP_API_DOMAIN}/showtimes/attractions?${params.toString()}`;
+  return `${process.env.NEXT_PUBLIC_API_DOMAIN}/showtimes/attractions?${params.toString()}`;
 };
 
 /**

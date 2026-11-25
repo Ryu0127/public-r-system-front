@@ -1,6 +1,7 @@
+'use client';
+
 import React, { useMemo, useEffect, useState } from 'react';
-import { Helmet } from 'react-helmet-async';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParamsState } from 'hooks/navigation/useSearchParamsState';
 import { HashtagSearchState, useHashtagSearchState } from '../hooks/useHashtagSearchState';
 import { loadTalentSelection, saveTalentSelection } from 'utils/talentSelectionStorage';
 import HashtagSearchPresenter from '../presenters/HashtagSearchPresenter';
@@ -37,7 +38,7 @@ const HashtagSearchContainer: React.FC = () => {
 
   // Actions Hook
   const { actions } = useHashtagSearchState(state, setState);
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParamsState();
   const talentQuery = useMemo(() => (searchParams.get('talent') ?? '').trim(), [searchParams]);
 
   // URLの ?talent=...（slug）がある場合、完全一致するタレントを自動選択してハッシュタグを取得
@@ -76,16 +77,6 @@ const HashtagSearchContainer: React.FC = () => {
 
   return (
     <>
-      <Helmet>
-        <title>タレント別 ハッシュタグ投稿/検索 サポート | ホロリスの推し活サポート</title>
-        <meta name="description" content="お気に入りのタレントのハッシュタグを簡単に検索・投稿できます。推しのSNS投稿を見逃さず、効率的に推し活を楽しむためのハッシュタグサポート機能。" />
-        <meta property="og:title" content="タレント別 ハッシュタグサポート | ホロリスの推し活サポート" />
-        <meta property="og:description" content="お気に入りのタレントのハッシュタグを簡単に検索・投稿。推しのSNS投稿を見逃さず、効率的に推し活を楽しめます。" />
-        <meta property="og:url" content="https://public-r-system-front.vercel.app/talent-hashtag-support" />
-        <meta name="twitter:title" content="タレント別 ハッシュタグサポート | ホロリスの推し活サポート" />
-        <meta name="twitter:description" content="お気に入りのタレントのハッシュタグを簡単に検索・投稿。推しのSNS投稿を見逃さず、効率的に推し活を楽しめます。" />
-        <link rel="canonical" href="https://public-r-system-front.vercel.app/talent-hashtag-support" />
-      </Helmet>
       <HashtagSearchPresenter
         state={state}
         actions={actionsWithUrl}

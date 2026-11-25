@@ -2,7 +2,7 @@ import useFetchDataTs from 'utils/useFetchDataTs';
 import { ShowtimesApiResponse } from 'features/showtimes/tdl-showtimes/types';
 
 const getApiUrl = (date: string): string => {
-  return `${process.env.REACT_APP_API_DOMAIN}/showtimes/tdl?date=${encodeURIComponent(date)}`;
+  return `${process.env.NEXT_PUBLIC_API_DOMAIN}/showtimes/tdl?date=${encodeURIComponent(date)}`;
 };
 
 /**

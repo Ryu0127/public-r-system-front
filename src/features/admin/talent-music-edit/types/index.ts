@@ -71,3 +71,12 @@ export const MUSIC_TYPE_LABELS: Record<MusicType, string> = {
   original: 'オリジナル曲',
   cover: 'カバー曲',
 };
+
+/** 登録・編集画面から一覧へ渡す完了メッセージ */
+export interface LastMusicAction {
+  message: string;
+  id: number;
+}
+
+/** 完了メッセージのフラッシュキー（utils/navigationFlash） */
+export const LAST_MUSIC_ACTION_FLASH_KEY = 'lastMusicAction';

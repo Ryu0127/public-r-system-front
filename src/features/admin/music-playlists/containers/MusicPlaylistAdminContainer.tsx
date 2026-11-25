@@ -1,32 +1,28 @@
+'use client';
+
 import React, { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { MusicPlaylistLastAction } from '../../music-playlist-edit/types';
+import { LAST_PLAYLIST_ACTION_FLASH_KEY, MusicPlaylistLastAction } from '../../music-playlist-edit/types';
 import { useMusicPlaylistList } from '../hooks/useMusicPlaylistList';
 import MusicPlaylistAdminPresenter from '../presenters/MusicPlaylistAdminPresenter';
+import { consumeNavigationFlash } from 'utils/navigationFlash';
 
-const readLastAction = (state: unknown): MusicPlaylistLastAction | null => {
-  const action = (state as { lastPlaylistAction?: MusicPlaylistLastAction } | null)?.lastPlaylistAction;
-  return action && typeof action.message === 'string' ? action : null;
-};
+const isLastAction = (value: unknown): value is MusicPlaylistLastAction =>
+  !!value && typeof (value as MusicPlaylistLastAction).message === 'string';
 
 /**
  * プレイリスト管理（一覧）
  */
 const MusicPlaylistAdminContainer: React.FC = () => {
   const { playlists, loading, error } = useMusicPlaylistList();
-  const location = useLocation();
-  const navigate = useNavigate();
-  const [lastAction, setLastAction] = useState<MusicPlaylistLastAction | null>(() =>
-    readLastAction(location.state)
-  );
+  const [lastAction, setLastAction] = useState<MusicPlaylistLastAction | null>(null);
 
-  // 登録・更新・削除後の完了メッセージを受け取り、location.state はクリア（再読み込みで再表示しない）
+  // 登録・更新・削除後の完了メッセージを受け取る（受け取り時に破棄されるため、再読み込みで再表示しない）
   useEffect(() => {
-    const action = readLastAction(location.state);
-    if (!action) return;
-    setLastAction(action);
-    navigate('/admin/music-playlists', { replace: true, state: {} });
-  }, [location.state, navigate]);
+    const action = consumeNavigationFlash<unknown>(LAST_PLAYLIST_ACTION_FLASH_KEY);
+    if (isLastAction(action)) {
+      setLastAction(action);
+    }
+  }, []);
 
   return (
     <MusicPlaylistAdminPresenter

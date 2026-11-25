@@ -28,7 +28,7 @@ export interface TalentHashtagsApiEventHashtag {
 }
 
 const getApiUrl = (id: string): string => {
-  return `${process.env.REACT_APP_API_DOMAIN}/oshi-katsu-saport/talents/${id}/hashtags`;
+  return `${process.env.NEXT_PUBLIC_API_DOMAIN}/oshi-katsu-saport/talents/${id}/hashtags`;
 };
 
 /**

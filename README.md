@@ -1,70 +1,59 @@
-# Getting Started with Create React App
+# public-r-system-front
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+ホロリスの推し活サポート フロントエンド（Next.js App Router）
 
-## Available Scripts
+## 動作環境
 
-In the project directory, you can run:
+- Node.js 20.9 以上（Docker イメージは node:22-alpine）
 
-### `npm start`
+## スクリプト
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+| コマンド | 内容 |
+|---|---|
+| `npm run dev` | 開発サーバー起動（http://localhost:3000） |
+| `npm run build` | 本番ビルド（`.next/`） |
+| `npm run start` | 本番ビルドの起動 |
+| `npm run lint` | ESLint（eslint-config-next） |
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## 環境変数
 
-### `npm test`
+`.env.example` を参照。`NEXT_PUBLIC_*` はビルド時に埋め込まれる。
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+| 変数 | 内容 |
+|---|---|
+| `NEXT_PUBLIC_API_DOMAIN` | API のベースURL（例: `http://localhost:8000/api`） |
+| `NEXT_PUBLIC_GA_MEASUREMENT_ID` | Google アナリティクスの測定ID |
 
-### `npm run build`
+CRA 時代の `REACT_APP_API_DOMAIN` / `REACT_APP_GA_MEASUREMENT_ID` も `next.config.mjs` でフォールバックとして読み込む（移行期間の互換措置）。
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## ディレクトリ構成
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```
+src/
+  app/          ルーティング（page.tsx = 画面、layout.tsx = 共通レイアウト、メタデータ）
+  features/     画面ごとの Container / Presenter / hooks（従来どおり）
+  components/   共通コンポーネント（ClientOnly, AnalyticsTracker など）
+  hooks/        API・認証・ナビゲーション用フック
+  config/       API 設定、サイト定数、メタデータ生成
+  og/           /music の OGP 定義
+public/         静的ファイル（event/ の静的HTML、OGP 画像、sitemap.xml、robots.txt）
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## 実装方針
 
-### `npm run eject`
+- **メタデータ（title / description / OGP / canonical）はサーバー側で出力する**
+  - 各 `src/app/**/page.tsx` の `metadata` / `generateMetadata`（共通処理は `config/metadata.ts`）
+  - `/music?talent=...` はクエリに応じた OGP を返す（旧 vercel.json の User-Agent 判定 + `public/og/*.html` は廃止）
+  - `/music/[musicId]/lyrics` は API から楽曲名を取得してタイトルに含める（取得失敗時は汎用タイトル）
+- **画面本体は `ClientOnly` でブラウザ描画する**
+  - 既存画面は描画時に localStorage / window / 現在時刻を参照するため、サーバー描画するとハイドレーション不一致になる
+  - `/event/[slug]` のみサーバー描画（ビルド時に静的生成）
+- **画面遷移**: `next/navigation`（`useRouter` / `useParams`）、クエリ操作は `hooks/navigation/useSearchParamsState`
+- **遷移時の一回限りメッセージ**（旧 `navigate(path, { state })`）: `utils/navigationFlash`
+- **ログイン後の戻り先**: `/login?from=/admin/...`（`utils/redirectPath` でサイト内パスのみ許可）
+- **リダイレクト**: `next.config.mjs` の `redirects()`（`/talent-music` → `/music` など）
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## イベントページの追加
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+1. `public/event/<slug>/index.html` を配置
+2. `src/features/simple-pages/data/simplePages.ts` にエントリを追加（ビルド時に `/event/<slug>` が静的生成される）

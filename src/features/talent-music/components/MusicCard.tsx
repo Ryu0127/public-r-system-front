@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { Music } from '../types';
 
 interface MusicCardProps {
@@ -299,7 +299,7 @@ export const MusicCard: React.FC<MusicCardProps> = ({
                 再生
               </a>
               <Link
-                to={`/music/${music.id}/lyrics`}
+                href={`/music/${music.id}/lyrics`}
                 className="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-full border border-pink-200 text-pink-600 text-sm font-bold tracking-wide hover:bg-pink-50 transition-colors"
               >
                 <LyricsIcon />

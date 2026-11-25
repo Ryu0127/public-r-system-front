@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import TalentAdminPresenter from '../presenters/TalentAdminPresenter';
 import { useTalentList } from '../hooks/useTalentList';

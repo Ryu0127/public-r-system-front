@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { HololiveEvent } from '../../../events/events-calendar/types';
 import EventForm from '../components/EventForm';
 import EventPreview from '../components/EventPreview';
@@ -20,19 +20,19 @@ const EventFormPresenter: React.FC<EventFormPresenterProps> = ({
   onSave,
   onDelete,
 }) => {
-  const navigate = useNavigate();
+  const router = useRouter();
   const [previewEvent, setPreviewEvent] = useState<HololiveEvent | null>(null);
 
   const handleSave = async (eventData: Partial<HololiveEvent>) => {
     const success = await onSave(eventData);
     if (success) {
       alert(event ? 'イベントを更新しました' : 'イベントを作成しました');
-      navigate('/admin/events');
+      router.push('/admin/events');
     }
   };
 
   const handleCancel = () => {
-    navigate('/admin/events');
+    router.push('/admin/events');
   };
 
   const handlePreview = (eventData: Partial<HololiveEvent>) => {
@@ -58,7 +58,7 @@ const EventFormPresenter: React.FC<EventFormPresenterProps> = ({
       const success = await onDelete();
       if (success) {
         alert('イベントを削除しました');
-        navigate('/admin/events');
+        router.push('/admin/events');
       }
     }
   };

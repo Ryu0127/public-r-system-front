@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { AdminMusic, MUSIC_TYPE_LABELS } from '../../talent-music-edit/types';
+import { useRouter } from 'next/navigation';
+import {
+  AdminMusic,
+  LAST_MUSIC_ACTION_FLASH_KEY,
+  LastMusicAction,
+  MUSIC_TYPE_LABELS,
+} from '../../talent-music-edit/types';
+import { consumeNavigationFlash } from 'utils/navigationFlash';
 import { MusicType } from '../../../talent-music/types';
 import MusicListTable from '../components/MusicListTable';
 import { API_ENDPOINTS, getApiHeaders } from '../../../../config/api';
@@ -35,25 +41,20 @@ const MusicAdminPresenter: React.FC<MusicAdminPresenterProps> = ({
   loading,
   error,
 }) => {
-  const navigate = useNavigate();
-  const location = useLocation();
+  const router = useRouter();
   const [filterType, setFilterType] = useState<MusicType | 'all'>('all');
   const [sortType, setSortType] = useState<SortType>('createdAtDesc');
   const [searchQuery, setSearchQuery] = useState('');
   const [talentNameMap, setTalentNameMap] = useState<Record<number, string>>({});
-  const [lastMusicAction, setLastMusicAction] = useState<
-    { message: string; id: number } | null
-  >(() => ((location.state as any)?.lastMusicAction as { message: string; id: number } | null) ?? null);
+  const [lastMusicAction, setLastMusicAction] = useState<LastMusicAction | null>(null);
 
+  // 登録・更新・削除後の完了メッセージを受け取る（受け取り時に破棄されるため、再読み込みで再表示しない）
   useEffect(() => {
-    const action = (location.state as any)?.lastMusicAction as
-      | { message: string; id: number }
-      | undefined;
-    if (!action) return;
-    setLastMusicAction(action);
-    // URLは維持しつつ location.state のみクリア
-    navigate('/admin/talent-music', { replace: true, state: {} });
-  }, [location.state, navigate]);
+    const action = consumeNavigationFlash<LastMusicAction>(LAST_MUSIC_ACTION_FLASH_KEY);
+    if (action && typeof action.message === 'string') {
+      setLastMusicAction(action);
+    }
+  }, []);
 
   const toTimestamp = (rawDate?: string): number => {
     if (!rawDate) return 0;
@@ -87,7 +88,7 @@ const MusicAdminPresenter: React.FC<MusicAdminPresenterProps> = ({
   }, []);
 
   const handleEdit = (id: string) => {
-    navigate(`/admin/talent-music/${id}/edit`);
+    router.push(`/admin/talent-music/${id}/edit`);
   };
 
   // フィルタリングと検索
@@ -126,7 +127,7 @@ const MusicAdminPresenter: React.FC<MusicAdminPresenterProps> = ({
           <div className="flex justify-between items-center mb-4">
             <h1 className="text-3xl font-bold">楽曲管理</h1>
             <button
-              onClick={() => navigate('/admin/talent-music/new')}
+              onClick={() => router.push('/admin/talent-music/new')}
               className="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
             >
               + 新規登録

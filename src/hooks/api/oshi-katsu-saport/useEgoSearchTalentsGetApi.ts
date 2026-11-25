@@ -24,7 +24,7 @@ export interface Talent {
 }
 
 const getApiUrl = (): string => {
-  return `${process.env.REACT_APP_API_DOMAIN}/oshi-katsu-saport/ego-search/talents`;
+  return `${process.env.NEXT_PUBLIC_API_DOMAIN}/oshi-katsu-saport/ego-search/talents`;
 };
 
 /**
